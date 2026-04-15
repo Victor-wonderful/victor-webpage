@@ -1,3 +1,100 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* =========================================================
+   Editorial Canvas — design tokens
+   spec: docs/superpowers/specs/2026-04-15-canvas-style-redesign.md
+   ========================================================= */
+
+@layer base {
+  :root {
+    /* Palette — light */
+    --bg: 237 231 216;            /* #EDE7D8 */
+    --surface: 255 255 255;       /* #FFFFFF */
+    --surface-warm: 245 239 224;  /* #F5EFE0 */
+    --ink: 31 38 34;              /* #1F2622 */
+    --ink-soft: 44 53 48;         /* #2C3530 */
+    --fg: 26 26 26;               /* #1A1A1A */
+    --fg-muted: 107 103 96;       /* #6B6760 */
+    --border: 217 210 192;        /* #D9D2C0 */
+    --accent: 232 93 47;          /* #E85D2F */
+    --accent-hover: 200 73 31;    /* #C8491F */
+    --accent-bg: 251 228 214;     /* #FBE4D6 */
+
+    /* Semantic */
+    --up: 46 125 91;              /* #2E7D5B */
+    --down: 192 57 43;             /* #C0392B */
+    --warning: 217 164 65;        /* #D9A441 */
+    --info: 44 53 48;             /* #2C3530 */
+
+    /* Layout */
+    --container-page: 1120px;
+    --container-prose: 720px;
+
+    color-scheme: light;
+  }
+
+  .dark, [data-theme="dark"] {
+    --bg: 22 25 26;               /* #16191A */
+    --surface: 31 38 34;          /* #1F2622 */
+    --surface-warm: 38 44 40;     /* #262C28 */
+    --ink: 12 15 14;              /* #0C0F0E */
+    --ink-soft: 22 25 26;         /* #16191A */
+    --fg: 237 231 216;            /* #EDE7D8 */
+    --fg-muted: 154 147 137;      /* #9A9389 */
+    --border: 44 53 48;           /* #2C3530 */
+    --accent: 255 127 77;         /* #FF7F4D */
+    --accent-hover: 232 93 47;    /* #E85D2F */
+    --accent-bg: 60 38 28;
+
+    color-scheme: dark;
+  }
+
+  /* Dark theme is opt-in via [data-theme="dark"] only.
+     OS prefers-color-scheme is intentionally ignored until a UI toggle ships. */
+
+  html {
+    background-color: rgb(var(--bg));
+    color: rgb(var(--fg));
+  }
+
+  body {
+    font-family: var(--font-sans), -apple-system, "Pretendard", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Numeric tabular figures for tickers/prices */
+  .tabular-nums { font-variant-numeric: tabular-nums; }
+}
+
+@layer components {
+  /* Page container — magazine width 1120px */
+  .container-page {
+    max-width: var(--container-page);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  /* Reading prose container */
+  .container-prose {
+    max-width: var(--container-prose);
+    margin-left: auto;
+    margin-right: auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+
+  /* Display headlines (Playfair) */
+  .font-display {
+    font-family: var(--font-display), Georgia, "Pretendard", serif;
+    font-feature-settings: "ss01", "kern";
+  }
+  .font-serif-body {
+    font-family: var(--font-serif), Georgia, "Pretendard", serif;
+  }
+}

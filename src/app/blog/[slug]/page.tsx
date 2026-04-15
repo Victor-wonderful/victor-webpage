@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllSlugs, getPostBySlug } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
+import { EditorialImage } from "@/components/editorial-image";
 
 type Params = { slug: string };
 
@@ -32,40 +33,56 @@ export default async function PostPage(
   if (!post) notFound();
 
   return (
-    <article className="space-y-8">
-      <div>
+    <article>
+      {/* Header */}
+      <header className="container-prose mt-12 border-b border-border pb-10">
         <Link
           href="/blog"
-          className="text-sm text-neutral-500 hover:text-neutral-900 dark:hover:text-neutral-100"
+          className="text-meta text-fg-muted hover:text-accent"
         >
-          ← 블로그
+          ← 전체 글
         </Link>
-      </div>
-
-      <header className="space-y-4 border-b border-neutral-200 pb-8 dark:border-neutral-800">
-        {post.coverEmoji && <div className="text-5xl">{post.coverEmoji}</div>}
-        <h1 className="text-4xl font-bold tracking-tight">{post.title}</h1>
-        <p className="text-lg text-neutral-600 dark:text-neutral-400">
+        <p className="mt-8 text-eyebrow text-accent">시장분석</p>
+        <h1 className="mt-4 font-display text-[44px] font-extrabold leading-[1.05] tracking-tighter md:text-[56px]">
+          {post.title}
+        </h1>
+        <p className="mt-5 font-serif-body text-xl italic text-fg-muted">
           {post.summary}
         </p>
-        <div className="flex items-center gap-3 text-sm text-neutral-500">
+        <div className="mt-6 flex flex-wrap items-center gap-3 text-meta text-fg-muted">
+          <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs text-bg">
+            V
+          </span>
+          <span className="font-medium text-fg">Victor</span>
+          <span>·</span>
           <time dateTime={post.publishedAt}>{formatDate(post.publishedAt)}</time>
           <span>·</span>
-          <div className="flex gap-1.5">
-            {post.tags.map((t) => (
-              <span
-                key={t}
-                className="rounded-full bg-neutral-100 px-2 py-0.5 dark:bg-neutral-800"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
+          <span>읽는 시간 4분</span>
         </div>
       </header>
 
-      <div className="prose-content whitespace-pre-wrap text-base leading-7 text-neutral-800 dark:text-neutral-200">
-        {post.content}
+      {/* Full-bleed cover */}
+      <div className="mt-10 w-full">
+        <EditorialImage seed={post.slug} variant="hero" priority alt={post.title} />
+      </div>
+
+      {/* Body */}
+      <div className="container-prose mt-12">
+        <div className="font-serif-body whitespace-pre-wrap text-[18px] leading-[1.7] text-fg">
+          {post.content}
+        </div>
+
+        {/* Tags */}
+        <ul className="mt-12 flex flex-wrap gap-2 border-t border-border pt-8">
+          {post.tags.map((t) => (
+            <li
+              key={t}
+              className="rounded-full border border-ink/20 bg-surface-warm px-3 py-1.5 text-pill text-fg"
+            >
+              #{t}
+            </li>
+          ))}
+        </ul>
       </div>
     </article>
   );

@@ -1,25 +1,54 @@
 import type { Metadata } from "next";
-import { SiteHeader } from "@/components/site-header";
-import { SiteFooter } from "@/components/site-footer";
+import { Playfair_Display, Source_Serif_4, Inter, JetBrains_Mono } from "next/font/google";
+import { BrandBand } from "@/components/brand-band";
 import "./globals.css";
+
+const display = Playfair_Display({
+  subsets: ["latin"],
+  weight: ["700", "800", "900"],
+  variable: "--font-display",
+  display: "swap",
+});
+const serif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400", "600", "700"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+  display: "swap",
+});
+const sans = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+  display: "swap",
+});
+const mono = JetBrains_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  variable: "--font-mono",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: {
-    default: "Victor",
-    template: "%s | Victor",
+    default: "Victor Alpha",
+    template: "%s | Victor Alpha",
   },
-  description: "개발, 디자인, 트레이딩에 관한 기록.",
+  description: "Pine Script로 시작하는 트레이딩 전략과 시장 인사이트.",
 };
 
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="ko">
-      <body className="bg-white text-neutral-900 antialiased dark:bg-neutral-950 dark:text-neutral-100">
-        <SiteHeader />
-        <main className="mx-auto max-w-3xl px-6 py-10">{children}</main>
-        <SiteFooter />
+    <html
+      lang="ko"
+      className={`${display.variable} ${serif.variable} ${sans.variable} ${mono.variable}`}
+    >
+      <body className="bg-bg text-fg antialiased">
+        <BrandBand variant="header" />
+        <main>{children}</main>
+        <BrandBand variant="footer" />
       </body>
     </html>
   );

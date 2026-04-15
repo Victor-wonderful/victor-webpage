@@ -13,7 +13,6 @@ export type Post = {
   content: string; // 향후 MDX/Notion 블록으로 교체
   publishedAt: string; // ISO 8601
   tags: string[];
-  coverEmoji?: string;
 };
 
 const POSTS: Post[] = [
@@ -24,7 +23,6 @@ const POSTS: Post[] = [
       "첫 번째 포스트입니다. 앞으로 개발, 디자인, 트레이딩에 관한 글을 올립니다.",
     publishedAt: "2026-04-15",
     tags: ["공지", "시작"],
-    coverEmoji: "👋",
     content: `## 환영합니다
 
 이 블로그는 Next.js 15, Tailwind, 그리고 Claude Code 기반 에이전트 팀으로 구축되었습니다.
@@ -43,7 +41,6 @@ const POSTS: Post[] = [
       "혼합형 팀 구성 — TeamCreate 병렬 리서치와 서브에이전트 호출을 조합한 설계.",
     publishedAt: "2026-04-14",
     tags: ["agents", "claude-code"],
-    coverEmoji: "🤖",
     content: `## 왜 혼합형인가
 
 순수 병렬 팀은 조정 비용이, 순수 순차는 병목이 문제입니다.
@@ -62,7 +59,6 @@ const POSTS: Post[] = [
       "SSG + ISR 조합으로 Notion 데이터를 캐싱하면서도 즉시 반영되게 하는 패턴.",
     publishedAt: "2026-04-12",
     tags: ["nextjs", "blog"],
-    coverEmoji: "⚡",
     content: `## 데이터 소스 추상화
 
 \`src/lib/posts.ts\` 에 함수 시그니처만 고정하고 내부 구현은 자유롭게 교체하는 패턴을 씁니다.
