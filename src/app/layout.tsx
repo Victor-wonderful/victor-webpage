@@ -44,7 +44,17 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`${display.variable} ${serif.variable} ${sans.variable} ${mono.variable}`}
+      data-theme="light"
+      suppressHydrationWarning
     >
+      <head>
+        {/* Apply stored theme before paint to avoid flash */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem('victor-alpha-theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t;}}catch(e){}`,
+          }}
+        />
+      </head>
       <body className="bg-bg text-fg antialiased">
         <BrandBand variant="header" />
         <main>{children}</main>

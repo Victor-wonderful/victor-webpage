@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { getAllSlugs, getPostBySlug } from "@/lib/posts";
+import { getCategory } from "@/lib/categories";
 import { formatDate } from "@/lib/format";
 import { EditorialImage } from "@/components/editorial-image";
 
@@ -31,6 +32,7 @@ export default async function PostPage(
   const { slug } = await params;
   const post = await getPostBySlug(slug);
   if (!post) notFound();
+  const category = getCategory(post.category);
 
   return (
     <article>
@@ -42,7 +44,14 @@ export default async function PostPage(
         >
           ← 전체 글
         </Link>
-        <p className="mt-8 text-eyebrow text-accent">시장분석</p>
+        {category && (
+          <Link
+            href={`/category/${category.slug}`}
+            className="mt-8 block text-eyebrow text-accent hover:underline"
+          >
+            {category.label}
+          </Link>
+        )}
         <h1 className="mt-4 font-display text-[44px] font-extrabold leading-[1.05] tracking-tighter md:text-[56px]">
           {post.title}
         </h1>

@@ -2,70 +2,89 @@
  * 블로그 포스트 데이터 레이어.
  *
  * 현재: 로컬 목 데이터.
- * 추후: Notion API(@notionhq/client) 또는 Supabase로 이 모듈의 함수 시그니처를
+ * 추후: Sanity GROQ 또는 Supabase로 이 모듈의 함수 시그니처를
  *       유지한 채 구현체만 교체. 페이지 컴포넌트는 수정 불필요.
  */
+
+import type { CategorySlug } from "./categories";
 
 export type Post = {
   slug: string;
   title: string;
   summary: string;
-  content: string; // 향후 MDX/Notion 블록으로 교체
+  content: string; // 향후 MDX/Sanity 포터블 텍스트로 교체
   publishedAt: string; // ISO 8601
   tags: string[];
+  category: CategorySlug;
 };
 
 const POSTS: Post[] = [
   {
     slug: "hello-world",
-    title: "Victor 블로그 오픈",
+    title: "Victor Alpha 블로그 오픈",
     summary:
-      "첫 번째 포스트입니다. 앞으로 개발, 디자인, 트레이딩에 관한 글을 올립니다.",
+      "Pine Script 전략, 시장 인사이트, 매크로 노트를 한 곳에 모아 갑니다.",
     publishedAt: "2026-04-15",
     tags: ["공지", "시작"],
+    category: "market",
     content: `## 환영합니다
 
-이 블로그는 Next.js 15, Tailwind, 그리고 Claude Code 기반 에이전트 팀으로 구축되었습니다.
+Victor Alpha는 한국 리테일 트레이더와 입문자를 위한 매거진형 트레이딩 블로그입니다.
 
-### 앞으로 다룰 주제
-- 웹 개발 (Next.js / React)
-- AI 에이전트 설계
-- 트레이딩 자동화
+### 다룰 주제
+- 시장인사이트 — BTC·KOSPI·매크로 흐름
+- 트레이딩 전략 — 추세추종·평균회귀·돌파
+- Pine Script — 지표/전략 코드
+- 입문 가이드 — 차트와 지표 기초
+- 매크로·뉴스 — 금리·CPI·정책 해석
 
-천천히 채워 나가겠습니다.`,
+거의 매일 업데이트하겠습니다.`,
   },
   {
     slug: "agent-team-design",
-    title: "Claude Code로 에이전트 팀 구성하기",
+    title: "전략 백테스트 자동화 — 에이전트 팀 구성기",
     summary:
-      "혼합형 팀 구성 — TeamCreate 병렬 리서치와 서브에이전트 호출을 조합한 설계.",
+      "Pine Script 전략 후보를 병렬로 백테스트·리포트하는 에이전트 워크플로 설계.",
     publishedAt: "2026-04-14",
-    tags: ["agents", "claude-code"],
-    content: `## 왜 혼합형인가
+    tags: ["백테스트", "자동화"],
+    category: "strategy",
+    content: `## 왜 자동화인가
 
-순수 병렬 팀은 조정 비용이, 순수 순차는 병목이 문제입니다.
-기획 단계는 병렬, 구현 단계는 메인 + 필요 시 서브에이전트 호출이 실용적입니다.
+전략 후보 5~10개를 손으로 백테스트하면 반나절이 사라집니다.
+병렬 에이전트로 분담시키면 같은 시간에 30~50개 검증이 가능합니다.
 
-### 에이전트 역할 분리
-- frontend-builder: UI 구현
-- ui-reviewer: 리뷰 (읽기 전용)
-- backend-integrator: API 연동
-- qa-tester: Playwright E2E`,
+### 역할 분리
+- runner: 백테스트 실행
+- analyzer: 결과 통계화
+- reporter: 마크다운 리포트 작성`,
   },
   {
     slug: "nextjs-15-notes",
-    title: "Next.js 15 App Router로 블로그 만들기",
+    title: "RSI + EMA 추세추종 전략 — Pine Script v5",
     summary:
-      "SSG + ISR 조합으로 Notion 데이터를 캐싱하면서도 즉시 반영되게 하는 패턴.",
+      "RSI 50 돌파 + EMA 200 위 조건을 결합한 가벼운 추세추종 셋업과 백테스트 결과.",
     publishedAt: "2026-04-12",
-    tags: ["nextjs", "blog"],
-    content: `## 데이터 소스 추상화
+    tags: ["RSI", "EMA", "추세추종"],
+    category: "pinescript",
+    content: `## 셋업 요약
 
-\`src/lib/posts.ts\` 에 함수 시그니처만 고정하고 내부 구현은 자유롭게 교체하는 패턴을 씁니다.
+- RSI(14) > 50
+- 종가 > EMA(200)
+- 두 조건 동시 충족 시 진입, 반대 조건 시 청산
 
-- Phase 1: 목 데이터 (지금)
-- Phase 2: Notion API + ISR (revalidate: 60)
-- Phase 3: 웹훅으로 on-demand revalidate`,
+\`\`\`pinescript
+//@version=5
+strategy("RSI50 + EMA200 Trend", overlay=true)
+emaLen = input.int(200, "EMA length")
+rsiLen = input.int(14, "RSI length")
+ema = ta.ema(close, emaLen)
+rsi = ta.rsi(close, rsiLen)
+long = rsi > 50 and close > ema
+if long
+    strategy.entry("L", strategy.long)
+if not long
+    strategy.close("L")
+\`\`\``,
   },
 ];
 
@@ -81,4 +100,16 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
 
 export async function getAllSlugs(): Promise<string[]> {
   return POSTS.map((p) => p.slug);
+}
+
+export async function getPostsByCategory(
+  category: CategorySlug,
+): Promise<Post[]> {
+  const all = await getAllPosts();
+  return all.filter((p) => p.category === category);
+}
+
+export async function getPostsByTag(tag: string): Promise<Post[]> {
+  const all = await getAllPosts();
+  return all.filter((p) => p.tags.includes(tag));
 }

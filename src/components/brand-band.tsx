@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { WordMark } from "./word-mark";
 import { SocialDots } from "./social-dots";
+import { MobileMenu } from "./mobile-menu";
+import { ThemeToggle } from "./theme-toggle";
 import { cn } from "@/lib/cn";
 
 type Variant = "header" | "footer";
@@ -41,15 +43,17 @@ export function BrandBand({
             <Link href="/category/macro" className="hover:text-accent">매크로·뉴스</Link>
           </nav>
           <div className="flex items-center gap-3 text-meta">
+            <ThemeToggle />
             <Link
               href="/subscribe"
-              className="rounded-full bg-accent px-4 py-2 font-semibold text-white transition-colors hover:bg-accent-hover"
+              className="hidden rounded-full bg-accent px-4 py-2 font-semibold text-white transition-colors hover:bg-accent-hover sm:inline-block"
             >
               구독하기
             </Link>
-            <Link href="/login" className="hidden hover:text-accent sm:inline">
+            <Link href="/login" className="hidden hover:text-accent lg:inline">
               로그인
             </Link>
+            <MobileMenu />
           </div>
         </div>
       </header>
