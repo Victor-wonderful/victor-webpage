@@ -5,6 +5,7 @@ import { getAllSlugs, getPostBySlug } from "@/lib/posts";
 import { getCategory } from "@/lib/categories";
 import { formatDate } from "@/lib/format";
 import { EditorialImage } from "@/components/editorial-image";
+import { TypedMetaBlock } from "@/components/typed-meta";
 
 type Params = { slug: string };
 
@@ -77,6 +78,7 @@ export default async function PostPage(
 
       {/* Body */}
       <div className="container-prose mt-12">
+        <TypedMetaBlock post={post} />
         <div className="font-serif-body whitespace-pre-wrap text-[18px] leading-[1.7] text-fg">
           {post.content}
         </div>
