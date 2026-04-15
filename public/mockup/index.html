@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Superpowers Brainstorming</title>
+  <style>
+    /*
+     * BRAINSTORM COMPANION FRAME TEMPLATE
+     *
+     * This template provides a consistent frame with:
+     * - OS-aware light/dark theming
+     * - Fixed header and selection indicator bar
+     * - Scrollable main content area
+     * - CSS helpers for common UI patterns
+     *
+     * Content is injected via placeholder comment in #claude-content.
+     */
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; overflow: hidden; }
+
+    /* ===== THEME VARIABLES ===== */
+    :root {
+      --bg-primary: #f5f5f7;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #e5e5e7;
+      --border: #d1d1d6;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #aeaeb2;
+      --accent: #0071e3;
+      --accent-hover: #0077ed;
+      --success: #34c759;
+      --warning: #ff9f0a;
+      --error: #ff3b30;
+      --selected-bg: #e8f4fd;
+      --selected-border: #0071e3;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg-primary: #1d1d1f;
+        --bg-secondary: #2d2d2f;
+        --bg-tertiary: #3d3d3f;
+        --border: #424245;
+        --text-primary: #f5f5f7;
+        --text-secondary: #86868b;
+        --text-tertiary: #636366;
+        --accent: #0a84ff;
+        --accent-hover: #409cff;
+        --selected-bg: rgba(10, 132, 255, 0.15);
+        --selected-border: #0a84ff;
+      }
+    }
+
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      display: flex;
+      flex-direction: column;
+      line-height: 1.5;
+    }
+
+    /* ===== FRAME STRUCTURE ===== */
+    .header {
+      background: var(--bg-secondary);
+      padding: 0.5rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .header h1 { font-size: 0.85rem; font-weight: 500; color: var(--text-secondary); }
+    .header .status { font-size: 0.7rem; color: var(--success); display: flex; align-items: center; gap: 0.4rem; }
+    .header .status::before { content: ''; width: 6px; height: 6px; background: var(--success); border-radius: 50%; }
+
+    .main { flex: 1; overflow-y: auto; }
+    #claude-content { padding: 2rem; min-height: 100%; }
+
+    .indicator-bar {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      padding: 0.5rem 1.5rem;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .indicator-bar span {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+    .indicator-bar .selected-text {
+      color: var(--accent);
+      font-weight: 500;
+    }
+
+    /* ===== TYPOGRAPHY ===== */
+    h2 { font-size: 1.5rem; font-weight: 600; margin-bottom: 0.5rem; }
+    h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .subtitle { color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .section { margin-bottom: 2rem; }
+    .label { font-size: 0.7rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+
+    /* ===== OPTIONS (for A/B/C choices) ===== */
+    .options { display: flex; flex-direction: column; gap: 0.75rem; }
+    .option {
+      background: var(--bg-secondary);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.25rem;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+    .option:hover { border-color: var(--accent); }
+    .option.selected { background: var(--selected-bg); border-color: var(--selected-border); }
+    .option .letter {
+      background: var(--bg-tertiary);
+      color: var(--text-secondary);
+      width: 1.75rem; height: 1.75rem;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 600; font-size: 0.85rem; flex-shrink: 0;
+    }
+    .option.selected .letter { background: var(--accent); color: white; }
+    .option .content { flex: 1; }
+    .option .content h3 { font-size: 0.95rem; margin-bottom: 0.15rem; }
+    .option .content p { color: var(--text-secondary); font-size: 0.85rem; margin: 0; }
+
+    /* ===== CARDS (for showing designs/mockups) ===== */
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1rem; }
+    .card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+    .card.selected { border-color: var(--selected-border); border-width: 2px; }
+    .card-image { background: var(--bg-tertiary); aspect-ratio: 16/10; display: flex; align-items: center; justify-content: center; }
+    .card-body { padding: 1rem; }
+    .card-body h3 { margin-bottom: 0.25rem; }
+    .card-body p { color: var(--text-secondary); font-size: 0.85rem; }
+
+    /* ===== MOCKUP CONTAINER ===== */
+    .mockup {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+    .mockup-header {
+      background: var(--bg-tertiary);
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border);
+    }
+    .mockup-body { padding: 1.5rem; }
+
+    /* ===== SPLIT VIEW (side-by-side comparison) ===== */
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+
+    /* ===== PROS/CONS ===== */
+    .pros-cons { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin: 1rem 0; }
+    .pros, .cons { background: var(--bg-secondary); border-radius: 8px; padding: 1rem; }
+    .pros h4 { color: var(--success); font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .cons h4 { color: var(--error); font-size: 0.85rem; margin-bottom: 0.5rem; }
+    .pros ul, .cons ul { margin-left: 1.25rem; font-size: 0.85rem; color: var(--text-secondary); }
+    .pros li, .cons li { margin-bottom: 0.25rem; }
+
+    /* ===== PLACEHOLDER (for mockup areas) ===== */
+    .placeholder {
+      background: var(--bg-tertiary);
+      border: 2px dashed var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      text-align: center;
+      color: var(--text-tertiary);
+    }
+
+    /* ===== INLINE MOCKUP ELEMENTS ===== */
+    .mock-nav { background: var(--accent); color: white; padding: 0.75rem 1rem; display: flex; gap: 1.5rem; font-size: 0.9rem; }
+    .mock-sidebar { background: var(--bg-tertiary); padding: 1rem; min-width: 180px; }
+    .mock-content { padding: 1.5rem; flex: 1; }
+    .mock-button { background: var(--accent); color: white; border: none; padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.85rem; }
+    .mock-input { background: var(--bg-primary); border: 1px solid var(--border); border-radius: 6px; padding: 0.5rem; width: 100%; }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1><a href="https://github.com/obra/superpowers" style="color: inherit; text-decoration: none;">Superpowers Brainstorming</a></h1>
+    <div class="status">Connected</div>
+  </div>
+
+  <div class="main">
+    <div id="claude-content">
+      <h2>Material 컬러 적용 — 두 가지 방향</h2>
+<p class="subtitle">같은 카드를 Material Deep Purple / Indigo / Blue로 각각 렌더링. 두 번째는 "Material SaaS" 스타일로 pivot.</p>
+
+<!-- ============ 해석 1: 에디토리얼 유지, 악센트만 교체 ============ -->
+<h3>해석 1. Medium 에디토리얼 유지 + Material 악센트</h3>
+
+<div class="cards">
+
+  <div class="card" data-choice="editorial-deeppurple" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#FAFAF7;padding:18px;font-family:Georgia,serif;color:#0A0A0A;height:220px;border-bottom:1px solid #E8E6DF">
+      <div style="font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:3px;color:#673AB7;font-weight:700;text-transform:uppercase">시장 분석</div>
+      <div style="font-size:19px;font-weight:700;letter-spacing:-0.03em;margin-top:6px;line-height:1.15">BTC 삼각수렴, 돌파의<br>기술적 조건 세 가지</div>
+      <div style="font-size:12px;color:#525252;margin-top:8px;font-style:italic;line-height:1.5">4시간봉이 보여주는 신호</div>
+      <div style="display:flex;gap:10px;margin-top:10px;font-family:-apple-system,sans-serif;font-size:10px;color:#525252">
+        <span>Victor</span><span>·</span><span>8분</span>
+      </div>
+      <div style="margin-top:14px;display:inline-block;padding:7px 14px;background:#673AB7;color:#fff;font-family:-apple-system,sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;border-radius:4px">READ →</div>
+    </div>
+    <div class="card-body">
+      <h3>1A. Editorial × Deep Purple</h3>
+      <p>아이보리 배경 + Georgia serif + <span style="color:#673AB7;font-weight:700">Deep Purple (#673AB7)</span>. 지적 + 고급 + 약간 신비.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="editorial-indigo" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#FAFAF7;padding:18px;font-family:Georgia,serif;color:#0A0A0A;height:220px;border-bottom:1px solid #E8E6DF">
+      <div style="font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:3px;color:#3F51B5;font-weight:700;text-transform:uppercase">시장 분석</div>
+      <div style="font-size:19px;font-weight:700;letter-spacing:-0.03em;margin-top:6px;line-height:1.15">BTC 삼각수렴, 돌파의<br>기술적 조건 세 가지</div>
+      <div style="font-size:12px;color:#525252;margin-top:8px;font-style:italic;line-height:1.5">4시간봉이 보여주는 신호</div>
+      <div style="display:flex;gap:10px;margin-top:10px;font-family:-apple-system,sans-serif;font-size:10px;color:#525252">
+        <span>Victor</span><span>·</span><span>8분</span>
+      </div>
+      <div style="margin-top:14px;display:inline-block;padding:7px 14px;background:#3F51B5;color:#fff;font-family:-apple-system,sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;border-radius:4px">READ →</div>
+    </div>
+    <div class="card-body">
+      <h3>1B. Editorial × Indigo</h3>
+      <p>아이보리 + Georgia + <span style="color:#3F51B5;font-weight:700">Indigo (#3F51B5)</span>. 진중 + 신뢰 + 지적. 가장 "금융스러움".</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="editorial-blue" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#FAFAF7;padding:18px;font-family:Georgia,serif;color:#0A0A0A;height:220px;border-bottom:1px solid #E8E6DF">
+      <div style="font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:3px;color:#2196F3;font-weight:700;text-transform:uppercase">시장 분석</div>
+      <div style="font-size:19px;font-weight:700;letter-spacing:-0.03em;margin-top:6px;line-height:1.15">BTC 삼각수렴, 돌파의<br>기술적 조건 세 가지</div>
+      <div style="font-size:12px;color:#525252;margin-top:8px;font-style:italic;line-height:1.5">4시간봉이 보여주는 신호</div>
+      <div style="display:flex;gap:10px;margin-top:10px;font-family:-apple-system,sans-serif;font-size:10px;color:#525252">
+        <span>Victor</span><span>·</span><span>8분</span>
+      </div>
+      <div style="margin-top:14px;display:inline-block;padding:7px 14px;background:#2196F3;color:#fff;font-family:-apple-system,sans-serif;font-size:10px;font-weight:700;letter-spacing:1px;border-radius:4px">READ →</div>
+    </div>
+    <div class="card-body">
+      <h3>1C. Editorial × Blue</h3>
+      <p>아이보리 + Georgia + <span style="color:#2196F3;font-weight:700">Blue (#2196F3)</span>. 산뜻 + 개방 + 밝음. 테크 친화.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ 해석 2: Material SaaS로 완전 전환 ============ -->
+<h3 style="margin-top:36px">해석 2. Material SaaS 스타일로 Pivot</h3>
+
+<div class="cards">
+
+  <div class="card" data-choice="saas-deeppurple" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fff;padding:0;font-family:'Pretendard',-apple-system,sans-serif;color:#1a1a1a;height:220px;border:1px solid #EDE7F6;border-radius:8px;overflow:hidden">
+      <div style="background:linear-gradient(135deg,#EDE7F6 0%,#D1C4E9 100%);height:80px;padding:14px 16px;display:flex;align-items:flex-end">
+        <span style="background:#673AB7;color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600">시장 분석</span>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:17px;font-weight:700;line-height:1.25;letter-spacing:-0.02em">BTC 삼각수렴, 돌파의 기술적 조건 세 가지</div>
+        <div style="font-size:12px;color:#616161;margin-top:6px">Victor · 8분 읽기 · 4월 15일</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <span style="background:#F3E5F5;color:#673AB7;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:500">BTC</span>
+          <span style="background:#F3E5F5;color:#673AB7;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:500">기술분석</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>2A. SaaS × Deep Purple</h3>
+      <p>Pretendard · 둥근 카드 · 그라디언트 헤더 · 채도 높은 악센트. Linear/Notion풍 앱.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="saas-indigo" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fff;padding:0;font-family:'Pretendard',-apple-system,sans-serif;color:#1a1a1a;height:220px;border:1px solid #E8EAF6;border-radius:8px;overflow:hidden">
+      <div style="background:linear-gradient(135deg,#E8EAF6 0%,#C5CAE9 100%);height:80px;padding:14px 16px;display:flex;align-items:flex-end">
+        <span style="background:#3F51B5;color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600">시장 분석</span>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:17px;font-weight:700;line-height:1.25;letter-spacing:-0.02em">BTC 삼각수렴, 돌파의 기술적 조건 세 가지</div>
+        <div style="font-size:12px;color:#616161;margin-top:6px">Victor · 8분 읽기 · 4월 15일</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <span style="background:#E8EAF6;color:#3F51B5;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:500">BTC</span>
+          <span style="background:#E8EAF6;color:#3F51B5;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:500">기술분석</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>2B. SaaS × Indigo</h3>
+      <p>Pretendard · 둥근 카드 · Indigo 그라디언트. 네이비 블루의 진중함 + SaaS의 현대감.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="saas-blue" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#fff;padding:0;font-family:'Pretendard',-apple-system,sans-serif;color:#1a1a1a;height:220px;border:1px solid #E3F2FD;border-radius:8px;overflow:hidden">
+      <div style="background:linear-gradient(135deg,#E3F2FD 0%,#BBDEFB 100%);height:80px;padding:14px 16px;display:flex;align-items:flex-end">
+        <span style="background:#2196F3;color:#fff;padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600">시장 분석</span>
+      </div>
+      <div style="padding:14px 16px">
+        <div style="font-size:17px;font-weight:700;line-height:1.25;letter-spacing:-0.02em">BTC 삼각수렴, 돌파의 기술적 조건 세 가지</div>
+        <div style="font-size:12px;color:#616161;margin-top:6px">Victor · 8분 읽기 · 4월 15일</div>
+        <div style="display:flex;gap:6px;margin-top:8px">
+          <span style="background:#E3F2FD;color:#1976D2;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:500">BTC</span>
+          <span style="background:#E3F2FD;color:#1976D2;padding:3px 8px;border-radius:4px;font-size:10px;font-weight:500">기술분석</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>2C. SaaS × Blue</h3>
+      <p>Pretendard · 둥근 카드 · Blue 그라디언트. 가장 밝고 친근. 트레이딩뷰 UI와도 결 비슷.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ 홈 상단 비교 ============ -->
+<h3 style="margin-top:36px">홈페이지 헤더 적용 — 가장 유력한 4개 비교</h3>
+
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+
+  <div class="mockup">
+    <div class="mockup-header">1B. Editorial × Indigo (Medium 유지)</div>
+    <div class="mockup-body" style="background:#FAFAF7;padding:0">
+      <div style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E8E6DF">
+        <div style="font-family:Georgia,serif;font-weight:900;font-size:16px;letter-spacing:-0.03em;color:#0A0A0A">Victor Alpha<span style="color:#3F51B5">α</span></div>
+        <div style="font-family:-apple-system,sans-serif;font-size:11px;display:flex;gap:14px;color:#525252">
+          <span>시장분석</span><span>전략</span><span>Pine Script</span>
+          <span style="background:#3F51B5;color:#fff;padding:4px 10px;font-size:10px;font-weight:700">구독</span>
+        </div>
+      </div>
+      <div style="padding:20px;font-family:Georgia,serif;color:#0A0A0A">
+        <div style="font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:3px;color:#3F51B5;font-weight:700;text-transform:uppercase">이번 주 피처</div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.03em;margin-top:6px;line-height:1.1">BTC 삼각수렴, 돌파의 기술적 조건</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">2B. SaaS × Indigo (Material 앱)</div>
+    <div class="mockup-body" style="background:#fff;padding:0">
+      <div style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E8EAF6">
+        <div style="font-family:'Pretendard',-apple-system,sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.02em;color:#1a1a1a;display:flex;align-items:center;gap:6px">
+          <span style="background:#3F51B5;color:#fff;width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px">Vα</span>
+          Victor Alpha
+        </div>
+        <div style="font-family:-apple-system,sans-serif;font-size:12px;display:flex;gap:14px;color:#616161;align-items:center">
+          <span>시장분석</span><span>전략</span><span>Pine Script</span>
+          <span style="background:#3F51B5;color:#fff;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600">구독</span>
+        </div>
+      </div>
+      <div style="padding:20px;font-family:'Pretendard',-apple-system,sans-serif;color:#1a1a1a">
+        <div style="font-size:10px;color:#3F51B5;font-weight:600;background:#E8EAF6;padding:3px 10px;border-radius:20px;display:inline-block">이번 주 피처</div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-top:8px;line-height:1.2">BTC 삼각수렴, 돌파의 기술적 조건</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">1C. Editorial × Blue</div>
+    <div class="mockup-body" style="background:#FAFAF7;padding:0">
+      <div style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E8E6DF">
+        <div style="font-family:Georgia,serif;font-weight:900;font-size:16px;letter-spacing:-0.03em;color:#0A0A0A">Victor Alpha<span style="color:#2196F3">α</span></div>
+        <div style="font-family:-apple-system,sans-serif;font-size:11px;display:flex;gap:14px;color:#525252">
+          <span>시장분석</span><span>전략</span><span>Pine Script</span>
+          <span style="background:#2196F3;color:#fff;padding:4px 10px;font-size:10px;font-weight:700">구독</span>
+        </div>
+      </div>
+      <div style="padding:20px;font-family:Georgia,serif;color:#0A0A0A">
+        <div style="font-family:-apple-system,sans-serif;font-size:9px;letter-spacing:3px;color:#2196F3;font-weight:700;text-transform:uppercase">이번 주 피처</div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.03em;margin-top:6px;line-height:1.1">BTC 삼각수렴, 돌파의 기술적 조건</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">2C. SaaS × Blue</div>
+    <div class="mockup-body" style="background:#fff;padding:0">
+      <div style="padding:14px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #E3F2FD">
+        <div style="font-family:'Pretendard',-apple-system,sans-serif;font-weight:800;font-size:17px;letter-spacing:-0.02em;color:#1a1a1a;display:flex;align-items:center;gap:6px">
+          <span style="background:#2196F3;color:#fff;width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:12px">Vα</span>
+          Victor Alpha
+        </div>
+        <div style="font-family:-apple-system,sans-serif;font-size:12px;display:flex;gap:14px;color:#616161;align-items:center">
+          <span>시장분석</span><span>전략</span><span>Pine Script</span>
+          <span style="background:#2196F3;color:#fff;padding:6px 14px;border-radius:20px;font-size:11px;font-weight:600">구독</span>
+        </div>
+      </div>
+      <div style="padding:20px;font-family:'Pretendard',-apple-system,sans-serif;color:#1a1a1a">
+        <div style="font-size:10px;color:#1976D2;font-weight:600;background:#E3F2FD;padding:3px 10px;border-radius:20px;display:inline-block">이번 주 피처</div>
+        <div style="font-size:22px;font-weight:700;letter-spacing:-0.02em;margin-top:8px;line-height:1.2">BTC 삼각수렴, 돌파의 기술적 조건</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============ 비교 ============ -->
+<h3 style="margin-top:32px">해석 1 vs 해석 2 트레이드오프</h3>
+
+<table style="width:100%;font-family:-apple-system,sans-serif;font-size:13px;border-collapse:collapse">
+<tr style="background:#f8f5ee">
+<th style="padding:10px;text-align:left;border-bottom:1px solid #e5dfd1"></th>
+<th style="padding:10px;text-align:left;border-bottom:1px solid #e5dfd1">해석 1 — 에디토리얼 유지 + Material 악센트</th>
+<th style="padding:10px;text-align:left;border-bottom:1px solid #e5dfd1">해석 2 — Material SaaS로 Pivot</th>
+</tr>
+<tr>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0"><strong>서체</strong></td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">Georgia serif (그대로)</td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">Pretendard sans로 통일</td>
+</tr>
+<tr>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0"><strong>카드</strong></td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">보더 1px, 라운드 최소</td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">라운드 8px, 그라디언트 헤더</td>
+</tr>
+<tr>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0"><strong>무드</strong></td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">매거진, 독서 중심</td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">앱, 탐색 중심</td>
+</tr>
+<tr>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0"><strong>한국 트레이더 블로그에 흔함</strong></td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">드묾 (차별화)</td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">많음 (익숙함·평범)</td>
+</tr>
+<tr>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0"><strong>Medium 시그니처</strong></td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">유지</td>
+<td style="padding:10px;border-bottom:1px solid #f0f0f0">잃음 (일반 Next.js 블로그처럼 보임)</td>
+</tr>
+<tr>
+<td style="padding:10px"><strong>브랜딩 파워</strong></td>
+<td style="padding:10px">강함 (독특함)</td>
+<td style="padding:10px">중간 (무난함)</td>
+</tr>
+</table>
+
+<p style="margin-top:20px;font-family:-apple-system,sans-serif;font-size:13px;background:#f8f5ee;padding:14px;border-radius:6px;line-height:1.7">
+<strong>제 추천: 1B. Editorial × Indigo</strong><br>
+• Medium 에디토리얼의 독특함 유지<br>
+• Indigo(#3F51B5)는 녹색보다 훨씬 세련 · 신뢰 · 금융 친화<br>
+• "Victor Alpha"라는 브랜드에 α 는 인디고로 포인트 + 본문은 Georgia 유지<br>
+• 한국 트레이더 블로그에서 거의 안 쓰는 조합 → 차별화
+</p>
+
+<div class="options" style="margin-top:20px">
+  <div class="option" data-choice="1A" onclick="toggleSelect(this)"><div class="letter">1A</div><div class="content"><h3>Editorial × Deep Purple</h3></div></div>
+  <div class="option" data-choice="1B" onclick="toggleSelect(this)"><div class="letter">1B</div><div class="content"><h3>Editorial × Indigo ⭐</h3></div></div>
+  <div class="option" data-choice="1C" onclick="toggleSelect(this)"><div class="letter">1C</div><div class="content"><h3>Editorial × Blue</h3></div></div>
+  <div class="option" data-choice="2A" onclick="toggleSelect(this)"><div class="letter">2A</div><div class="content"><h3>SaaS × Deep Purple</h3></div></div>
+</div>
+<div class="options" style="margin-top:8px">
+  <div class="option" data-choice="2B" onclick="toggleSelect(this)"><div class="letter">2B</div><div class="content"><h3>SaaS × Indigo</h3></div></div>
+  <div class="option" data-choice="2C" onclick="toggleSelect(this)"><div class="letter">2C</div><div class="content"><h3>SaaS × Blue</h3></div></div>
+</div>
+
+    </div>
+  </div>
+
+  <div class="indicator-bar">
+    <span id="indicator-text">Click an option above, then return to the terminal</span>
+  </div>
+
+<script>
+(function() {
+  const WS_URL = 'ws://' + window.location.host;
+  let ws = null;
+  let eventQueue = [];
+
+  function connect() {
+    ws = new WebSocket(WS_URL);
+
+    ws.onopen = () => {
+      eventQueue.forEach(e => ws.send(JSON.stringify(e)));
+      eventQueue = [];
+    };
+
+    ws.onmessage = (msg) => {
+      const data = JSON.parse(msg.data);
+      if (data.type === 'reload') {
+        window.location.reload();
+      }
+    };
+
+    ws.onclose = () => {
+      setTimeout(connect, 1000);
+    };
+  }
+
+  function sendEvent(event) {
+    event.timestamp = Date.now();
+    if (ws && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify(event));
+    } else {
+      eventQueue.push(event);
+    }
+  }
+
+  // Capture clicks on choice elements
+  document.addEventListener('click', (e) => {
+    const target = e.target.closest('[data-choice]');
+    if (!target) return;
+
+    sendEvent({
+      type: 'click',
+      text: target.textContent.trim(),
+      choice: target.dataset.choice,
+      id: target.id || null
+    });
+
+    // Update indicator bar (defer so toggleSelect runs first)
+    setTimeout(() => {
+      const indicator = document.getElementById('indicator-text');
+      if (!indicator) return;
+      const container = target.closest('.options') || target.closest('.cards');
+      const selected = container ? container.querySelectorAll('.selected') : [];
+      if (selected.length === 0) {
+        indicator.textContent = 'Click an option above, then return to the terminal';
+      } else if (selected.length === 1) {
+        const label = selected[0].querySelector('h3, .content h3, .card-body h3')?.textContent?.trim() || selected[0].dataset.choice;
+        indicator.innerHTML = '<span class="selected-text">' + label + ' selected</span> — return to terminal to continue';
+      } else {
+        indicator.innerHTML = '<span class="selected-text">' + selected.length + ' selected</span> — return to terminal to continue';
+      }
+    }, 0);
+  });
+
+  // Frame UI: selection tracking
+  window.selectedChoice = null;
+
+  window.toggleSelect = function(el) {
+    const container = el.closest('.options') || el.closest('.cards');
+    const multi = container && container.dataset.multiselect !== undefined;
+    if (container && !multi) {
+      container.querySelectorAll('.option, .card').forEach(o => o.classList.remove('selected'));
+    }
+    if (multi) {
+      el.classList.toggle('selected');
+    } else {
+      el.classList.add('selected');
+    }
+    window.selectedChoice = el.dataset.choice;
+  };
+
+  // Expose API for explicit use
+  window.brainstorm = {
+    send: sendEvent,
+    choice: (value, metadata = {}) => sendEvent({ type: 'choice', value, ...metadata })
+  };
+
+  connect();
+})();
+
+</script>
+</body>
+</html>
