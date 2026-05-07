@@ -1,11 +1,15 @@
+import Link from "next/link";
 import { getAllPosts } from "@/lib/posts";
+import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
 import { FeaturedHero } from "@/components/featured-hero";
 import { EditorialCTA } from "@/components/editorial-cta";
 import { SpotlightSection } from "@/components/spotlight-section";
 import { MustWatchGrid } from "@/components/must-watch-grid";
-import Link from "next/link";
-import { formatDate } from "@/lib/format";
+import { EditorNote } from "@/components/home/editor-note";
+import { TokenPicks } from "@/components/home/token-picks";
+import { MostDiscussed } from "@/components/home/most-discussed";
+import { TodaysPoll } from "@/components/home/todays-poll";
 
 export default async function Home() {
   const posts = await getAllPosts();
@@ -19,26 +23,42 @@ export default async function Home() {
     author: "Victor",
   }));
 
-  const mustWatch = posts.slice(0, 3);
-  const latest = posts;
+  // Curated chart-tagged posts
+  const CHART_TAGS = ["차트노트", "차트", "chart"];
+  const mustWatch = posts
+    .filter((p) => p.tags?.some((t) => CHART_TAGS.includes(t)))
+    .slice(0, 3);
+
+  const latest = posts.slice(0, 8);
 
   return (
     <>
+      {/* 1. Hero — 이번 주 핵심 글 */}
       <FeaturedHero post={hero} />
 
       <section className="container-page mt-12">
         <PillNav />
       </section>
 
-      <EditorialCTA
-        eyebrow="이번 주"
-        headline={["Have You Read", "This Week's Insight?"]}
-        ctaLabel="최신 글 보기"
-        ctaHref="/blog"
-      />
+      {/* 2. Editor's Note + Sentence of the Day */}
+      <EditorNote />
 
+      {/* 3. Token Picks — 투자 후보 토큰 */}
+      <TokenPicks />
+
+      {/* 4. Strategy Spotlight (기존, 재배치) */}
       <SpotlightSection items={spotlight} />
 
+      {/* 5. Must-Watch Charts (차트 태그 글이 있을 때만 노출) */}
+      <MustWatchGrid posts={mustWatch} />
+
+      {/* 6. Today's Poll — 투표 위젯 */}
+      <TodaysPoll />
+
+      {/* 7. Most Discussed — 댓글 많은 글 */}
+      <MostDiscussed days={30} limit={3} />
+
+      {/* 7. Newsletter CTA */}
       <EditorialCTA
         eyebrow="Newsletter"
         headline={["Sign Up for Our", "Newsletter"]}
@@ -46,9 +66,7 @@ export default async function Home() {
         ctaHref="/subscribe"
       />
 
-      <MustWatchGrid posts={mustWatch} />
-
-      {/* Latest list */}
+      {/* 8. Latest — 최신 글 (간소) */}
       <section className="container-page mt-24">
         <header className="mb-10 flex items-baseline justify-between">
           <div>

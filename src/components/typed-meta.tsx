@@ -35,7 +35,7 @@ function MetaShell({
       )}
     >
       <header className="mb-4 flex items-center gap-3">
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-bg">
+        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-bg dark:bg-fg dark:text-ink">
           {icon}
         </span>
         <h2 className="text-eyebrow text-fg">{title}</h2>
@@ -84,6 +84,13 @@ const Icons = {
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
       <circle cx="12" cy="12" r="9" />
       <path d="M3 12h18M12 3a13 13 0 0 1 0 18M12 3a13 13 0 0 0 0 18" />
+    </svg>
+  ),
+  coins: (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-3.5 w-3.5">
+      <circle cx="9" cy="9" r="6" />
+      <path d="M14.5 4.5a6 6 0 0 1 0 11" />
+      <path d="M17 8.5a6 6 0 0 1 0 11 6 6 0 0 1-6 0" />
     </svg>
   ),
 };
@@ -142,6 +149,19 @@ export function TypedMetaBlock({ post }: { post: Post }) {
             { label: "레벨", value: meta.level ?? "초급" },
             { label: "읽는 시간", value: meta.readMinutes ? `${meta.readMinutes}분` : "5분" },
             { label: "선수 지식", value: meta.prerequisites ?? "없음" },
+          ]}
+        />
+      );
+    case "tokens":
+      return (
+        <MetaShell
+          icon={Icons.coins}
+          title="토큰 트렌드"
+          fields={[
+            { label: "섹터", value: meta.sector ?? "AI · RWA" },
+            { label: "기간", value: meta.timeframe ?? "주간" },
+            { label: "데이터", value: meta.dataSource ?? "CoinGecko" },
+            { label: "리스크", value: meta.riskLevel ?? "중" },
           ]}
         />
       );

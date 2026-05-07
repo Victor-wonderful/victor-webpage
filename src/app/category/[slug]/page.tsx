@@ -2,12 +2,14 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { CATEGORIES, getCategory, isCategorySlug } from "@/lib/categories";
-import { getPostsByCategory } from "@/lib/posts";
+import { getPostsByCategoryPage, POSTS_PER_PAGE } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
 import { EditorialImage } from "@/components/editorial-image";
+import { Pagination } from "@/components/pagination";
 
 type Params = { slug: string };
+type Search = { page?: string };
 
 export function generateStaticParams(): Params[] {
   return CATEGORIES.map((c) => ({ slug: c.slug }));
@@ -25,13 +27,33 @@ export async function generateMetadata(
   };
 }
 
-export default async function CategoryPage(
-  { params }: { params: Promise<Params> },
-) {
-  const { slug } = await params;
+function parsePage(raw: string | undefined): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+export default async function CategoryPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<Params>;
+  searchParams: Promise<Search>;
+}) {
+  const [{ slug }, sp] = await Promise.all([params, searchParams]);
   if (!isCategorySlug(slug)) notFound();
   const category = getCategory(slug)!;
-  const posts = await getPostsByCategory(slug);
+  const page = parsePage(sp.page);
+
+  const { posts, total, totalPages } = await getPostsByCategoryPage(
+    slug,
+    page,
+    POSTS_PER_PAGE,
+  );
+
+  // Out-of-range page → 404 (better than empty list)
+  if (total > 0 && page > totalPages) notFound();
+
+  const basePath = `/category/${slug}`;
 
   return (
     <>
@@ -47,7 +69,10 @@ export default async function CategoryPage(
               {category.description}
             </p>
           </div>
-          <p className="text-meta text-fg-muted">총 {posts.length}개의 글</p>
+          <p className="text-meta text-fg-muted">
+            총 {total}개의 글
+            {totalPages > 1 && ` · ${page} / ${totalPages} 페이지`}
+          </p>
         </header>
         <div className="mt-8">
           <PillNav />
@@ -69,44 +94,52 @@ export default async function CategoryPage(
             </Link>
           </div>
         ) : (
-          <ul className="grid gap-10 md:grid-cols-2">
-            {posts.map((p) => (
-              <li key={p.slug}>
-                <Link
-                  href={`/blog/${p.slug}`}
-                  className="group block overflow-hidden rounded-md border border-border bg-surface transition-colors hover:border-accent"
-                >
-                  <EditorialImage seed={p.slug} variant="wide" alt={p.title} />
-                  <div className="p-6">
-                    <p className="text-eyebrow text-fg-muted">
-                      {category.label}
-                    </p>
-                    <h2 className="mt-3 font-serif-body text-2xl font-bold leading-snug tracking-tight group-hover:text-accent">
-                      {p.title}
-                    </h2>
-                    <p className="mt-2 line-clamp-2 text-fg-muted">
-                      {p.summary}
-                    </p>
-                    <div className="mt-4 flex items-center justify-between text-meta text-fg-muted">
-                      <time dateTime={p.publishedAt}>
-                        {formatDate(p.publishedAt)}
-                      </time>
-                      <ul className="flex flex-wrap gap-2">
-                        {p.tags.slice(0, 2).map((t) => (
-                          <li
-                            key={t}
-                            className="rounded-full bg-surface-warm px-2 py-1 text-[11px]"
-                          >
-                            #{t}
-                          </li>
-                        ))}
-                      </ul>
+          <>
+            <ul className="grid gap-10 md:grid-cols-2">
+              {posts.map((p) => (
+                <li key={p.slug}>
+                  <Link
+                    href={`/blog/${p.slug}`}
+                    className="group block overflow-hidden rounded-md border border-border bg-surface transition-colors hover:border-accent"
+                  >
+                    <EditorialImage seed={p.slug} variant="wide" alt={p.title} />
+                    <div className="p-6">
+                      <p className="text-eyebrow text-fg-muted">
+                        {category.label}
+                      </p>
+                      <h2 className="mt-3 font-serif-body text-2xl font-bold leading-snug tracking-tight group-hover:text-accent">
+                        {p.title}
+                      </h2>
+                      <p className="mt-2 line-clamp-2 text-fg-muted">
+                        {p.summary}
+                      </p>
+                      <div className="mt-4 flex items-center justify-between text-meta text-fg-muted">
+                        <time dateTime={p.publishedAt}>
+                          {formatDate(p.publishedAt)}
+                        </time>
+                        <ul className="flex flex-wrap gap-2">
+                          {p.tags.slice(0, 2).map((t) => (
+                            <li
+                              key={t}
+                              className="rounded-full bg-surface-warm px-2 py-1 text-[11px]"
+                            >
+                              #{t}
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
                     </div>
-                  </div>
-                </Link>
-              </li>
-            ))}
-          </ul>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+
+            <Pagination
+              basePath={basePath}
+              currentPage={page}
+              totalPages={totalPages}
+            />
+          </>
         )}
       </section>
     </>

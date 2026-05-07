@@ -1,0 +1,50 @@
+import { getEditorial } from "@/lib/editorial";
+
+/**
+ * Editor's Note + Sentence of the Day — a short editorial block on the home.
+ * Hides itself when no editorial doc exists.
+ */
+export async function EditorNote() {
+  const ed = await getEditorial();
+  if (!ed?.editorNote && !ed?.sentenceOfTheDay) return null;
+
+  return (
+    <section className="container-page mt-24">
+      <div className="grid items-start gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+        {/* Sentence of the Day — left column, large quote */}
+        {ed.sentenceOfTheDay && (
+          <aside className="rounded-md bg-ink p-8 text-bg dark:bg-fg dark:text-ink">
+            <p className="text-eyebrow text-accent">Sentence of the Day</p>
+            <blockquote className="mt-4 font-display text-2xl font-bold leading-snug tracking-tight md:text-3xl">
+              <span className="select-none text-accent">“ </span>
+              {ed.sentenceOfTheDay}
+              <span className="select-none text-accent"> ”</span>
+            </blockquote>
+            {ed.updatedAt && (
+              <p className="mt-6 text-meta opacity-70">
+                업데이트 ·{" "}
+                {new Date(ed.updatedAt).toLocaleDateString("ko-KR")}
+              </p>
+            )}
+          </aside>
+        )}
+
+        {/* Editor's Note — right column, longer text */}
+        {ed.editorNote && (
+          <article>
+            <p className="text-eyebrow text-accent">Editor&apos;s Note</p>
+            <h2 className="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
+              이번 주의 시선
+            </h2>
+            <p className="mt-6 whitespace-pre-line font-serif-body text-lg italic leading-[1.7] text-fg">
+              {ed.editorNote}
+            </p>
+            <p className="mt-6 text-meta text-fg-muted">
+              — {ed.editorNoteAuthor ?? "Victor"}
+            </p>
+          </article>
+        )}
+      </div>
+    </section>
+  );
+}

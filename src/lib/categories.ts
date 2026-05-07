@@ -8,6 +8,7 @@ export type CategorySlug =
   | "market"
   | "strategy"
   | "pinescript"
+  | "tokens"
   | "basics"
   | "macro";
 
@@ -36,6 +37,12 @@ export const CATEGORIES: Category[] = [
     label: "Pine Script",
     description: "TradingView 지표·전략 코드와 구현 노트.",
     eyebrow: "Pine Script",
+  },
+  {
+    slug: "tokens",
+    label: "토큰 트렌드",
+    description: "주간 신규 상장·섹터별 자금 흐름·주목할 만한 토큰 큐레이션.",
+    eyebrow: "Token Trends",
   },
   {
     slug: "basics",

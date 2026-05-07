@@ -32,11 +32,11 @@ export function SpotlightSection({ items }: { items: Strategy[] }) {
             >
               {/* Round backtest badge */}
               <div className="shrink-0">
-                <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-ink text-bg">
+                <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-ink text-bg dark:bg-fg dark:text-ink">
                   <span className="font-display text-lg font-bold leading-none tabular-nums">
                     {winRate}%
                   </span>
-                  <span className="mt-1 text-[10px] uppercase tracking-[0.18em] text-bg/70">
+                  <span className="mt-1 text-[10px] uppercase tracking-[0.18em] text-bg/70 dark:text-ink/70">
                     승률
                   </span>
                 </div>

@@ -1,23 +1,59 @@
 /**
  * 블로그 포스트 데이터 레이어.
  *
- * 현재: 로컬 목 데이터.
- * 추후: Sanity GROQ 또는 Supabase로 이 모듈의 함수 시그니처를
- *       유지한 채 구현체만 교체. 페이지 컴포넌트는 수정 불필요.
+ * 1순위: Sanity GROQ.
+ * Sanity 응답이 비어있거나 실패하면 로컬 mock으로 fallback.
+ * 마이그레이션 전후 양쪽에서 사이트가 동작하도록 유지.
  */
 
+import { client } from "@/sanity/client";
+import {
+  allPostsQuery,
+  allPostsPageQuery,
+  allPostsCountQuery,
+  allSlugsQuery,
+  postBySlugQuery,
+  postsByCategoryQuery,
+  postsByCategoryPageQuery,
+  postsByCategoryCountQuery,
+  postsByTagQuery,
+} from "@/sanity/queries";
 import type { CategorySlug } from "./categories";
+
+export type SanityImageRef = {
+  asset?: { _ref?: string; _id?: string; url?: string };
+  alt?: string;
+};
+
+export type SanityFileRef = {
+  asset?: {
+    _ref?: string;
+    _id?: string;
+    url?: string;
+    originalFilename?: string;
+    size?: number;
+    extension?: string;
+    mimeType?: string;
+  };
+};
+
+export type PostAttachment = {
+  label: string;
+  description?: string;
+  file?: SanityFileRef;
+};
 
 export type Post = {
   slug: string;
   title: string;
   summary: string;
-  content: string; // 향후 MDX/Sanity 포터블 텍스트로 교체
+  content: string;
   publishedAt: string; // ISO 8601
   tags: string[];
   category: CategorySlug;
-  /** 카테고리별 자유 형태 메타 필드 (Sanity 스키마 도입 전까지 임시) */
   meta?: Record<string, string | number>;
+  bodyImages?: SanityImageRef[];
+  attachments?: PostAttachment[];
 };
 
 const POSTS: Post[] = [
@@ -118,6 +154,40 @@ if not long
 4. **유성형** — 긴 위꼬리, 상승 후 매물 출현`,
   },
   {
+    slug: "token-trends-2026-w16",
+    title: "이번 주 토큰 트렌드 — AI·RWA 섹터 자금 유입 TOP 5",
+    summary:
+      "4월 셋째 주, 거래소 신규 상장과 온체인 자금 흐름 기준으로 본 주목할 만한 토큰 5종.",
+    publishedAt: "2026-04-16",
+    tags: ["토큰", "AI", "RWA", "온체인"],
+    category: "tokens",
+    meta: {
+      sector: "AI · RWA",
+      timeframe: "주간",
+      dataSource: "CoinGecko · Nansen",
+      riskLevel: "중·고",
+    },
+    content: `## 이번 주 픽 5종
+
+이번 주는 **AI 에이전트 섹터**와 **RWA(실물자산 토큰화)** 두 축에서 자금 유입이 두드러졌습니다. 가격 추종이 아닌 **온체인 활동 + 거래소 상장** 기준 큐레이션입니다.
+
+### TOP 5 (가나다 순)
+
+1. **AI Agent 섹터 토큰 A** — 주요 거래소 동시 상장, 24h 거래량 5배 증가
+2. **RWA 플랫폼 토큰 B** — 미 국채 토큰화 TVL 30% 증가, 기관 지갑 신규 유입
+3. **DePIN 인프라 토큰 C** — 노드 수 주간 +12%, 에어드랍 시즌 종료 후 가격 안정화
+4. **L2 인프라 토큰 D** — 메인넷 업그레이드 직후 활성 주소 +40%
+5. **Meme 섹터 대표 E** — 단기 변동성 ↑, 진입은 신중히
+
+### 보는 관점
+
+- **자금 흐름**: 거래량/TVL 증가 토큰만 후보
+- **상장 모멘텀**: 주요 거래소 신규 상장 ±7일 구간
+- **온체인 시그널**: 활성 주소·고래 지갑 누적 잔고 변화
+
+> ⚠️ **본 글은 투자 추천이 아닙니다.** 큐레이션 관점의 분석/의견이며, 매매 결정은 본인 책임입니다.`,
+  },
+  {
     slug: "fomc-2026-04-preview",
     title: "4월 FOMC 프리뷰 — 금리 동결과 점도표 변화 가능성",
     summary:
@@ -144,28 +214,160 @@ if not long
   },
 ];
 
+function normalize(p: Post): Post {
+  return {
+    ...p,
+    publishedAt: p.publishedAt?.slice(0, 10) ?? p.publishedAt,
+    tags: p.tags ?? [],
+  };
+}
+
+async function trySanity<T>(fn: () => Promise<T>, fallback: T): Promise<T> {
+  try {
+    const result = await fn();
+    if (Array.isArray(result) && result.length === 0) return fallback;
+    if (result == null) return fallback;
+    return result;
+  } catch (err) {
+    console.warn("[posts] Sanity query failed, using mock:", err);
+    return fallback;
+  }
+}
+
+/**
+ * Loosely-typed fetch helper.
+ * @sanity/client v7 infers params from the query template-literal type, but
+ * our queries use string interpolation (POST_PROJECTION) which defeats that
+ * inference. We forward through a wrapper to keep `this` bound.
+ */
+function sanityFetch<T>(
+  query: string,
+  params?: Record<string, unknown>,
+): Promise<T> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (client.fetch as any)(query, params ?? {}) as Promise<T>;
+}
+
 export async function getAllPosts(): Promise<Post[]> {
-  return [...POSTS].sort((a, b) =>
+  const fallback = [...POSTS].sort((a, b) =>
     b.publishedAt.localeCompare(a.publishedAt),
   );
+  const result = await trySanity(
+    () => sanityFetch<Post[]>(allPostsQuery),
+    fallback,
+  );
+  return result.map(normalize);
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
-  return POSTS.find((p) => p.slug === slug) ?? null;
+  const mock = POSTS.find((p) => p.slug === slug) ?? null;
+  const result = await trySanity(
+    () => sanityFetch<Post | null>(postBySlugQuery, { slug }),
+    mock,
+  );
+  return result ? normalize(result) : null;
 }
 
 export async function getAllSlugs(): Promise<string[]> {
-  return POSTS.map((p) => p.slug);
+  const fallback = POSTS.map((p) => p.slug);
+  return trySanity(
+    () => sanityFetch<string[]>(allSlugsQuery),
+    fallback,
+  );
 }
 
 export async function getPostsByCategory(
   category: CategorySlug,
 ): Promise<Post[]> {
-  const all = await getAllPosts();
-  return all.filter((p) => p.category === category);
+  const fallback = POSTS.filter((p) => p.category === category);
+  const result = await trySanity(
+    () => sanityFetch<Post[]>(postsByCategoryQuery, { category }),
+    fallback,
+  );
+  return result.map(normalize);
+}
+
+export const POSTS_PER_PAGE = 12;
+
+/** Paginated all-posts (across all categories). 1-based page. */
+export async function getAllPostsPage(
+  page: number,
+  perPage: number = POSTS_PER_PAGE,
+): Promise<{ posts: Post[]; total: number; totalPages: number }> {
+  const safePage = Math.max(1, Math.floor(page));
+  const start = (safePage - 1) * perPage;
+  const end = start + perPage;
+
+  const fallbackAll = [...POSTS].sort((a, b) =>
+    b.publishedAt.localeCompare(a.publishedAt),
+  );
+  const fallback = {
+    posts: fallbackAll.slice(start, end),
+    total: fallbackAll.length,
+    totalPages: Math.max(1, Math.ceil(fallbackAll.length / perPage)),
+  };
+
+  try {
+    const [pagePosts, total] = await Promise.all([
+      sanityFetch<Post[]>(allPostsPageQuery, { start, end }),
+      sanityFetch<number>(allPostsCountQuery),
+    ]);
+    if (!Array.isArray(pagePosts) || typeof total !== "number") return fallback;
+    return {
+      posts: pagePosts.map(normalize),
+      total,
+      totalPages: Math.max(1, Math.ceil(total / perPage)),
+    };
+  } catch (err) {
+    console.warn("[posts] paginated fetch failed, using mock:", err);
+    return fallback;
+  }
+}
+
+/**
+ * Paginated category fetch. Returns one page of posts plus the total count
+ * needed to render pagination controls.
+ *
+ * `page` is 1-based.
+ */
+export async function getPostsByCategoryPage(
+  category: CategorySlug,
+  page: number,
+  perPage: number = POSTS_PER_PAGE,
+): Promise<{ posts: Post[]; total: number; totalPages: number }> {
+  const safePage = Math.max(1, Math.floor(page));
+  const start = (safePage - 1) * perPage;
+  const end = start + perPage;
+
+  const fallbackAll = POSTS.filter((p) => p.category === category);
+  const fallback = {
+    posts: fallbackAll.slice(start, end),
+    total: fallbackAll.length,
+    totalPages: Math.max(1, Math.ceil(fallbackAll.length / perPage)),
+  };
+
+  try {
+    const [pagePosts, total] = await Promise.all([
+      sanityFetch<Post[]>(postsByCategoryPageQuery, { category, start, end }),
+      sanityFetch<number>(postsByCategoryCountQuery, { category }),
+    ]);
+    if (!Array.isArray(pagePosts) || typeof total !== "number") return fallback;
+    return {
+      posts: pagePosts.map(normalize),
+      total,
+      totalPages: Math.max(1, Math.ceil(total / perPage)),
+    };
+  } catch (err) {
+    console.warn("[posts] paginated fetch failed, using mock:", err);
+    return fallback;
+  }
 }
 
 export async function getPostsByTag(tag: string): Promise<Post[]> {
-  const all = await getAllPosts();
-  return all.filter((p) => p.tags.includes(tag));
+  const fallback = POSTS.filter((p) => p.tags.includes(tag));
+  const result = await trySanity(
+    () => sanityFetch<Post[]>(postsByTagQuery, { tag }),
+    fallback,
+  );
+  return result.map(normalize);
 }

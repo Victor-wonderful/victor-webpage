@@ -4,6 +4,7 @@ import { formatDate } from "@/lib/format";
 import { EditorialImage } from "./editorial-image";
 
 export function MustWatchGrid({ posts }: { posts: Post[] }) {
+  if (posts.length === 0) return null;
   return (
     <section className="container-page mt-24">
       <header className="mb-10">

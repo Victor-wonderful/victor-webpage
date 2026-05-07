@@ -3,16 +3,19 @@ import { WordMark } from "./word-mark";
 import { SocialDots } from "./social-dots";
 import { MobileMenu } from "./mobile-menu";
 import { ThemeToggle } from "./theme-toggle";
+import { UserMenu } from "./user-menu";
+import { CATEGORIES } from "@/lib/categories";
 import { cn } from "@/lib/cn";
 
 type Variant = "header" | "footer";
 
+const CATEGORY_LINKS = CATEGORIES.map((c) => ({
+  label: c.label,
+  href: `/category/${c.slug}`,
+}));
+
 const FOOTER_LINKS = [
-  { label: "시장인사이트", href: "/category/market" },
-  { label: "트레이딩 전략", href: "/category/strategy" },
-  { label: "Pine Script", href: "/category/pinescript" },
-  { label: "입문 가이드", href: "/category/basics" },
-  { label: "매크로·뉴스", href: "/category/macro" },
+  ...CATEGORY_LINKS,
   { label: "소개", href: "/about" },
   { label: "구독", href: "/subscribe" },
   { label: "RSS", href: "/rss.xml" },
@@ -30,17 +33,18 @@ export function BrandBand({
       <header
         className={cn(
           "sticky top-0 z-40 w-full border-b border-ink/30 bg-ink text-bg",
+          "dark:border-bg/15 dark:text-fg",
           className,
         )}
       >
-        <div className="container-page flex h-16 items-center justify-between gap-6">
-          <WordMark size="sm" asLink className="text-bg" />
+        <div className="container-page flex h-20 items-center justify-between gap-6">
+          <WordMark size="sm" asLink className="text-bg dark:text-fg" />
           <nav className="hidden items-center gap-5 text-meta lg:flex">
-            <Link href="/category/market" className="hover:text-accent">시장인사이트</Link>
-            <Link href="/category/strategy" className="hover:text-accent">트레이딩 전략</Link>
-            <Link href="/category/pinescript" className="hover:text-accent">Pine Script</Link>
-            <Link href="/category/basics" className="hover:text-accent">입문 가이드</Link>
-            <Link href="/category/macro" className="hover:text-accent">매크로·뉴스</Link>
+            {CATEGORY_LINKS.map((l) => (
+              <Link key={l.href} href={l.href} className="hover:text-accent">
+                {l.label}
+              </Link>
+            ))}
           </nav>
           <div className="flex items-center gap-3 text-meta">
             <ThemeToggle />
@@ -50,9 +54,7 @@ export function BrandBand({
             >
               구독하기
             </Link>
-            <Link href="/login" className="hidden hover:text-accent lg:inline">
-              로그인
-            </Link>
+            <UserMenu className="hidden lg:flex" />
             <MobileMenu />
           </div>
         </div>
@@ -60,30 +62,41 @@ export function BrandBand({
     );
   }
 
-  // footer
+  // footer — balanced with header (smaller wordmark, tighter spacing)
   return (
     <footer
-      className={cn("mt-24 w-full bg-ink text-bg", className)}
+      className={cn(
+        "mt-16 w-full bg-ink text-bg",
+        "dark:text-fg",
+        className,
+      )}
     >
-      <div className="container-page flex flex-col gap-10 py-14">
-        <div className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end">
-          <WordMark size="xl" className="block max-w-full text-bg" />
+      <div className="container-page flex flex-col gap-6 py-8">
+        {/* Row: wordmark left, social right */}
+        <div className="flex items-center justify-between gap-6">
+          <WordMark size="sm" asLink className="text-bg dark:text-fg" />
           <SocialDots className="shrink-0" />
         </div>
-        <hr className="border-bg/20" />
-        <div className="flex flex-col items-start justify-between gap-6 text-meta md:flex-row md:items-center">
-          <ul className="flex flex-wrap gap-x-6 gap-y-2">
+
+        <hr className="border-bg/20 dark:border-fg/15" />
+
+        {/* Nav — single horizontal row, scrolls on narrow screens */}
+        <nav aria-label="푸터 메뉴" className="text-meta">
+          <ul className="-mx-1 flex items-center gap-x-5 overflow-x-auto whitespace-nowrap px-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {FOOTER_LINKS.map((l) => (
-              <li key={l.href}>
+              <li key={l.href} className="shrink-0">
                 <Link href={l.href} className="hover:text-accent">
                   {l.label}
                 </Link>
               </li>
             ))}
           </ul>
-          <p className="text-bg/60">
-            Pine Script로 시작하는 트레이딩 전략과 시장 인사이트 · © 2026 Victor Alpha
-          </p>
+        </nav>
+
+        {/* Tagline + copyright on one line at md+ */}
+        <div className="flex flex-col gap-1 text-meta text-bg/60 dark:text-fg/60 md:flex-row md:items-center md:justify-between">
+          <p>Pine Script로 시작하는 트레이딩 전략과 시장 인사이트</p>
+          <p>© 2026 Victor Alpha</p>
         </div>
       </div>
     </footer>

@@ -6,7 +6,7 @@ import { EditorialImage } from "./editorial-image";
 export function FeaturedHero({ post }: { post: Post }) {
   return (
     <section className="container-page mt-10">
-      <div className="relative overflow-hidden rounded-md border border-border bg-ink text-bg">
+      <div className="relative overflow-hidden rounded-md border border-border bg-ink text-bg dark:text-fg">
         <EditorialImage seed={post.slug} variant="hero" priority alt={post.title} />
         {/* Floating overlay card */}
         <div className="absolute bottom-6 left-6 right-6 max-w-md rounded-md bg-surface p-6 text-fg shadow-sm md:left-auto md:right-8 md:bottom-8">

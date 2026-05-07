@@ -33,7 +33,7 @@ export function MobileMenu() {
         aria-label="메뉴 열기"
         aria-expanded={open}
         onClick={() => setOpen(true)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full text-bg hover:text-accent lg:hidden"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full text-bg hover:text-accent dark:text-fg lg:hidden"
       >
         <svg
           viewBox="0 0 24 24"
@@ -70,11 +70,11 @@ export function MobileMenu() {
         {/* Panel */}
         <aside
           className={cn(
-            "absolute right-0 top-0 flex h-full w-full max-w-sm flex-col bg-ink text-bg shadow-xl transition-transform",
+            "absolute right-0 top-0 flex h-full w-full max-w-sm flex-col bg-ink text-bg shadow-xl transition-transform dark:text-fg",
             open ? "translate-x-0" : "translate-x-full",
           )}
         >
-          <div className="flex items-center justify-between border-b border-bg/15 px-6 py-4">
+          <div className="flex items-center justify-between border-b border-bg/15 dark:border-fg/15 px-6 py-4">
             <span className="font-display text-xl font-extrabold uppercase tracking-tight">
               VICTOR <span className="italic">ALPHA</span>
             </span>
@@ -113,12 +113,13 @@ export function MobileMenu() {
               ))}
             </ul>
 
-            <hr className="my-8 border-bg/15" />
+            <hr className="my-8 border-bg/15 dark:border-fg/15" />
 
             <p className="text-eyebrow text-accent">More</p>
             <ul className="mt-4 space-y-1">
               {[
                 { label: "전체 글", href: "/blog" },
+                { label: "북마크", href: "/bookmarks" },
                 { label: "소개", href: "/about" },
                 { label: "구독", href: "/subscribe" },
                 { label: "로그인", href: "/login" },
@@ -135,7 +136,7 @@ export function MobileMenu() {
             </ul>
           </nav>
 
-          <div className="border-t border-bg/15 p-6">
+          <div className="border-t border-bg/15 dark:border-fg/15 p-6">
             <Link
               href="/subscribe"
               className="block w-full rounded-full bg-accent px-6 py-3 text-center font-semibold text-white transition-colors hover:bg-accent-hover"

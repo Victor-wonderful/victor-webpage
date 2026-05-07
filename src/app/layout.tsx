@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Source_Serif_4, Inter, JetBrains_Mono } from "next/font/google";
 import { BrandBand } from "@/components/brand-band";
+import { SITE } from "@/lib/site";
 import "./globals.css";
 
 const display = Playfair_Display({
@@ -30,11 +31,31 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE.url),
   title: {
-    default: "Victor Alpha",
-    template: "%s | Victor Alpha",
+    default: SITE.name,
+    template: `%s | ${SITE.name}`,
   },
-  description: "Pine Script로 시작하는 트레이딩 전략과 시장 인사이트.",
+  description: SITE.description,
+  openGraph: {
+    type: "website",
+    siteName: SITE.name,
+    title: SITE.name,
+    description: SITE.description,
+    locale: SITE.locale,
+    url: SITE.url,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE.name,
+    description: SITE.description,
+  },
+  alternates: {
+    canonical: "/",
+    types: {
+      "application/rss+xml": "/rss.xml",
+    },
+  },
 };
 
 export default function RootLayout({

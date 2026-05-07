@@ -6,6 +6,11 @@ import { getCategory } from "@/lib/categories";
 import { formatDate } from "@/lib/format";
 import { EditorialImage } from "@/components/editorial-image";
 import { TypedMetaBlock } from "@/components/typed-meta";
+import { MarkdownContent } from "@/components/markdown-content";
+import { PostAttachments } from "@/components/post-attachments";
+import { CommentsSection } from "@/components/comments/comments-section";
+import { PostLike } from "@/components/likes/post-like";
+import { PostBookmark } from "@/components/bookmarks/post-bookmark";
 
 type Params = { slug: string };
 
@@ -17,7 +22,8 @@ export async function generateStaticParams(): Promise<Params[]> {
 export async function generateMetadata(
   { params }: { params: Promise<Params> },
 ): Promise<Metadata> {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const post = await getPostBySlug(slug);
   if (!post) return { title: "글을 찾을 수 없습니다" };
   return {
@@ -30,7 +36,8 @@ export async function generateMetadata(
 export default async function PostPage(
   { params }: { params: Promise<Params> },
 ) {
-  const { slug } = await params;
+  const { slug: rawSlug } = await params;
+  const slug = decodeURIComponent(rawSlug);
   const post = await getPostBySlug(slug);
   if (!post) notFound();
   const category = getCategory(post.category);
@@ -79,21 +86,34 @@ export default async function PostPage(
       {/* Body */}
       <div className="container-prose mt-12">
         <TypedMetaBlock post={post} />
-        <div className="font-serif-body whitespace-pre-wrap text-[18px] leading-[1.7] text-fg">
-          {post.content}
+        <MarkdownContent
+          source={post.content}
+          bodyImages={post.bodyImages}
+        />
+
+        {/* Attachments (only renders when post has files) */}
+        <PostAttachments items={post.attachments} />
+
+        {/* Tags + actions */}
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-4 border-t border-border pt-8">
+          <ul className="flex flex-wrap gap-2">
+            {post.tags.map((t) => (
+              <li
+                key={t}
+                className="rounded-full border border-ink/20 bg-surface-warm px-3 py-1.5 text-pill text-fg"
+              >
+                #{t}
+              </li>
+            ))}
+          </ul>
+          <div className="flex items-center gap-2">
+            <PostLike slug={slug} />
+            <PostBookmark slug={slug} />
+          </div>
         </div>
 
-        {/* Tags */}
-        <ul className="mt-12 flex flex-wrap gap-2 border-t border-border pt-8">
-          {post.tags.map((t) => (
-            <li
-              key={t}
-              className="rounded-full border border-ink/20 bg-surface-warm px-3 py-1.5 text-pill text-fg"
-            >
-              #{t}
-            </li>
-          ))}
-        </ul>
+        {/* Comments */}
+        <CommentsSection slug={slug} />
       </div>
     </article>
   );

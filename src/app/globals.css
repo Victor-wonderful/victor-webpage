@@ -1,3 +1,6 @@
+/* Code highlighting — github-dark fits ink-bg code blocks. Must come before @tailwind. */
+@import "highlight.js/styles/github-dark.css";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

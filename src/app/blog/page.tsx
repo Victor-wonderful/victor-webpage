@@ -1,16 +1,38 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPostsPage, POSTS_PER_PAGE } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
+import { Pagination } from "@/components/pagination";
 
 export const metadata: Metadata = {
   title: "전체 글",
   description: "Pine Script · 시장분석 · 전략 · 차트노트.",
 };
 
-export default async function BlogIndex() {
-  const posts = await getAllPosts();
+type Search = { page?: string };
+
+function parsePage(raw: string | undefined): number {
+  const n = Number(raw);
+  return Number.isFinite(n) && n >= 1 ? Math.floor(n) : 1;
+}
+
+export default async function BlogIndex({
+  searchParams,
+}: {
+  searchParams: Promise<Search>;
+}) {
+  const sp = await searchParams;
+  const page = parsePage(sp.page);
+
+  const { posts, total, totalPages } = await getAllPostsPage(
+    page,
+    POSTS_PER_PAGE,
+  );
+
+  if (total > 0 && page > totalPages) notFound();
+
   return (
     <>
       <section className="container-page mt-12">
@@ -21,7 +43,10 @@ export default async function BlogIndex() {
               전체 글
             </h1>
           </div>
-          <p className="text-meta text-fg-muted">총 {posts.length}개의 글</p>
+          <p className="text-meta text-fg-muted">
+            총 {total}개의 글
+            {totalPages > 1 && ` · ${page} / ${totalPages} 페이지`}
+          </p>
         </header>
         <div className="mt-8">
           <PillNav />
@@ -66,6 +91,12 @@ export default async function BlogIndex() {
             </li>
           ))}
         </ul>
+
+        <Pagination
+          basePath="/blog"
+          currentPage={page}
+          totalPages={totalPages}
+        />
       </section>
     </>
   );
