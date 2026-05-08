@@ -7,5 +7,9 @@ node_modules/
 .superpowers/
 .sanity/
 dist/
-tools/cloudflared.exe
-.claude/worktrees/
+tools/
+.claude/
+content-drafts/
+docs/
+scripts/
+supabase/
