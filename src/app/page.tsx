@@ -10,6 +10,8 @@ import { EditorNote } from "@/components/home/editor-note";
 import { TokenPicks } from "@/components/home/token-picks";
 import { MostDiscussed } from "@/components/home/most-discussed";
 import { TodaysPoll } from "@/components/home/todays-poll";
+import { MarketSnapshot } from "@/components/home/market-snapshot";
+import { MoversBoard } from "@/components/home/movers-board";
 
 export default async function Home() {
   const posts = await getAllPosts();
@@ -36,6 +38,9 @@ export default async function Home() {
       {/* 1. Hero — 이번 주 핵심 글 */}
       <FeaturedHero post={hero} />
 
+      {/* 1b. Market Snapshot — Fear&Greed / BTC Dominance / Macro Calendar (mockup) */}
+      <MarketSnapshot />
+
       <section className="container-page mt-12">
         <PillNav />
       </section>
@@ -45,6 +50,9 @@ export default async function Home() {
 
       {/* 3. Token Picks — 투자 후보 토큰 */}
       <TokenPicks />
+
+      {/* 3b. Movers — 급등/급락 TOP 5 (mockup) */}
+      <MoversBoard />
 
       {/* 4. Strategy Spotlight (기존, 재배치) */}
       <SpotlightSection items={spotlight} />

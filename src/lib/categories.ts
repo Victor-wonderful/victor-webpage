@@ -22,8 +22,8 @@ export type Category = {
 export const CATEGORIES: Category[] = [
   {
     slug: "market",
-    label: "시장인사이트",
-    description: "BTC·KOSPI·매크로 관점에서 짚어보는 시장 흐름.",
+    label: "주간마켓인사이트",
+    description: "이번 주 주목해야 할 L1/L2 프로젝트, 비트코인 도미넌스 변화, 혹은 거시 경제 일정(FOMC 등)에 따른 시나리오.",
     eyebrow: "Market Insight",
   },
   {
@@ -40,8 +40,8 @@ export const CATEGORIES: Category[] = [
   },
   {
     slug: "tokens",
-    label: "토큰 트렌드",
-    description: "주간 신규 상장·섹터별 자금 흐름·주목할 만한 토큰 큐레이션.",
+    label: "심층분석",
+    description: "트레이딩 외에도 장기적인 안목을 보여줄 수 있는 섹션으로 프로젝트/토큰 노믹스 심층 분석.",
     eyebrow: "Token Trends",
   },
   {

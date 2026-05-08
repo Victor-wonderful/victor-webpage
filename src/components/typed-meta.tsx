@@ -105,7 +105,7 @@ export function TypedMetaBlock({ post }: { post: Post }) {
       return (
         <MetaShell
           icon={Icons.trendingUp}
-          title="시장인사이트"
+          title="주간마켓인사이트"
           fields={[
             { label: "심볼", value: meta.symbol ?? "BTC/USDT" },
             { label: "타임프레임", value: meta.timeframe ?? "1D" },
