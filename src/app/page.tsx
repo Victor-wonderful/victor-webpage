@@ -3,7 +3,6 @@ import { getAllPosts } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
 import { FeaturedHero } from "@/components/featured-hero";
-import { EditorialCTA } from "@/components/editorial-cta";
 import { SpotlightSection } from "@/components/spotlight-section";
 import { MustWatchGrid } from "@/components/must-watch-grid";
 import { EditorNote } from "@/components/home/editor-note";
@@ -18,6 +17,7 @@ import { PromiseSection } from "@/components/home/promise-section";
 import { ToolsRail } from "@/components/home/tools-rail";
 import { BasicsTrackRail } from "@/components/home/basics-track-rail";
 import { DailySignalCard } from "@/components/home/daily-signal-card";
+import { SubscribeChannels } from "@/components/home/subscribe-channels";
 
 export const revalidate = 60;
 
@@ -121,13 +121,8 @@ export default async function Home() {
       <TodaysPoll />
       <MostDiscussed days={30} limit={3} />
 
-      {/* ── Newsletter CTA ───────────────────────────────── */}
-      <EditorialCTA
-        eyebrow="Newsletter"
-        headline={["Sign Up for Our", "Newsletter"]}
-        ctaLabel="구독하기"
-        ctaHref="/subscribe"
-      />
+      {/* ── Subscribe channels: Newsletter + Telegram ────── */}
+      <SubscribeChannels />
 
       {/* ── Latest posts (uncategorized stream) ─────────── */}
       <section className="container-page mt-24">
