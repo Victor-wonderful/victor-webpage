@@ -14,7 +14,7 @@
   :root {
     /* Palette — light */
     --bg: 237 231 216;            /* #EDE7D8 */
-    --surface: 255 255 255;       /* #FFFFFF */
+    --surface: 251 247 236;       /* #FBF7EC — paper white, warmer than pure white */
     --surface-warm: 245 239 224;  /* #F5EFE0 */
     --ink: 31 38 34;              /* #1F2622 */
     --ink-soft: 44 53 48;         /* #2C3530 */
@@ -40,7 +40,7 @@
 
   .dark, [data-theme="dark"] {
     --bg: 22 25 26;               /* #16191A */
-    --surface: 31 38 34;          /* #1F2622 */
+    --surface: 35 43 38;          /* #232B26 — paper-black, slightly lifted from --bg */
     --surface-warm: 38 44 40;     /* #262C28 */
     --ink: 12 15 14;              /* #0C0F0E */
     --ink-soft: 22 25 26;         /* #16191A */
