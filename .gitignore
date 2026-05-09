@@ -7,7 +7,7 @@ node_modules/
 .superpowers/
 .sanity/
 dist/
-tools/
+/tools/
 .claude/
 content-drafts/
 docs/*
