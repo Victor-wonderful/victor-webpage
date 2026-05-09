@@ -28,7 +28,7 @@ export async function TokenPicks() {
       <header className="mb-10 flex items-baseline justify-between gap-4 flex-wrap">
         <div>
           <p className="text-eyebrow text-accent">Token Picks</p>
-          <h2 className="mt-3 font-display text-[40px] font-extrabold leading-[1.02] tracking-tight md:text-[48px]">
+          <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             투자 후보 토큰
           </h2>
           <p className="mt-3 max-w-xl text-meta text-fg-muted">

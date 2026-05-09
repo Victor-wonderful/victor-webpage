@@ -133,7 +133,7 @@ export default async function Home() {
         <header className="mb-10 flex items-baseline justify-between">
           <div>
             <p className="text-eyebrow text-accent">Latest</p>
-            <h2 className="mt-3 break-keep font-display text-[40px] font-extrabold leading-[1.05] md:text-[48px]">
+            <h2 className="mt-3 break-keep font-display text-[32px] font-extrabold leading-[1.1] md:text-[40px]">
               최신 글
             </h2>
           </div>

@@ -43,7 +43,7 @@ export async function MoversBoard() {
       <header className="mb-8 flex items-baseline justify-between">
         <div>
           <p className="text-eyebrow text-accent">Movers · 24h</p>
-          <h2 className="mt-3 font-display text-[40px] font-extrabold leading-[1.02] tracking-tight md:text-[48px]">
+          <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             급등 / 급락 TOP 5
           </h2>
         </div>

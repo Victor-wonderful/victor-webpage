@@ -16,7 +16,7 @@ export function PinescriptGrid({ posts }: { posts: Post[] }) {
       <header className="mb-8 flex items-baseline justify-between gap-4 flex-wrap">
         <div>
           <p className="text-eyebrow text-accent">Pine Script</p>
-          <h2 className="mt-3 font-display text-[40px] font-extrabold leading-[1.05] tracking-tight md:text-[48px]">
+          <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             차트에 바로 붙이는 코드
           </h2>
           <p className="mt-3 max-w-xl text-meta text-fg-muted">

@@ -19,7 +19,7 @@ export function MustWatchGrid({
     <section className="container-page mt-24">
       <header className="mb-10">
         <p className="text-eyebrow text-accent">{eyebrow}</p>
-        <h2 className="mt-3 font-display text-[40px] font-extrabold leading-[1.02] tracking-tight md:text-[48px]">
+        <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
           {title}
         </h2>
       </header>

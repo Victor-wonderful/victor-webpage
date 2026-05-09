@@ -33,7 +33,7 @@ export async function EditorNote() {
         {ed.editorNote && (
           <article>
             <p className="text-eyebrow text-accent">Editor&apos;s Note</p>
-            <h2 className="mt-3 font-display text-[40px] font-extrabold leading-[1.02] tracking-tight md:text-[48px]">
+            <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
               이번 주의 시선
             </h2>
             <p className="mt-6 whitespace-pre-line break-keep text-pretty font-serif-body text-[17px] leading-[1.85] text-fg">

@@ -15,7 +15,7 @@ export function SpotlightSection({ items }: { items: Strategy[] }) {
       <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <header>
           <p className="text-eyebrow text-accent">Strategy Notes</p>
-          <h2 className="mt-3 break-keep font-display text-[40px] font-extrabold leading-[1.05] tracking-tight md:text-[48px]">
+          <h2 className="mt-3 break-keep font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             전략 노트
           </h2>
           <p className="mt-5 max-w-xs text-meta text-fg-muted">

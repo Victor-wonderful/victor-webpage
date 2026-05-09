@@ -21,7 +21,7 @@ export async function MostDiscussed({ days = 30, limit = 3 }: { days?: number; l
     <section className="container-page mt-24">
       <header className="mb-10">
         <p className="text-eyebrow text-accent">Loud This Week</p>
-        <h2 className="mt-3 font-display text-[40px] font-extrabold leading-[1.02] tracking-tight md:text-[48px]">
+        <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
           가장 활발한 글
         </h2>
         <p className="mt-3 text-meta text-fg-muted">
