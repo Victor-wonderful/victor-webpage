@@ -7,10 +7,47 @@
  */
 
 import type { Post } from "@/lib/posts";
-import { getCategory } from "@/lib/categories";
+import { getCategory, type CategorySlug } from "@/lib/categories";
 import { imageUrl } from "@/sanity/image";
 
 const TELEGRAM_API = "https://api.telegram.org";
+
+/**
+ * Curated Unsplash photo IDs per category — same pool as the EditorialImage
+ * component but pinned per category for predictable Telegram banners.
+ * Replace any entry with a hand-picked image when desired.
+ */
+const CATEGORY_BANNER_PHOTO_IDS: Record<CategorySlug, string> = {
+  macro: "1642543492481-44e81e3914a7",       // bloomberg-style terminal
+  market: "1611974789855-9c2a0a7236a3",      // multi-monitor stock screens
+  tokens: "1559526324-4b87b5e36e44",         // golden bitcoin coin
+  basics: "1518186285589-2f7649de83e0",      // laptop with chart, low light
+  strategy: "1640340434855-6084b1f4901c",    // dark trading desk
+  pinescript: "1551288049-bebda4e38f71",     // candle chart on screen
+};
+
+function categoryBannerUrl(category: CategorySlug, w = 1280, h = 720): string {
+  const id = CATEGORY_BANNER_PHOTO_IDS[category] ?? CATEGORY_BANNER_PHOTO_IDS.macro;
+  return `https://images.unsplash.com/photo-${id}?w=${w}&h=${h}&fit=crop&auto=format&q=80`;
+}
+
+/**
+ * Resolve the photo URL Telegram should show, in priority order:
+ *   1. coverImage (manually uploaded in Studio)
+ *   2. first bodyImages entry
+ *   3. category default banner (Unsplash, deterministic per category)
+ * Always returns a string — telegram.sendPhoto can be called unconditionally.
+ */
+export function resolvePhotoUrl(post: Post): string {
+  const cover = imageUrl(post.coverImage, 1280);
+  if (cover) return cover;
+  const firstBody = post.bodyImages?.[0];
+  if (firstBody) {
+    const url = imageUrl(firstBody, 1280);
+    if (url) return url;
+  }
+  return categoryBannerUrl(post.category);
+}
 
 /**
  * Categories whose published posts auto-broadcast to Telegram.
@@ -106,23 +143,15 @@ export async function sendPostToTelegram(
   if (!chatId) throw new Error("TELEGRAM_CHANNEL_ID is not set");
 
   const caption = buildCaption(post, siteUrl);
-  const photo = imageUrl(post.coverImage, 1280);
+  const photo = resolvePhotoUrl(post);
 
-  if (photo) {
-    const r = await tgCall<SendResponse>(token, "sendPhoto", {
-      chat_id: chatId,
-      photo,
-      caption,
-      parse_mode: "HTML",
-    });
-    return r.message_id;
-  }
-
-  const r = await tgCall<SendResponse>(token, "sendMessage", {
+  // Always sendPhoto since resolvePhotoUrl guarantees a URL
+  // (category default banner if nothing else available).
+  const r = await tgCall<SendResponse>(token, "sendPhoto", {
     chat_id: chatId,
-    text: caption,
+    photo,
+    caption,
     parse_mode: "HTML",
-    disable_web_page_preview: false,
   });
   return r.message_id;
 }
