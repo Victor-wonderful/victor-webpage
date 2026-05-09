@@ -172,7 +172,7 @@ export function TypedMetaBlock({ post }: { post: Post }) {
       return (
         <MetaShell
           icon={Icons.globe}
-          title="매크로·뉴스"
+          title="오늘의 시장"
           fields={[
             { label: "이벤트", value: meta.event ?? "FOMC" },
             { label: "지역", value: meta.region ?? "글로벌" },

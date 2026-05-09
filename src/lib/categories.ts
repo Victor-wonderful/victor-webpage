@@ -52,9 +52,9 @@ export const CATEGORIES: Category[] = [
   },
   {
     slug: "macro",
-    label: "매크로·뉴스",
-    description: "금리·CPI·정책 등 매크로 이벤트와 시장 해석.",
-    eyebrow: "Macro & News",
+    label: "오늘의 시장",
+    description: "오늘 BTC·ETH·주요 알트 가격 흐름 + 금리·CPI·정책 등 매크로 이벤트의 크립토 전가 해석.",
+    eyebrow: "Today's Market",
   },
 ];
 
