@@ -15,11 +15,10 @@ export function SpotlightSection({ items }: { items: Strategy[] }) {
       <div className="grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)]">
         <header>
           <p className="text-eyebrow text-accent">Strategy Notes</p>
-          <h2 className="mt-3 font-display text-[44px] font-extrabold leading-[1.02] tracking-tight md:text-[56px]">
-            <span className="block">전략</span>
-            <span className="block">노트</span>
+          <h2 className="mt-3 break-keep font-display text-[40px] font-extrabold leading-[1.05] tracking-tight md:text-[48px]">
+            전략 노트
           </h2>
-          <p className="mt-6 max-w-xs text-meta text-fg-muted">
+          <p className="mt-5 max-w-xs text-meta text-fg-muted">
             서랍 속 검증된 셋업 — 백테스트 수치(승률·MDD)와 함께 사고법까지.
           </p>
         </header>

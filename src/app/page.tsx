@@ -4,7 +4,6 @@ import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
 import { FeaturedHero } from "@/components/featured-hero";
 import { SpotlightSection } from "@/components/spotlight-section";
-import { MustWatchGrid } from "@/components/must-watch-grid";
 import { EditorNote } from "@/components/home/editor-note";
 import { TokenPicks } from "@/components/home/token-picks";
 import { DeepDives } from "@/components/home/deep-dives";
@@ -18,6 +17,7 @@ import { ToolsRail } from "@/components/home/tools-rail";
 import { BasicsTrackRail } from "@/components/home/basics-track-rail";
 import { DailySignalCard } from "@/components/home/daily-signal-card";
 import { SubscribeChannels } from "@/components/home/subscribe-channels";
+import { PinescriptGrid } from "@/components/home/pinescript-grid";
 
 export const revalidate = 60;
 
@@ -97,12 +97,7 @@ export default async function Home() {
             description="실제 운용한 셋업의 사고법·룰·실수를 글로, 그 전략을 차트에 바로 붙이는 코드로."
           />
           <SpotlightSection items={spotlight} />
-          <MustWatchGrid
-            posts={pineGrid}
-            eyebrow="Pine Script"
-            title="차트에 바로 붙이는 코드"
-            cardEyebrow="Pine Script"
-          />
+          <PinescriptGrid posts={pineGrid} />
         </>
       )}
 
