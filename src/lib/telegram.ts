@@ -79,32 +79,66 @@ function truncate(s: string, max: number): string {
 }
 
 /**
- * Build the channel post caption / message body.
- * Format ("짧게" — user choice): category eyebrow → bold title → 1-line
- * summary → permalink → (optional) discussion group cue.
+ * Telegram rejects inline keyboard buttons whose URL points to localhost
+ * or private hosts. We detect that and fall back to embedding the URL in
+ * the caption (auto-linkified by Telegram clients) instead of a button.
+ */
+function isPublicUrl(u: string): boolean {
+  try {
+    const parsed = new URL(u);
+    if (parsed.protocol !== "http:" && parsed.protocol !== "https:") return false;
+    const host = parsed.hostname;
+    if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0") return false;
+    if (/^192\.168\./.test(host) || /^10\./.test(host) || /^172\.(1[6-9]|2\d|3[0-1])\./.test(host)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Build the channel post caption.
+ *  - Public site URL: caption is text-only (link is rendered as inline button)
+ *  - Local/private:    caption embeds the URL as a plain line (Telegram
+ *                      auto-linkifies http(s) but keeps the page openable
+ *                      from a browser context if not from the mobile app)
  *
- * The discussion line is only added when a group is actually linked
- * — detected via NEXT_PUBLIC_TELEGRAM_GROUP_URL env. Otherwise it would
- * be misleading because the channel post has no comment button.
+ * Format ("짧게" — user choice):
+ *   [카테고리]
+ *   <b>제목</b>
+ *
+ *   요약 한 줄
+ *   [→ url, only when no inline button is possible]
  */
 export function buildCaption(post: Post, siteUrl: string): string {
   const categoryLabel = getCategory(post.category)?.label ?? post.category;
   const summary = truncate(post.summary ?? "", SUMMARY_CAP);
   const url = `${siteUrl}/blog/${post.slug}`;
-  const hasGroup = Boolean(process.env.NEXT_PUBLIC_TELEGRAM_GROUP_URL);
 
   const lines = [
     `[${escapeHtml(categoryLabel)}]`,
     `<b>${escapeHtml(post.title)}</b>`,
     "",
     escapeHtml(summary),
-    "",
-    `→ <a href="${url}">전문 보기</a>`,
   ];
-  if (hasGroup) {
-    lines.push("", "💬 의견·질문은 댓글 버튼으로");
+
+  if (!isPublicUrl(url)) {
+    lines.push("", `→ ${url}`);
   }
+
   return lines.join("\n");
+}
+
+/**
+ * Inline keyboard with the post permalink as a primary button.
+ * Returns null when the site URL isn't public (Telegram rejects those).
+ */
+export function buildReplyMarkup(post: Post, siteUrl: string) {
+  const url = `${siteUrl}/blog/${post.slug}`;
+  if (!isPublicUrl(url)) return undefined;
+  return {
+    inline_keyboard: [[{ text: "📖 전문 보기", url }]],
+  };
 }
 
 /** POST helper around fetch. */
@@ -144,14 +178,18 @@ export async function sendPostToTelegram(
 
   const caption = buildCaption(post, siteUrl);
   const photo = resolvePhotoUrl(post);
+  const reply_markup = buildReplyMarkup(post, siteUrl);
 
   // Always sendPhoto since resolvePhotoUrl guarantees a URL
   // (category default banner if nothing else available).
-  const r = await tgCall<SendResponse>(token, "sendPhoto", {
+  const payload: Record<string, unknown> = {
     chat_id: chatId,
     photo,
     caption,
     parse_mode: "HTML",
-  });
+  };
+  if (reply_markup) payload.reply_markup = reply_markup;
+
+  const r = await tgCall<SendResponse>(token, "sendPhoto", payload);
   return r.message_id;
 }
