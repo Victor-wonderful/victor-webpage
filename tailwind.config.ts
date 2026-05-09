@@ -45,9 +45,13 @@ export default {
         prose: "720px",
       },
       letterSpacing: {
-        tightest: "-0.04em",
-        tighter: "-0.035em",
-        tight: "-0.03em",
+        // Korean-primary site: keep negative letter-spacing very mild.
+        // Hangul (Pretendard) doesn't benefit from tight tracking the way
+        // Latin display serifs do — values below were dialed down from
+        // -0.03~-0.04em so site-wide headings stay legible in Korean.
+        tightest: "-0.015em",
+        tighter: "-0.01em",
+        tight: "-0.005em",
       },
     },
   },

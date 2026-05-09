@@ -1,12 +1,15 @@
 import { defineField, defineType } from "sanity";
 
 /**
- * Token investment pick. A short curated card for "투자 가치 있는 토큰" section.
- * Multiple documents — render the active ones on the homepage.
+ * Token investment pick. A short curated stance card for the home page.
+ * NOT for long-form analysis posts — those live as `post` documents with
+ * category=tokens (심층분석) and render in the Deep Dives section instead.
  */
 export const tokenPickType = defineType({
   name: "tokenPick",
-  title: "토큰 픽 (투자 후보)",
+  title: "토큰 픽 — 코어 자산 stance",
+  description:
+    "BTC·ETH 같은 코어 자산의 stance(Long/Watch/Hold/Avoid) 카드. 짧은 thesis 1~3문장. 활성 카드 3~6개 권장. 본격 분석 글은 여기 말고 [포스트] → 카테고리 [심층분석]에서 작성.",
   type: "document",
   fields: [
     defineField({

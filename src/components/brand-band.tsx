@@ -16,6 +16,7 @@ const CATEGORY_LINKS = CATEGORIES.map((c) => ({
 
 const FOOTER_LINKS = [
   ...CATEGORY_LINKS,
+  { label: "도구", href: "/tools" },
   { label: "소개", href: "/about" },
   { label: "구독", href: "/subscribe" },
   { label: "RSS", href: "/rss.xml" },
@@ -45,6 +46,12 @@ export function BrandBand({
                 {l.label}
               </Link>
             ))}
+            <Link
+              href="/tools"
+              className="font-semibold text-accent hover:text-accent-hover"
+            >
+              도구
+            </Link>
           </nav>
           <div className="flex items-center gap-3 text-meta">
             <ThemeToggle />

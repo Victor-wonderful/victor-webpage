@@ -10,10 +10,10 @@ export async function EditorNote() {
 
   return (
     <section className="container-page mt-24">
-      <div className="grid items-start gap-10 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)]">
+      <div className="grid items-start gap-10 md:grid-cols-[minmax(0,1fr)_minmax(0,2fr)]">
         {/* Sentence of the Day — left column, large quote */}
         {ed.sentenceOfTheDay && (
-          <aside className="rounded-md bg-ink p-8 text-bg dark:bg-fg dark:text-ink">
+          <aside className="rounded-md bg-ink p-8 text-bg dark:bg-fg dark:text-ink md:sticky md:top-24">
             <p className="text-eyebrow text-accent">Sentence of the Day</p>
             <blockquote className="mt-4 font-display text-2xl font-bold leading-snug tracking-tight md:text-3xl">
               <span className="select-none text-accent">“ </span>
@@ -36,7 +36,7 @@ export async function EditorNote() {
             <h2 className="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tighter md:text-4xl">
               이번 주의 시선
             </h2>
-            <p className="mt-6 whitespace-pre-line font-serif-body text-lg italic leading-[1.7] text-fg">
+            <p className="mt-6 whitespace-pre-line break-keep text-pretty font-serif-body text-[17px] leading-[1.85] text-fg">
               {ed.editorNote}
             </p>
             <p className="mt-6 text-meta text-fg-muted">

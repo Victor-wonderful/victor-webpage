@@ -41,8 +41,8 @@ export const CATEGORIES: Category[] = [
   {
     slug: "tokens",
     label: "심층분석",
-    description: "트레이딩 외에도 장기적인 안목을 보여줄 수 있는 섹션으로 프로젝트/토큰 노믹스 심층 분석.",
-    eyebrow: "Token Trends",
+    description: "프로젝트 X-ray — 백서·토크노믹스·베스팅·메커니즘을 같은 프레임으로 정량 분해해 '무엇을 살까'를 결정하기 위한 노하우.",
+    eyebrow: "Project X-ray",
   },
   {
     slug: "basics",

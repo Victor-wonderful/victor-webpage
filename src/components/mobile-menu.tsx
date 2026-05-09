@@ -118,6 +118,7 @@ export function MobileMenu() {
             <p className="text-eyebrow text-accent">More</p>
             <ul className="mt-4 space-y-1">
               {[
+                { label: "도구", href: "/tools" },
                 { label: "전체 글", href: "/blog" },
                 { label: "북마크", href: "/bookmarks" },
                 { label: "소개", href: "/about" },

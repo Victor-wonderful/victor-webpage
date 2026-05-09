@@ -32,82 +32,78 @@ export async function TokenPicks() {
             투자 후보 토큰
           </h2>
           <p className="mt-3 max-w-xl text-meta text-fg-muted">
-            큐레이션된 토큰 — 매수 추천이 아닌, 주목하는 프로젝트의 분석/의견입니다.
+            이번 주 주목하는 코어 자산의 stance 한 줄 — 단기 입장 요약입니다.
           </p>
         </div>
       </header>
 
-      <ul className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <ul className="grid gap-6 md:grid-cols-2">
         {picks.map((p) => {
           const stance = p.stance ? STANCE[p.stance] : STANCE.watch;
-          const card = (
-            <div className="flex h-full flex-col rounded-md border border-border bg-surface p-6 transition-colors group-hover:border-accent">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  {p.logoUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={p.logoUrl}
-                      alt=""
-                      className="h-10 w-10 shrink-0 rounded-full object-cover"
-                      referrerPolicy="no-referrer"
-                    />
-                  ) : (
-                    <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs font-bold text-bg dark:bg-fg dark:text-ink">
-                      {(p.ticker ?? p.name).slice(0, 4).toUpperCase()}
-                    </span>
-                  )}
-                  <div className="min-w-0">
-                    <h3 className="font-display text-xl font-bold tracking-tight truncate">
-                      {p.name}
-                    </h3>
-                    {p.ticker && (
-                      <p className="font-mono text-meta text-fg-muted">
-                        {p.ticker}
-                      </p>
-                    )}
-                  </div>
-                </div>
-                <span
-                  className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ${stance.cls}`}
-                >
-                  {stance.label}
-                </span>
-              </div>
-
-              {p.sector && (
-                <p className="mt-3 text-meta text-fg-muted">섹터 · {p.sector}</p>
-              )}
-
-              <p className="mt-3 line-clamp-4 font-serif-body text-base leading-[1.6] text-fg">
-                {p.thesis}
-              </p>
-
-              {(p.disclaimer || p.updatedAt) && (
-                <p className="mt-auto pt-4 text-[11px] text-fg-muted">
-                  {p.updatedAt &&
-                    `갱신 ${new Date(p.updatedAt).toLocaleDateString("ko-KR")}`}
-                  {p.disclaimer && (
-                    <span className="block mt-1 italic">⚠️ {p.disclaimer}</span>
-                  )}
-                </p>
-              )}
-            </div>
-          );
           return (
-            <li key={p._id} className="group">
-              {p.externalLink ? (
-                <a
-                  href={p.externalLink}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block h-full"
-                >
-                  {card}
-                </a>
-              ) : (
-                card
-              )}
+            <li key={p._id}>
+              <div className="flex h-full flex-col rounded-md border border-border bg-surface p-6">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex items-center gap-3 min-w-0">
+                    {p.logoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={p.logoUrl}
+                        alt=""
+                        className="h-10 w-10 shrink-0 rounded-full object-cover"
+                        referrerPolicy="no-referrer"
+                      />
+                    ) : (
+                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink font-mono text-xs font-bold text-bg dark:bg-fg dark:text-ink">
+                        {(p.ticker ?? p.name).slice(0, 4).toUpperCase()}
+                      </span>
+                    )}
+                    <div className="min-w-0">
+                      <h3 className="font-display text-xl font-bold tracking-tight truncate">
+                        {p.name}
+                      </h3>
+                      {p.ticker && (
+                        <p className="font-mono text-meta text-fg-muted">
+                          {p.ticker}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <span
+                    className={`inline-flex shrink-0 items-center rounded-full border px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wider ${stance.cls}`}
+                  >
+                    {stance.label}
+                  </span>
+                </div>
+
+                {p.sector && (
+                  <p className="mt-3 text-meta text-fg-muted">섹터 · {p.sector}</p>
+                )}
+
+                <p className="mt-4 break-keep text-pretty whitespace-pre-line font-serif-body text-[15px] leading-[1.75] text-fg">
+                  {p.thesis}
+                </p>
+
+                <div className="mt-auto flex items-end justify-between gap-3 pt-5">
+                  <p className="text-[11px] text-fg-muted">
+                    {p.updatedAt &&
+                      `갱신 ${new Date(p.updatedAt).toLocaleDateString("ko-KR")}`}
+                    {p.disclaimer && (
+                      <span className="block mt-1 italic">⚠️ {p.disclaimer}</span>
+                    )}
+                  </p>
+                  {p.externalLink && (
+                    <a
+                      href={p.externalLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="shrink-0 text-[12px] font-medium text-fg-muted hover:text-accent"
+                    >
+                      자세히 ↗
+                    </a>
+                  )}
+                </div>
+              </div>
             </li>
           );
         })}

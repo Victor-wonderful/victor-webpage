@@ -1,4 +1,3 @@
-import { isValidElement, type ReactNode } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -7,17 +6,31 @@ import { imageUrl } from "@/sanity/image";
 import type { SanityImageRef } from "@/lib/posts";
 import { cn } from "@/lib/cn";
 
-/** Returns true when the only meaningful child is an <img>. */
-function isImageOnlyParagraph(children: ReactNode): boolean {
-  const arr = Array.isArray(children) ? children : [children];
-  const meaningful = arr.filter(
-    (c) => !(typeof c === "string" && c.trim() === ""),
-  );
-  if (meaningful.length !== 1) return false;
-  const only = meaningful[0];
-  if (!isValidElement(only)) return false;
-  const type = (only as { type?: unknown }).type;
-  return type === "img";
+/**
+ * Remark plugin: lift standalone images out of paragraphs.
+ * Without this, `<figure>` ends up inside `<p>` which is invalid HTML
+ * (causes hydration mismatch in React 19).
+ */
+type MdNode = { type: string; children?: MdNode[] };
+function remarkUnwrapImages() {
+  return (tree: MdNode) => {
+    const walk = (node: MdNode) => {
+      if (!node.children) return;
+      for (let i = 0; i < node.children.length; i++) {
+        const c = node.children[i];
+        if (
+          c.type === "paragraph" &&
+          c.children?.length === 1 &&
+          c.children[0].type === "image"
+        ) {
+          node.children[i] = c.children[0];
+        } else {
+          walk(c);
+        }
+      }
+    };
+    walk(tree);
+  };
 }
 
 /**
@@ -83,18 +96,10 @@ export function MarkdownContent({
       )}
     >
       <ReactMarkdown
-        remarkPlugins={[remarkGfm]}
+        remarkPlugins={[remarkGfm, remarkUnwrapImages]}
         rehypePlugins={[rehypeHighlight]}
         components={{
           pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
-          // Markdown wraps images in <p>. <figure> is block-level so it
-          // can't be inside <p> — unwrap when the paragraph holds only an image.
-          p: ({ children }) =>
-            isImageOnlyParagraph(children) ? (
-              <>{children}</>
-            ) : (
-              <p>{children}</p>
-            ),
           img: ({ src, alt }) => {
             const resolved = resolveSrc(typeof src === "string" ? src : undefined);
             if (!resolved) return null;
