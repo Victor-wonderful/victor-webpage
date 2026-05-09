@@ -49,6 +49,19 @@ export function MarkdownContent({
   bodyImages?: SanityImageRef[];
   className?: string;
 }) {
+  // Split body and the standardized "이 글에서 가져갈 것" closing block
+  // so the closing block can render in a distinct call-out container.
+  const TAKEAWAY_MARKER = /^##\s*📚\s*이 글에서 가져갈 것\s*$/m;
+  const markerMatch = source.match(TAKEAWAY_MARKER);
+  let body = source;
+  let takeaway: string | null = null;
+  if (markerMatch && markerMatch.index !== undefined) {
+    body = source.slice(0, markerMatch.index).trimEnd();
+    // Strip any trailing horizontal rule used as separator
+    body = body.replace(/\n+---\s*$/, "").trimEnd();
+    takeaway = source.slice(markerMatch.index + markerMatch[0].length).trim();
+  }
+
   // Resolve `#N` placeholder URLs against the bodyImages array.
   const resolveSrc = (
     src: string | undefined,
@@ -124,8 +137,34 @@ export function MarkdownContent({
           },
         }}
       >
-        {source}
+        {body}
       </ReactMarkdown>
+
+      {takeaway && (
+        <aside
+          aria-label="이 글에서 가져갈 것"
+          className="mt-16 rounded-md border border-accent/30 bg-accent/5 p-8 md:p-10"
+        >
+          <p className="text-eyebrow text-accent">📚 Reader's Block</p>
+          <h2 className="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tight md:text-4xl">
+            이 글에서 가져갈 것
+          </h2>
+          <div
+            className={cn(
+              "mt-6 font-serif-body text-[17px] leading-[1.7] text-fg",
+              "[&_h2]:hidden",
+              "[&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-bold",
+              "[&_p]:my-3",
+              "[&_strong]:block [&_strong]:mt-6 [&_strong]:font-display [&_strong]:text-base [&_strong]:font-bold [&_strong]:uppercase [&_strong]:tracking-wider [&_strong]:text-accent first:[&_strong]:mt-0",
+              "[&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul_li]:my-1",
+            )}
+          >
+            <ReactMarkdown remarkPlugins={[[remarkGfm, { singleTilde: false }]]}>
+              {takeaway}
+            </ReactMarkdown>
+          </div>
+        </aside>
+      )}
     </div>
   );
 }
