@@ -97,7 +97,7 @@ export function MarkdownContent({
       )}
     >
       <ReactMarkdown
-        remarkPlugins={[remarkGfm, remarkUnwrapImages]}
+        remarkPlugins={[[remarkGfm, { singleTilde: false }], remarkUnwrapImages]}
         rehypePlugins={[rehypeHighlight]}
         components={{
           pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
