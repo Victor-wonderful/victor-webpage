@@ -17,6 +17,7 @@ import { PositioningStrip } from "@/components/home/positioning-strip";
 import { PromiseSection } from "@/components/home/promise-section";
 import { ToolsRail } from "@/components/home/tools-rail";
 import { BasicsTrackRail } from "@/components/home/basics-track-rail";
+import { DailySignalCard } from "@/components/home/daily-signal-card";
 
 export const revalidate = 60;
 
@@ -31,6 +32,9 @@ export default async function Home() {
     mdd: [12, 18][i] ?? 20,
     author: "Victor",
   }));
+
+  // Latest macro daily for Promise 01
+  const latestMacro = posts.find((p) => p.category === "macro");
 
   // Curated chart-tagged posts
   const CHART_TAGS = ["차트노트", "차트", "chart"];
@@ -66,8 +70,9 @@ export default async function Home() {
       <PromiseSection
         number="01"
         title="매일 1개 시장 신호"
-        description="주간마켓인사이트로 시장 톤을 한 페이지에 정리. 보조 지표는 24시간 Movers."
+        description="오늘의 시장(macro) 데일리로 그날 톤을 한 페이지에 정리. 보조 지표는 24시간 Movers."
       />
+      <DailySignalCard post={latestMacro} />
       <MoversBoard />
 
       {/* ═════════════════════════════════════════════════
