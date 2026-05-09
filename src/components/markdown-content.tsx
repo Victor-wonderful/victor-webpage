@@ -155,7 +155,11 @@ export function MarkdownContent({
               "[&_h2]:hidden",
               "[&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:font-display [&_h3]:text-lg [&_h3]:font-bold",
               "[&_p]:my-3",
-              "[&_strong]:block [&_strong]:mt-6 [&_strong]:font-display [&_strong]:text-base [&_strong]:font-bold [&_strong]:uppercase [&_strong]:tracking-wider [&_strong]:text-accent first:[&_strong]:mt-0",
+              // Section-label paragraphs: <p> whose only child is <strong>
+              "[&_p:has(>strong:only-child)]:mt-7 [&_p:has(>strong:only-child)]:mb-1",
+              "[&_p:has(>strong:only-child)>strong]:font-display [&_p:has(>strong:only-child)>strong]:text-sm [&_p:has(>strong:only-child)>strong]:font-bold [&_p:has(>strong:only-child)>strong]:uppercase [&_p:has(>strong:only-child)>strong]:tracking-wider [&_p:has(>strong:only-child)>strong]:text-accent",
+              "first:[&_p:has(>strong:only-child)]:mt-0",
+              // Inline <strong> stays inline (default), no overrides needed
               "[&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6 [&_ul_li]:my-1",
             )}
           >
