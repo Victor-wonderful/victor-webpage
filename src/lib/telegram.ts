@@ -44,12 +44,17 @@ function truncate(s: string, max: number): string {
 /**
  * Build the channel post caption / message body.
  * Format ("짧게" — user choice): category eyebrow → bold title → 1-line
- * summary → permalink → discussion group cue.
+ * summary → permalink → (optional) discussion group cue.
+ *
+ * The discussion line is only added when a group is actually linked
+ * — detected via NEXT_PUBLIC_TELEGRAM_GROUP_URL env. Otherwise it would
+ * be misleading because the channel post has no comment button.
  */
 export function buildCaption(post: Post, siteUrl: string): string {
   const categoryLabel = getCategory(post.category)?.label ?? post.category;
   const summary = truncate(post.summary ?? "", SUMMARY_CAP);
   const url = `${siteUrl}/blog/${post.slug}`;
+  const hasGroup = Boolean(process.env.NEXT_PUBLIC_TELEGRAM_GROUP_URL);
 
   const lines = [
     `[${escapeHtml(categoryLabel)}]`,
@@ -58,9 +63,10 @@ export function buildCaption(post: Post, siteUrl: string): string {
     escapeHtml(summary),
     "",
     `→ <a href="${url}">전문 보기</a>`,
-    "",
-    "💬 토론은 아래 댓글 버튼으로 그룹에서",
   ];
+  if (hasGroup) {
+    lines.push("", "💬 토론은 아래 댓글 버튼으로 그룹에서");
+  }
   return lines.join("\n");
 }
 
