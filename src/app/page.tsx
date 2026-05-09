@@ -113,7 +113,7 @@ export default async function Home() {
       <PromiseSection
         number="05"
         title="시리즈 학습 트랙"
-        description="월가의 전설 × 크립토 — 100편 시리즈로 자기 매매 시스템을 단계적으로 구축합니다."
+        description="월가의 전설 × 크립토 — 100편 시리즈로 자기 매매 규칙을 단계적으로 만듭니다."
       />
       <BasicsTrackRail />
 
