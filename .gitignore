@@ -10,6 +10,7 @@ dist/
 tools/
 .claude/
 content-drafts/
-docs/
+docs/*
+!docs/voice-guide.md
 scripts/
 supabase/
