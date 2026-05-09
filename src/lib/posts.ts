@@ -51,8 +51,12 @@ export type Post = {
   tags: string[];
   category: CategorySlug;
   meta?: Record<string, string | number>;
+  coverImage?: SanityImageRef;
   bodyImages?: SanityImageRef[];
   attachments?: PostAttachment[];
+  // System fields managed by /api/telegram/publish
+  telegramSentAt?: string;
+  telegramMessageId?: number;
 };
 
 function normalize(p: Post): Post {

@@ -19,6 +19,10 @@ export const POST_PROJECTION = /* groq */ `
   tags,
   "category": category->slug.current,
   meta,
+  coverImage{
+    "asset": asset->{ _id, url },
+    alt
+  },
   bodyImages[]{
     "asset": asset->{ _id, url },
     alt

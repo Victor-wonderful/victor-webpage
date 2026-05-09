@@ -123,6 +123,21 @@ export const postType = defineType({
       ],
     }),
     defineField({
+      name: "telegramSentAt",
+      title: "텔레그램 발송 시각 (시스템)",
+      description: "/api/telegram/publish 가 자동 기록. 수동 편집 금지.",
+      type: "datetime",
+      readOnly: true,
+      hidden: ({ document }) => !document?.telegramSentAt,
+    }),
+    defineField({
+      name: "telegramMessageId",
+      title: "텔레그램 메시지 ID (시스템)",
+      type: "number",
+      readOnly: true,
+      hidden: ({ document }) => !document?.telegramMessageId,
+    }),
+    defineField({
       name: "meta",
       title: "타입별 메타 (선택)",
       type: "object",

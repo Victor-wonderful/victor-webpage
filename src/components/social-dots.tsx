@@ -3,6 +3,9 @@ import { cn } from "@/lib/cn";
 
 type Item = { href: string; label: string; icon: React.ReactNode };
 
+const TELEGRAM_CHANNEL = process.env.NEXT_PUBLIC_TELEGRAM_CHANNEL_URL;
+const TELEGRAM_GROUP = process.env.NEXT_PUBLIC_TELEGRAM_GROUP_URL;
+
 const ITEMS: Item[] = [
   {
     href: "https://twitter.com",
@@ -13,6 +16,32 @@ const ITEMS: Item[] = [
       </svg>
     ),
   },
+  ...(TELEGRAM_CHANNEL
+    ? [
+        {
+          href: TELEGRAM_CHANNEL,
+          label: "Telegram 채널",
+          icon: (
+            <svg viewBox="0 0 24 24" fill="currentColor" className="h-3 w-3">
+              <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" />
+            </svg>
+          ),
+        },
+      ]
+    : []),
+  ...(TELEGRAM_GROUP
+    ? [
+        {
+          href: TELEGRAM_GROUP,
+          label: "Telegram 토론방",
+          icon: (
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-3 w-3">
+              <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+            </svg>
+          ),
+        },
+      ]
+    : []),
   {
     href: "/rss.xml",
     label: "RSS",
