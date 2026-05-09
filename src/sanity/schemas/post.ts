@@ -143,6 +143,7 @@ export const postType = defineType({
         { name: "level", title: "레벨", type: "string" },
         { name: "readMinutes", title: "읽는 시간 (분)", type: "number" },
         { name: "prerequisites", title: "선수 지식", type: "string" },
+        { name: "bookChapter", title: "책 챕터 번호 (basics)", type: "string" },
         { name: "event", title: "이벤트", type: "string" },
         { name: "region", title: "지역", type: "string" },
         { name: "scheduledAt", title: "예정/발표", type: "string" },
