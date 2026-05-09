@@ -12,6 +12,8 @@ import { CommentsSection } from "@/components/comments/comments-section";
 import { PostLike } from "@/components/likes/post-like";
 import { PostBookmark } from "@/components/bookmarks/post-bookmark";
 
+export const revalidate = 60;
+
 type Params = { slug: string };
 
 export async function generateStaticParams(): Promise<Params[]> {

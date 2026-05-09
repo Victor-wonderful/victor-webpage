@@ -8,6 +8,8 @@ import { PillNav } from "@/components/pill-nav";
 import { EditorialImage } from "@/components/editorial-image";
 import { Pagination } from "@/components/pagination";
 
+export const revalidate = 60;
+
 type Params = { slug: string };
 type Search = { page?: string };
 

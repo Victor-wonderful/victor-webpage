@@ -18,6 +18,8 @@ import { PromiseSection } from "@/components/home/promise-section";
 import { ToolsRail } from "@/components/home/tools-rail";
 import { BasicsTrackRail } from "@/components/home/basics-track-rail";
 
+export const revalidate = 60;
+
 export default async function Home() {
   const posts = await getAllPosts();
   const [hero, ...rest] = posts;

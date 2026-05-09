@@ -4,6 +4,8 @@ import { getPostsByCategory, type Post } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "입문 가이드 시리즈 — Victor Alpha",
   description:

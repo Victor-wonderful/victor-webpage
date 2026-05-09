@@ -6,6 +6,8 @@ import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
 import { Pagination } from "@/components/pagination";
 
+export const revalidate = 60;
+
 export const metadata: Metadata = {
   title: "전체 글",
   description: "Pine Script · 시장분석 · 전략 · 차트노트.",
