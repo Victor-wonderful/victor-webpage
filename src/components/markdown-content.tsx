@@ -57,7 +57,8 @@ export function MarkdownContent({
     const m = /^#(\d+)$/.exec(src.trim());
     if (!m) return { url: src };
     const idx = parseInt(m[1], 10) - 1;
-    const ref = bodyImages[idx];
+    const ref = bodyImages?.[idx];
+    if (!ref) return null;
     const url = imageUrl(ref, 1600);
     if (!url) return null;
     return { url, fallbackAlt: ref?.alt };
