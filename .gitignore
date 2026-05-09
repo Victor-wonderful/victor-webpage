@@ -12,6 +12,7 @@ tools/
 content-drafts/
 docs/*
 !docs/voice-guide.md
+!docs/voice-guide-baseline.md
 scripts/
 supabase/
 tsconfig.tsbuildinfo
