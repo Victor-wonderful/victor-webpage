@@ -102,7 +102,7 @@ export function buildCaption(post: Post, siteUrl: string): string {
     `→ <a href="${url}">전문 보기</a>`,
   ];
   if (hasGroup) {
-    lines.push("", "💬 토론은 아래 댓글 버튼으로 그룹에서");
+    lines.push("", "💬 의견·질문은 댓글 버튼으로");
   }
   return lines.join("\n");
 }
