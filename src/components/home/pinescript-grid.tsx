@@ -19,7 +19,7 @@ export function PinescriptGrid({ posts }: { posts: Post[] }) {
           <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             차트에 바로 붙이는 코드
           </h2>
-          <p className="mt-3 max-w-xl text-meta text-fg-muted">
+          <p className="mt-3 max-w-xl break-keep text-pretty text-meta leading-[1.7] text-fg-muted">
             전략 노트의 셋업을 TradingView Pine Script로 옮긴 코드 — 복붙해서 차트에 그대로.
           </p>
         </div>

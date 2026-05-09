@@ -18,8 +18,8 @@ export function SpotlightSection({ items }: { items: Strategy[] }) {
           <h2 className="mt-3 break-keep font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             전략 노트
           </h2>
-          <p className="mt-5 max-w-xs text-meta text-fg-muted">
-            서랍 속 검증된 셋업 — 백테스트 수치(승률·MDD)와 함께 사고법까지.
+          <p className="mt-5 max-w-sm break-keep text-pretty text-meta leading-[1.7] text-fg-muted">
+            왜 이 전략이 통하는지, 어디서 무너지는지. 진입·청산 룰과 실수 1개까지 풀어쓴 트레이딩 노트.
           </p>
         </header>
 

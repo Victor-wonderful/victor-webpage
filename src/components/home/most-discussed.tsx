@@ -24,7 +24,7 @@ export async function MostDiscussed({ days = 30, limit = 3 }: { days?: number; l
         <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
           가장 활발한 글
         </h2>
-        <p className="mt-3 text-meta text-fg-muted">
+        <p className="mt-3 max-w-xl break-keep text-pretty text-meta leading-[1.7] text-fg-muted">
           최근 {days}일간 댓글이 가장 많이 달린 글입니다.
         </p>
       </header>

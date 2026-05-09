@@ -18,7 +18,7 @@ export async function DeepDives({ limit = 3 }: { limit?: number }) {
           <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             심층분석
           </h2>
-          <p className="mt-3 max-w-xl text-meta text-fg-muted">
+          <p className="mt-3 max-w-xl break-keep text-pretty text-meta leading-[1.7] text-fg-muted">
             프로젝트 노믹스·온체인·섹터 흐름 — 장기 안목으로 읽는 토큰 분석.
           </p>
         </div>

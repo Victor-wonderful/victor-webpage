@@ -31,7 +31,7 @@ export async function TokenPicks() {
           <h2 className="mt-3 font-display text-[32px] font-extrabold leading-[1.1] tracking-tight md:text-[40px]">
             투자 후보 토큰
           </h2>
-          <p className="mt-3 max-w-xl text-meta text-fg-muted">
+          <p className="mt-3 max-w-xl break-keep text-pretty text-meta leading-[1.7] text-fg-muted">
             이번 주 주목하는 코어 자산의 stance 한 줄 — 단기 입장 요약입니다.
           </p>
         </div>
