@@ -38,7 +38,9 @@ export default async function Home() {
     .filter((p) => p.tags?.some((t) => CHART_TAGS.includes(t)))
     .slice(0, 3);
 
-  const latest = posts.slice(0, 8);
+  // Exclude the hero (already featured at top); show the rest.
+  // Cap at 20 — beyond that, /blog has full pagination.
+  const latest = rest.slice(0, 20);
 
   return (
     <>
