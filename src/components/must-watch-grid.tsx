@@ -3,14 +3,24 @@ import type { Post } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { EditorialImage } from "./editorial-image";
 
-export function MustWatchGrid({ posts }: { posts: Post[] }) {
+export function MustWatchGrid({
+  posts,
+  eyebrow = "Charts",
+  title = "Must-Watch Charts",
+  cardEyebrow = "차트노트",
+}: {
+  posts: Post[];
+  eyebrow?: string;
+  title?: string;
+  cardEyebrow?: string;
+}) {
   if (posts.length === 0) return null;
   return (
     <section className="container-page mt-24">
       <header className="mb-10">
-        <p className="text-eyebrow text-accent">Charts</p>
+        <p className="text-eyebrow text-accent">{eyebrow}</p>
         <h2 className="mt-3 font-display text-[44px] font-extrabold leading-[1.02] tracking-tight md:text-[56px]">
-          Must-Watch Charts
+          {title}
         </h2>
       </header>
       <ul className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
@@ -22,7 +32,7 @@ export function MustWatchGrid({ posts }: { posts: Post[] }) {
             >
               <EditorialImage seed={p.slug} variant="card" alt={p.title} />
               <div className="p-5">
-                <p className="text-eyebrow text-fg-muted">차트노트</p>
+                <p className="text-eyebrow text-fg-muted">{cardEyebrow}</p>
                 <h3 className="mt-2 font-serif-body text-lg font-bold leading-snug tracking-tight group-hover:text-accent">
                   {p.title}
                 </h3>

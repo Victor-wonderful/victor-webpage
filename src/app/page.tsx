@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getAllPosts } from "@/lib/posts";
+import { getAllPosts, getPostsByCategory } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
 import { FeaturedHero } from "@/components/featured-hero";
@@ -25,22 +25,22 @@ export default async function Home() {
   const posts = await getAllPosts();
   const [hero, ...rest] = posts;
 
-  // Mock backtest stats until Sanity ‘strategy’ schema lands
-  const spotlight = rest.slice(0, 2).map((p, i) => ({
-    post: p,
-    winRate: [78, 64][i] ?? 60,
-    mdd: [12, 18][i] ?? 20,
-    author: "Victor",
-  }));
-
   // Latest macro daily for Promise 01
   const latestMacro = posts.find((p) => p.category === "macro");
 
-  // Curated chart-tagged posts
-  const CHART_TAGS = ["차트노트", "차트", "chart"];
-  const mustWatch = posts
-    .filter((p) => p.tags?.some((t) => CHART_TAGS.includes(t)))
-    .slice(0, 3);
+  // Promise 03: real strategy + pinescript content
+  const [strategyPosts, pinescriptPosts] = await Promise.all([
+    getPostsByCategory("strategy"),
+    getPostsByCategory("pinescript"),
+  ]);
+  const spotlight = strategyPosts.slice(0, 3).map((p) => ({
+    post: p,
+    winRate: typeof p.meta?.winRate === "number" ? p.meta.winRate : 0,
+    mdd: typeof p.meta?.mdd === "number" ? p.meta.mdd : 0,
+    author: "Victor",
+  }));
+  const pineGrid = pinescriptPosts.slice(0, 3);
+  const hasPromise03Content = spotlight.length > 0 || pineGrid.length > 0;
 
   // Exclude the hero (already featured at top); show the rest.
   // Cap at 20 — beyond that, /blog has full pagination.
@@ -87,15 +87,24 @@ export default async function Home() {
       <TokenPicks />
 
       {/* ═════════════════════════════════════════════════
-          Promise 03 · 검증된 셋업 라이브러리
+          Promise 03 · 전략 노트 + Pine Script 코드
           ═══════════════════════════════════════════════ */}
-      <PromiseSection
-        number="03"
-        title="검증된 셋업 라이브러리"
-        description="모든 셋업에 백테스트 수치(승률·MDD)를 공개. '어디서 들었는데'가 아닌 데이터로 검증된 것만."
-      />
-      <SpotlightSection items={spotlight} />
-      <MustWatchGrid posts={mustWatch} />
+      {hasPromise03Content && (
+        <>
+          <PromiseSection
+            number="03"
+            title="전략 노트 + Pine Script 코드"
+            description="실제 운용한 셋업의 사고법·룰·실수를 글로, 그 전략을 차트에 바로 붙이는 코드로."
+          />
+          <SpotlightSection items={spotlight} />
+          <MustWatchGrid
+            posts={pineGrid}
+            eyebrow="Pine Script"
+            title="차트에 바로 붙이는 코드"
+            cardEyebrow="Pine Script"
+          />
+        </>
+      )}
 
       {/* ═════════════════════════════════════════════════
           Promise 04 · 자기 진단 도구
