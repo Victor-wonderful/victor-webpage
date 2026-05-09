@@ -10,6 +10,10 @@ dist/
 tools/
 .claude/
 content-drafts/
-docs/
+docs/*
+!docs/voice-guide.md
+!docs/voice-guide-baseline.md
+!docs/voice-guide-baseline-extra.md
 scripts/
 supabase/
+tsconfig.tsbuildinfo

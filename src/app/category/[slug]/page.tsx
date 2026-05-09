@@ -72,6 +72,14 @@ export default async function CategoryPage({
           <p className="text-meta text-fg-muted">
             총 {total}개의 글
             {totalPages > 1 && ` · ${page} / ${totalPages} 페이지`}
+            {slug === "basics" && (
+              <>
+                {" · "}
+                <Link href="/basics" className="text-accent hover:underline">
+                  챕터 순 보기 →
+                </Link>
+              </>
+            )}
           </p>
         </header>
         <div className="mt-8">
