@@ -15,5 +15,7 @@ docs/*
 !docs/voice-guide-baseline.md
 !docs/voice-guide-baseline-extra.md
 scripts/
-supabase/
+# Local Supabase migrations / config — only ignore the root-level dir,
+# not src/lib/supabase which contains application code.
+/supabase/
 tsconfig.tsbuildinfo
