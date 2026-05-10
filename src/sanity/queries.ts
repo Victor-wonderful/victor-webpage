@@ -112,3 +112,47 @@ export const postsByTagQuery = groq(`
     ${POST_PROJECTION}
   }
 `);
+
+// --- Admin dashboard queries -------------------------------------------------
+
+export const recentPostsForAdminQuery = groq(`
+  *[_type == "post" && defined(slug.current) && publishedAt <= now()]
+    | order(publishedAt desc)[0...$limit] {
+      _id,
+      title,
+      "slug": slug.current,
+      "category": category->slug.current,
+      publishedAt,
+      telegramSentAt,
+      telegramMessageId
+    }
+`);
+
+export const scheduledPostsQuery = groq(`
+  *[_type == "post"
+    && defined(publishedAt)
+    && publishedAt > now()
+    && publishedAt < dateTime(now()) + 60*60*24*$days]
+    | order(publishedAt asc) {
+      _id,
+      title,
+      "slug": slug.current,
+      "category": category->slug.current,
+      publishedAt
+    }
+`);
+
+export const draftsListQuery = groq(`
+  *[_type == "post" && _id in path("drafts.**")]
+    | order(_updatedAt desc)[0...$limit] {
+      _id,
+      title,
+      "slug": slug.current,
+      "category": category->slug.current,
+      _updatedAt
+    }
+`);
+
+export const draftsCountQuery = groq(`
+  count(*[_type == "post" && _id in path("drafts.**")])
+`);

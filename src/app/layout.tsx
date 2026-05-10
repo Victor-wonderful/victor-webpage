@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display, Source_Serif_4, Inter, JetBrains_Mono } from "next/font/google";
 import { BrandBand } from "@/components/brand-band";
 import { BackToTop } from "@/components/back-to-top";
+import { AlphaResearchBannerMount } from "@/components/alpha-research-banner-mount";
 import { SITE } from "@/lib/site";
 import "./globals.css";
 
@@ -79,6 +80,7 @@ export default function RootLayout({
       </head>
       <body className="bg-bg text-fg antialiased">
         <BrandBand variant="header" />
+        <AlphaResearchBannerMount />
         <main>{children}</main>
         <BrandBand variant="footer" />
         <BackToTop />

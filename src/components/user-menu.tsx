@@ -15,12 +15,17 @@ export async function UserMenu({ className = "" }: { className?: string }) {
 
   if (!user) {
     return (
-      <Link
-        href="/login"
-        className={`hover:text-accent ${className}`}
-      >
-        로그인
-      </Link>
+      <div className={`flex items-center gap-3 ${className}`}>
+        <Link
+          href="/signup"
+          className="rounded-full bg-accent px-4 py-2 font-semibold text-white transition-colors hover:bg-accent-hover"
+        >
+          회원가입
+        </Link>
+        <Link href="/login" className="hover:text-accent">
+          로그인
+        </Link>
+      </div>
     );
   }
 

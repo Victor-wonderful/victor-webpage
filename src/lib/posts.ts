@@ -68,6 +68,23 @@ function normalize(p: Post): Post {
 }
 
 /**
+ * Defends the UI against duplicate slugs in Sanity (e.g. accidental copies,
+ * legacy drafts that surfaced via a misconfigured perspective). Keeps the
+ * first occurrence — already sorted by `publishedAt desc` upstream so the
+ * latest copy wins.
+ */
+function dedupeBySlug<T extends { slug: string }>(posts: T[]): T[] {
+  const seen = new Set<string>();
+  const out: T[] = [];
+  for (const p of posts) {
+    if (seen.has(p.slug)) continue;
+    seen.add(p.slug);
+    out.push(p);
+  }
+  return out;
+}
+
+/**
  * Loosely-typed fetch helper.
  * @sanity/client v7 infers params from the query template-literal type, but
  * our queries use string interpolation (POST_PROJECTION) which defeats that
@@ -83,7 +100,7 @@ function sanityFetch<T>(
 
 export async function getAllPosts(): Promise<Post[]> {
   const result = await sanityFetch<Post[]>(allPostsQuery);
-  return (result ?? []).map(normalize);
+  return dedupeBySlug((result ?? []).map(normalize));
 }
 
 export async function getPostBySlug(slug: string): Promise<Post | null> {
@@ -100,7 +117,7 @@ export async function getPostsByCategory(
   category: CategorySlug,
 ): Promise<Post[]> {
   const result = await sanityFetch<Post[]>(postsByCategoryQuery, { category });
-  return (result ?? []).map(normalize);
+  return dedupeBySlug((result ?? []).map(normalize));
 }
 
 export const POSTS_PER_PAGE = 12;
@@ -120,7 +137,7 @@ export async function getAllPostsPage(
   ]);
   const safeTotal = typeof total === "number" ? total : 0;
   return {
-    posts: (pagePosts ?? []).map(normalize),
+    posts: dedupeBySlug((pagePosts ?? []).map(normalize)),
     total: safeTotal,
     totalPages: Math.max(1, Math.ceil(safeTotal / perPage)),
   };
@@ -147,7 +164,7 @@ export async function getPostsByCategoryPage(
   ]);
   const safeTotal = typeof total === "number" ? total : 0;
   return {
-    posts: (pagePosts ?? []).map(normalize),
+    posts: dedupeBySlug((pagePosts ?? []).map(normalize)),
     total: safeTotal,
     totalPages: Math.max(1, Math.ceil(safeTotal / perPage)),
   };
@@ -155,5 +172,5 @@ export async function getPostsByCategoryPage(
 
 export async function getPostsByTag(tag: string): Promise<Post[]> {
   const result = await sanityFetch<Post[]>(postsByTagQuery, { tag });
-  return (result ?? []).map(normalize);
+  return dedupeBySlug((result ?? []).map(normalize));
 }

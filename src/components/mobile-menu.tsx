@@ -122,7 +122,8 @@ export function MobileMenu() {
                 { label: "전체 글", href: "/blog" },
                 { label: "북마크", href: "/bookmarks" },
                 { label: "소개", href: "/about" },
-                { label: "구독", href: "/subscribe" },
+                { label: "Alpha Research 구독", href: "/subscribe" },
+                { label: "회원가입", href: "/signup" },
                 { label: "로그인", href: "/login" },
               ].map((l) => (
                 <li key={l.href}>
@@ -139,10 +140,16 @@ export function MobileMenu() {
 
           <div className="border-t border-bg/15 dark:border-fg/15 p-6">
             <Link
-              href="/subscribe"
+              href="/signup"
               className="block w-full rounded-full bg-accent px-6 py-3 text-center font-semibold text-white transition-colors hover:bg-accent-hover"
             >
-              구독하기
+              회원가입
+            </Link>
+            <Link
+              href="/login"
+              className="mt-2 block w-full rounded-full border border-bg/30 dark:border-fg/30 px-6 py-3 text-center font-semibold transition-colors hover:border-accent hover:text-accent"
+            >
+              로그인
             </Link>
           </div>
         </aside>
