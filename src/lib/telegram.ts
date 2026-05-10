@@ -7,7 +7,7 @@
  */
 
 import type { Post } from "@/lib/posts";
-import { getCategory, type CategorySlug } from "@/lib/categories";
+import { type CategorySlug } from "@/lib/categories";
 import { imageUrl } from "@/sanity/image";
 
 const TELEGRAM_API = "https://api.telegram.org";
@@ -53,7 +53,117 @@ export function resolvePhotoUrl(post: Post): string {
  * Categories whose published posts auto-broadcast to Telegram.
  * Mirrors the Sanity webhook GROQ filter — keep in sync.
  */
-export const TELEGRAM_BROADCAST_CATEGORIES = ["macro", "market", "tokens", "basics"] as const;
+export const TELEGRAM_BROADCAST_CATEGORIES = [
+  "macro",
+  "market",
+  "tokens",
+  "basics",
+  "strategy",
+  "pinescript",
+] as const;
+
+/**
+ * Per-category presentation overrides for Telegram captions.
+ * - icon:     leading emoji for category header line
+ * - label:    category short label shown on first line
+ * - cta:      inline keyboard button text
+ * - metaLine: builder for the optional meta sub-line (returns "" when no useful meta)
+ */
+type CategorySlugLocal =
+  | "macro"
+  | "market"
+  | "tokens"
+  | "basics"
+  | "strategy"
+  | "pinescript";
+
+const CATEGORY_TG_PRESENTATION: Record<
+  CategorySlugLocal,
+  {
+    icon: string;
+    label: string;
+    cta: string;
+    metaLine: (m: Record<string, string | number> | undefined) => string;
+  }
+> = {
+  macro: {
+    icon: "📰",
+    label: "오늘의 매크로",
+    cta: "📰 시황 전문 보기",
+    metaLine: (m) => {
+      const parts: string[] = [];
+      if (m?.event) parts.push(String(m.event));
+      if (m?.region) parts.push(String(m.region));
+      if (m?.impact) parts.push(`임팩트 ${m.impact}`);
+      return parts.join(" · ");
+    },
+  },
+  market: {
+    icon: "📊",
+    label: "이번 주 시장",
+    cta: "📊 인사이트 읽기",
+    metaLine: (m) => {
+      const parts: string[] = [];
+      if (m?.timeframe) parts.push(String(m.timeframe));
+      if (m?.sentiment) parts.push(String(m.sentiment));
+      return parts.join(" · ");
+    },
+  },
+  tokens: {
+    icon: "🔎",
+    label: "토큰 심층분석",
+    cta: "🔎 분석 보러 가기",
+    metaLine: (m) => {
+      const parts: string[] = [];
+      if (m?.symbol) parts.push(String(m.symbol));
+      if (m?.timeframe) parts.push(String(m.timeframe));
+      if (m?.sentiment) parts.push(String(m.sentiment));
+      return parts.join(" · ");
+    },
+  },
+  basics: {
+    icon: "📚",
+    label: "입문 가이드",
+    cta: "📚 가이드 읽기",
+    metaLine: (m) => {
+      const parts: string[] = [];
+      if (m?.bookChapter) parts.push(String(m.bookChapter));
+      if (m?.level) parts.push(String(m.level));
+      if (m?.readMinutes) parts.push(`${m.readMinutes}분 읽기`);
+      return parts.join(" · ");
+    },
+  },
+  strategy: {
+    icon: "⚡",
+    label: "전략 노트",
+    cta: "⚡ 전략 보러 가기",
+    metaLine: (m) => {
+      const parts: string[] = [];
+      if (m?.strategyType) parts.push(String(m.strategyType));
+      if (m?.winRate !== undefined && m?.winRate !== "") parts.push(`승률 ${m.winRate}`);
+      if (m?.mdd !== undefined && m?.mdd !== "") parts.push(`MDD ${m.mdd}`);
+      return parts.join(" · ");
+    },
+  },
+  pinescript: {
+    icon: "💻",
+    label: "Pine 코드",
+    cta: "💻 코드 받기",
+    metaLine: (m) => {
+      const parts: string[] = [];
+      if (m?.scriptType) parts.push(String(m.scriptType));
+      if (m?.pineVersion) parts.push(String(m.pineVersion));
+      return parts.join(" · ");
+    },
+  },
+};
+
+function presentationFor(category: string) {
+  return (
+    CATEGORY_TG_PRESENTATION[category as CategorySlugLocal] ??
+    CATEGORY_TG_PRESENTATION.macro
+  );
+}
 
 export type TelegramSendResult = {
   ok: true;
@@ -111,12 +221,18 @@ function isPublicUrl(u: string): boolean {
  *   [→ url, only when no inline button is possible]
  */
 export function buildCaption(post: Post, siteUrl: string): string {
-  const categoryLabel = getCategory(post.category)?.label ?? post.category;
+  const pres = presentationFor(post.category);
   const summary = truncate(post.summary ?? "", SUMMARY_CAP);
   const url = `${siteUrl}/blog/${post.slug}`;
+  const metaLine = pres.metaLine(post.meta);
+
+  // Header: "📰 <b>오늘의 매크로</b> · CPI · 미국 · 임팩트 중"
+  const header =
+    `${pres.icon} <b>${escapeHtml(pres.label)}</b>` +
+    (metaLine ? ` · ${escapeHtml(metaLine)}` : "");
 
   const lines = [
-    `[${escapeHtml(categoryLabel)}]`,
+    header,
     `<b>${escapeHtml(post.title)}</b>`,
     "",
     escapeHtml(summary),
@@ -136,9 +252,16 @@ export function buildCaption(post: Post, siteUrl: string): string {
 export function buildReplyMarkup(post: Post, siteUrl: string) {
   const url = `${siteUrl}/blog/${post.slug}`;
   if (!isPublicUrl(url)) return undefined;
-  return {
-    inline_keyboard: [[{ text: "📖 전문 보기", url }]],
-  };
+  const pres = presentationFor(post.category);
+  const buttons: { text: string; url: string }[][] = [[{ text: pres.cta, url }]];
+  // pinescript: add a TradingView link button if present in meta
+  if (post.category === "pinescript") {
+    const tvLink = post.meta?.tvLink;
+    if (typeof tvLink === "string" && tvLink.startsWith("http")) {
+      buttons.push([{ text: "📈 TradingView에서 열기", url: tvLink }]);
+    }
+  }
+  return { inline_keyboard: buttons };
 }
 
 /** POST helper around fetch. */
