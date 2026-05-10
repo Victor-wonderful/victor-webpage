@@ -5,11 +5,11 @@ const TG_GROUP = process.env.NEXT_PUBLIC_TELEGRAM_GROUP_URL;
 
 /**
  * Paired subscription cluster on the home page.
- *  - Newsletter (always shown)
- *  - Telegram   (only when channel/group envs are set)
+ *  - Alpha Research (always shown) — premium members-only research
+ *  - Telegram public (only when channel/group envs are set) — public alerts
  *
- * The two channels are complementary: newsletter = curated post digests,
- * Telegram = real-time signal alerts + community discussion.
+ * The two channels are complementary: Alpha Research = members-only deep
+ * research, Telegram public = public real-time alerts + open discussion.
  */
 export function SubscribeChannels() {
   const hasTelegram = Boolean(TG_CHANNEL || TG_GROUP);
@@ -17,21 +17,25 @@ export function SubscribeChannels() {
   return (
     <section className="container-page mt-24 border-t border-b border-ink/20 py-16">
       <div className={`grid gap-6 ${hasTelegram ? "md:grid-cols-2" : ""}`}>
-        {/* Newsletter card */}
-        <article className="flex h-full flex-col rounded-md border border-border bg-surface p-8 md:p-10">
-          <p className="text-eyebrow text-accent">📧 Newsletter</p>
+        {/* Alpha Research card */}
+        <article className="flex h-full flex-col rounded-md border-2 border-accent/40 bg-accent/5 p-8 md:p-10">
+          <p className="text-eyebrow text-accent">
+            Members Only · Premium Research
+          </p>
           <h3 className="mt-3 font-display text-3xl font-extrabold leading-tight tracking-tight md:text-4xl">
-            새 글, 메일로 받기
+            Alpha Research 구독
           </h3>
-          <p className="mt-4 max-w-md font-serif-body text-base text-fg-muted">
-            매주 발행되는 시장·전략·심층분석 글의 핵심을 한 번에 받아 보세요.
+          <p className="mt-4 max-w-md font-serif-body text-base leading-[1.7] text-fg-muted">
+            블로그에 공개되지 않는 회원 전용 리서치를 신청하신 채널로 직접
+            전달해드립니다. 신규 프로젝트 소개, 토큰 X-ray, 심층 시장 분석 등
+            엄선된 콘텐츠로 구성됩니다.
           </p>
           <div className="mt-auto pt-8">
             <Link
               href="/subscribe"
               className="inline-flex items-center justify-center rounded-full bg-accent px-8 py-3.5 text-base font-semibold text-white transition-all hover:bg-accent-hover active:scale-[0.98]"
             >
-              구독하기
+              구독 신청
             </Link>
           </div>
         </article>
