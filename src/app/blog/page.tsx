@@ -41,7 +41,7 @@ export default async function BlogIndex({
         <header className="grid items-end gap-6 border-b border-border pb-10 md:grid-cols-[1fr_auto]">
           <div>
             <p className="text-eyebrow text-accent">Archive</p>
-            <h1 className="mt-3 font-display text-[56px] font-extrabold leading-[0.95] tracking-tighter md:text-[80px]">
+            <h1 className="mt-3 font-display text-[40px] font-extrabold leading-[0.95] tracking-tighter md:text-[56px]">
               전체 글
             </h1>
           </div>

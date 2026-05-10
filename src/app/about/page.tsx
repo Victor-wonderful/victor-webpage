@@ -11,7 +11,7 @@ export default function AboutPage() {
   return (
     <article className="container-prose mt-12 mb-24">
       <p className="text-eyebrow text-accent">About</p>
-      <h1 className="mt-3 break-keep text-pretty font-display text-[44px] font-extrabold leading-[1.2] md:text-[56px] md:leading-[1.15]">
+      <h1 className="mt-3 break-keep text-pretty font-display text-[32px] font-extrabold leading-[1.2] md:text-[44px] md:leading-[1.15]">
         <span className="block">매일 1개의 신호,</span>
         <span className="block">매주 1개의 셋업,</span>
         <span className="block">매월 1단계 성장.</span>

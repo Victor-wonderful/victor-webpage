@@ -62,7 +62,7 @@ export default async function PostPage(
             {category.label}
           </Link>
         )}
-        <h1 className="mt-4 font-display text-[44px] font-extrabold leading-[1.05] tracking-tighter md:text-[56px]">
+        <h1 className="mt-4 font-display text-[32px] font-extrabold leading-[1.05] tracking-tighter md:text-[44px]">
           {post.title}
         </h1>
         <p className="mt-5 font-serif-body text-xl italic text-fg-muted">

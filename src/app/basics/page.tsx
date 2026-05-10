@@ -61,7 +61,7 @@ export default async function BasicsSeriesPage() {
       <section className="container-page mt-12">
         <header className="border-b border-border pb-10">
           <p className="text-eyebrow text-accent">Series · 도서 연재</p>
-          <h1 className="mt-3 font-display text-[56px] font-extrabold leading-[0.95] tracking-tighter md:text-[80px]">
+          <h1 className="mt-3 font-display text-[40px] font-extrabold leading-[0.95] tracking-tighter md:text-[56px]">
             입문 가이드
           </h1>
           <p className="mt-4 max-w-2xl text-meta text-fg-muted">

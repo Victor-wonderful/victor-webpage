@@ -11,7 +11,7 @@ export default function TermsPage() {
   return (
     <article className="container-prose mt-12 mb-24">
       <p className="text-eyebrow text-accent">Terms of Service</p>
-      <h1 className="mt-3 font-display text-[44px] font-extrabold leading-[1.05] tracking-tighter md:text-[56px]">
+      <h1 className="mt-3 font-display text-[32px] font-extrabold leading-[1.05] tracking-tighter md:text-[44px]">
         이용약관
       </h1>
       <p className="mt-5 font-serif-body text-xl italic text-fg-muted">

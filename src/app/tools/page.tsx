@@ -88,7 +88,7 @@ export default function ToolsPage() {
   return (
     <article className="container-page mt-12 mb-24">
       <p className="text-eyebrow text-accent">Tools</p>
-      <h1 className="mt-3 break-keep font-display text-[44px] font-extrabold leading-[1.2] md:text-[56px] md:leading-[1.15]">
+      <h1 className="mt-3 break-keep font-display text-[32px] font-extrabold leading-[1.2] md:text-[44px] md:leading-[1.15]">
         도구함
       </h1>
       <p className="mt-5 break-keep font-serif-body text-xl italic text-fg-muted">

@@ -64,7 +64,7 @@ export default async function CategoryPage({
         <header className="grid items-end gap-6 border-b border-border pb-10 md:grid-cols-[1fr_auto]">
           <div>
             <p className="text-eyebrow text-accent">{category.eyebrow}</p>
-            <h1 className="mt-3 font-display text-[56px] font-extrabold leading-[0.95] tracking-tighter md:text-[80px]">
+            <h1 className="mt-3 font-display text-[40px] font-extrabold leading-[0.95] tracking-tighter md:text-[56px]">
               {category.label}
             </h1>
             <p className="mt-4 max-w-xl text-meta text-fg-muted">
