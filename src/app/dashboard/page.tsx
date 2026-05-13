@@ -108,27 +108,41 @@ export default function DashboardPage() {
             DeFi에 잠긴 자금이 늘면 risk-on, 빠지면 risk-off — 가격보다 먼저 움직이는 선행 지표.
           </p>
         </header>
-        <div className="grid gap-4 md:grid-cols-2">
-          <Suspense fallback={<CardFallback label="DeFi TVL" />}>
-            <DefiTvlCard />
-          </Suspense>
-          <article className="flex h-full flex-col gap-3 border border-border bg-surface-warm/40 p-6">
-            <p className="text-eyebrow text-accent">읽는 법</p>
-            <ul className="space-y-2 text-meta leading-[1.7] text-fg-muted">
-              <li>
-                <strong className="text-fg">TVL 7d ↑ + Stablecoin 시총 ↑</strong> = DeFi 자금 유입 + 탄약 누적 → 강한 risk-on.
-              </li>
-              <li>
-                <strong className="text-fg">TVL 7d ↓ + 도미넌스 ↑</strong> = 알트에서 BTC로 회귀 — 알트 약세 후보.
-              </li>
-              <li>
-                <strong className="text-fg">TVL 급락 + Funding 음수</strong> = 디레버리징 진행 — 단기 바닥 후보지만 칼날 잡지 말 것.
-              </li>
-              <li>
-                <strong className="text-fg">특정 체인 TVL 비중 급증</strong> = 그 체인 토큰 알트시즌 신호 (예: Solana 비중 ↑ → SOL 생태계).
-              </li>
-            </ul>
-          </article>
+        <Suspense fallback={<CardFallback label="DeFi TVL" />}>
+          <DefiTvlCard />
+        </Suspense>
+
+        <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            {
+              t: "TVL 7d ↑ + Stablecoin 시총 ↑",
+              d: "DeFi 자금 유입 + 탄약 누적 → 강한 risk-on.",
+            },
+            {
+              t: "TVL 7d ↓ + 도미넌스 ↑",
+              d: "알트에서 BTC로 회귀 — 알트 약세 후보.",
+            },
+            {
+              t: "TVL 급락 + Funding 음수",
+              d: "디레버리징 진행 — 단기 바닥 후보지만 칼날 잡지 말 것.",
+            },
+            {
+              t: "특정 체인 TVL 비중 급증",
+              d: "그 체인 알트시즌 신호 (예: Solana 비중 ↑ → SOL 생태계).",
+            },
+          ].map((r) => (
+            <article
+              key={r.t}
+              className="flex flex-col gap-1 border border-border bg-surface-warm/40 p-4"
+            >
+              <p className="break-keep font-display text-[14px] font-bold leading-snug">
+                {r.t}
+              </p>
+              <p className="break-keep text-meta leading-[1.6] text-fg-muted">
+                {r.d}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
 

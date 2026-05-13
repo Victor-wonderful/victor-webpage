@@ -29,9 +29,9 @@ function hint(delta7d: number) {
 
 function Sparkline({ series }: { series: { date: number; tvl: number }[] }) {
   if (series.length < 2) return null;
-  const W = 240;
-  const H = 40;
-  const PAD = 2;
+  const W = 400;
+  const H = 90;
+  const PAD = 4;
   const vals = series.map((p) => p.tvl);
   const min = Math.min(...vals);
   const max = Math.max(...vals);
@@ -39,15 +39,15 @@ function Sparkline({ series }: { series: { date: number; tvl: number }[] }) {
   const xs = series.map(
     (_, i) => PAD + (i * (W - PAD * 2)) / (series.length - 1),
   );
-  const ys = vals.map(
-    (v) => H - PAD - ((v - min) / range) * (H - PAD * 2),
-  );
+  const ys = vals.map((v) => H - PAD - ((v - min) / range) * (H - PAD * 2));
   const d = xs
     .map((x, i) => `${i === 0 ? "M" : "L"} ${x.toFixed(1)} ${ys[i].toFixed(1)}`)
     .join(" ");
+  const areaPath = `${d} L ${xs[xs.length - 1].toFixed(1)} ${H} L ${xs[0].toFixed(1)} ${H} Z`;
   const t = vals[vals.length - 1] >= vals[0] ? "text-emerald-500" : "text-rose-500";
   return (
     <svg viewBox={`0 0 ${W} ${H}`} className="w-full" preserveAspectRatio="none">
+      <path d={areaPath} className={t} fill="currentColor" opacity={0.08} />
       <path
         d={d}
         fill="none"
@@ -60,7 +60,7 @@ function Sparkline({ series }: { series: { date: number; tvl: number }[] }) {
       <circle
         cx={xs[xs.length - 1]}
         cy={ys[ys.length - 1]}
-        r="3"
+        r="4"
         className={t}
         fill="currentColor"
       />
@@ -81,73 +81,79 @@ export async function DefiTvlCard() {
   }
 
   return (
-    <article className="flex h-full flex-col gap-4 border border-border bg-surface-warm/40 p-6">
-      <p className="text-eyebrow text-accent">DeFi TVL · DefiLlama</p>
+    <article className="flex flex-col gap-6 border border-border bg-surface-warm/40 p-6">
+      <header className="flex flex-wrap items-baseline justify-between gap-3">
+        <p className="text-eyebrow text-accent">DeFi TVL · DefiLlama</p>
+        <p className="text-meta text-fg-muted">{hint(r.delta7dPct)}</p>
+      </header>
 
-      {/* Big total */}
-      <div>
-        <p className="font-display text-4xl font-extrabold leading-none tabular-nums">
-          {fmtBn(r.total)}
-        </p>
-        <p className="mt-2 text-meta text-fg-muted">전체 DeFi 잠긴 자금 (USD)</p>
-      </div>
-
-      {/* Deltas */}
-      <div className="grid grid-cols-2 gap-3">
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">24h</p>
-          <p
-            className={`mt-1 font-mono text-base font-bold tabular-nums ${tone(r.delta24hPct)}`}
-          >
-            {fmtPct(r.delta24hPct)}
-          </p>
-        </div>
-        <div>
-          <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">7d</p>
-          <p
-            className={`mt-1 font-mono text-base font-bold tabular-nums ${tone(r.delta7dPct)}`}
-          >
-            {fmtPct(r.delta7dPct)}
-          </p>
-        </div>
-      </div>
-
-      {/* 30d sparkline */}
-      <div>
-        <p className="mb-1 text-[11px] uppercase tracking-[0.18em] text-fg-muted">
-          최근 30일
-        </p>
-        <Sparkline series={r.series} />
-      </div>
-
-      {/* Top chains */}
-      <div>
-        <p className="mb-2 text-[11px] uppercase tracking-[0.18em] text-fg-muted">
-          체인별 TVL 상위 5
-        </p>
-        <ul className="space-y-1">
-          {r.topChains.map((c) => {
-            const pct = r.total > 0 ? (c.tvl / r.total) * 100 : 0;
-            return (
-              <li
-                key={c.name}
-                className="flex items-baseline justify-between gap-3 text-meta tabular-nums"
+      <div className="grid items-start gap-8 lg:grid-cols-[1fr_1.4fr_1fr]">
+        {/* Col 1: Headline + deltas */}
+        <div className="flex flex-col gap-4">
+          <div>
+            <p className="font-display text-5xl font-extrabold leading-none tabular-nums">
+              {fmtBn(r.total)}
+            </p>
+            <p className="mt-2 text-meta text-fg-muted">전체 DeFi 잠긴 자금 (USD)</p>
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">24h</p>
+              <p
+                className={`mt-1 font-mono text-lg font-bold tabular-nums ${tone(r.delta24hPct)}`}
               >
-                <span className="font-display font-bold">{c.name}</span>
-                <span className="text-fg-muted">
-                  {fmtBn(c.tvl)}{" "}
-                  <span className="text-[11px]">({pct.toFixed(1)}%)</span>
-                </span>
-              </li>
-            );
-          })}
-        </ul>
+                {fmtPct(r.delta24hPct)}
+              </p>
+            </div>
+            <div>
+              <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">7d</p>
+              <p
+                className={`mt-1 font-mono text-lg font-bold tabular-nums ${tone(r.delta7dPct)}`}
+              >
+                {fmtPct(r.delta7dPct)}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Col 2: 30d trend */}
+        <div className="flex flex-col gap-2">
+          <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">
+            최근 30일 추이
+          </p>
+          <Sparkline series={r.series} />
+          <div className="flex justify-between text-[11px] tabular-nums text-fg-muted">
+            <span>30일 전 {fmtBn(r.series[0]?.tvl ?? 0)}</span>
+            <span>오늘 {fmtBn(r.total)}</span>
+          </div>
+        </div>
+
+        {/* Col 3: Top chains */}
+        <div>
+          <p className="mb-3 text-[11px] uppercase tracking-[0.18em] text-fg-muted">
+            체인별 TVL 상위 5
+          </p>
+          <ul className="space-y-1.5">
+            {r.topChains.map((c) => {
+              const pct = r.total > 0 ? (c.tvl / r.total) * 100 : 0;
+              return (
+                <li
+                  key={c.name}
+                  className="flex items-baseline justify-between gap-3 text-meta tabular-nums"
+                >
+                  <span className="font-display font-bold">{c.name}</span>
+                  <span className="text-fg-muted">
+                    {fmtBn(c.tvl)}{" "}
+                    <span className="text-[11px]">({pct.toFixed(1)}%)</span>
+                  </span>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </div>
 
-      <p className="mt-auto border-t border-border/60 pt-3 text-meta text-fg-muted">
-        {hint(r.delta7dPct)}
-      </p>
-      <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">
+      <p className="border-t border-border/60 pt-3 text-[11px] uppercase tracking-[0.18em] text-fg-muted">
         via DefiLlama
       </p>
     </article>
