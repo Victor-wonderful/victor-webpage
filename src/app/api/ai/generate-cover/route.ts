@@ -4,17 +4,21 @@
  * Flow:
  *   1. Studio Document Action posts { documentId, title, summary } here
  *      with an x-studio-secret header.
- *   2. We build a Korean-crypto-trading-editorial prompt and call
- *      OpenAI DALL-E 3.
- *   3. Download the generated PNG, upload to Sanity as an asset,
+ *   2. We build a Korean-crypto-trading-editorial prompt and request
+ *      a Flux-generated image from Pollinations.AI (free, no auth).
+ *   3. Download the generated image, upload to Sanity as an asset,
  *      patch the post.coverImage reference, return success.
  *
  * Env required (server, Vercel):
- *   - OPENAI_API_KEY           — DALL-E 3 access
- *   - SANITY_API_TOKEN         — already set, writeClient uses it
- *   - STUDIO_AI_SECRET         — shared secret; Studio sends as header
+ *   - SANITY_API_TOKEN   — already set, writeClient uses it
+ *   - STUDIO_AI_SECRET   — shared secret; Studio sends as header
  *
- * Vercel timeout extended to 60s — DALL-E 3 commonly takes 5–15s,
+ * No paid API keys needed. Pollinations.AI serves Flux-Schnell images
+ * by URL; we just GET the URL and the body IS the PNG. They cache by
+ * prompt, so we add a fresh `seed` each call to get a different image
+ * for the same title (useful when the first result isn't ideal).
+ *
+ * Vercel timeout extended to 60s — Flux usually finishes in 5–15s,
  * plus upload latency.
  */
 
@@ -43,15 +47,21 @@ function buildPrompt(title: string, summary: string | undefined): string {
   ].join(" ");
 }
 
+function buildPollinationsUrl(prompt: string, seed: number): string {
+  const params = new URLSearchParams({
+    width: "1792",
+    height: "1024",
+    model: "flux",
+    nologo: "true",
+    enhance: "true",
+    seed: String(seed),
+  });
+  // Path-encode the prompt; URLSearchParams handles the rest.
+  return `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?${params.toString()}`;
+}
+
 export async function POST(req: Request) {
-  const apiKey = process.env.OPENAI_API_KEY;
   const secret = process.env.STUDIO_AI_SECRET;
-  if (!apiKey) {
-    return NextResponse.json(
-      { ok: false, error: "OPENAI_API_KEY not configured" },
-      { status: 500 },
-    );
-  }
   if (!secret) {
     return NextResponse.json(
       { ok: false, error: "STUDIO_AI_SECRET not configured" },
@@ -83,76 +93,49 @@ export async function POST(req: Request) {
   }
 
   const prompt = buildPrompt(title, summary);
+  const seed = Math.floor(Math.random() * 1_000_000_000);
+  const imageUrl = buildPollinationsUrl(prompt, seed);
 
-  // 1. Generate via DALL-E 3
-  let imageUrl: string;
-  try {
-    const dalleRes = await fetch(
-      "https://api.openai.com/v1/images/generations",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          model: "dall-e-3",
-          prompt,
-          size: "1792x1024",
-          quality: "standard",
-          n: 1,
-        }),
-      },
-    );
-    if (!dalleRes.ok) {
-      const errBody = await dalleRes.text();
-      return NextResponse.json(
-        { ok: false, error: `OpenAI ${dalleRes.status}: ${errBody.slice(0, 200)}` },
-        { status: 502 },
-      );
-    }
-    const dalleJson = (await dalleRes.json()) as {
-      data?: { url?: string }[];
-    };
-    const url = dalleJson.data?.[0]?.url;
-    if (!url) {
-      return NextResponse.json(
-        { ok: false, error: "OpenAI returned no image url" },
-        { status: 502 },
-      );
-    }
-    imageUrl = url;
-  } catch (e) {
-    return NextResponse.json(
-      { ok: false, error: `OpenAI fetch failed: ${(e as Error).message}` },
-      { status: 502 },
-    );
-  }
-
-  // 2. Download the PNG
+  // 1. Generate + download in one step (Pollinations responds with the image body).
   let buffer: Buffer;
+  let contentType = "image/jpeg";
   try {
-    const imgRes = await fetch(imageUrl);
+    const imgRes = await fetch(imageUrl, {
+      // Pollinations may take 5–15s. Allow up to 50s before bailing.
+      signal: AbortSignal.timeout(50_000),
+    });
     if (!imgRes.ok) {
+      const text = await imgRes.text().catch(() => "");
       return NextResponse.json(
-        { ok: false, error: `image download ${imgRes.status}` },
+        {
+          ok: false,
+          error: `Pollinations ${imgRes.status}: ${text.slice(0, 200)}`,
+        },
         { status: 502 },
       );
     }
+    contentType = imgRes.headers.get("content-type") ?? contentType;
     buffer = Buffer.from(await imgRes.arrayBuffer());
+    if (buffer.byteLength < 1024) {
+      return NextResponse.json(
+        { ok: false, error: "image too small — likely an error response" },
+        { status: 502 },
+      );
+    }
   } catch (e) {
     return NextResponse.json(
-      { ok: false, error: `image download failed: ${(e as Error).message}` },
+      { ok: false, error: `image fetch failed: ${(e as Error).message}` },
       { status: 502 },
     );
   }
 
-  // 3. Upload to Sanity assets
+  // 2. Upload to Sanity assets.
   let assetId: string;
   try {
+    const ext = contentType.includes("png") ? "png" : "jpg";
     const asset = await writeClient.assets.upload("image", buffer, {
-      filename: `ai-cover-${Date.now()}.png`,
-      contentType: "image/png",
+      filename: `ai-cover-${Date.now()}.${ext}`,
+      contentType,
     });
     assetId = asset._id;
   } catch (e) {
@@ -162,9 +145,9 @@ export async function POST(req: Request) {
     );
   }
 
-  // 4. Patch the post's coverImage.
-  //    Sanity stores draft documents under id "drafts.{id}" — we patch
-  //    whichever exists. Try the draft first, fall back to published.
+  // 3. Patch the post's coverImage.
+  //    Sanity stores draft documents under id "drafts.{id}" — patch the
+  //    draft if it exists, otherwise the published doc.
   const draftId = documentId.startsWith("drafts.")
     ? documentId
     : `drafts.${documentId}`;
@@ -176,13 +159,11 @@ export async function POST(req: Request) {
   };
 
   try {
-    // Optimistic patch on draft (creates if needed via createIfNotExists path)
     await writeClient
       .patch(draftId)
       .set({ coverImage })
       .commit({ autoGenerateArrayKeys: true })
       .catch(async () => {
-        // If draft doesn't exist, patch the published doc directly
         await writeClient
           .patch(publishedId)
           .set({ coverImage })
@@ -199,5 +180,5 @@ export async function POST(req: Request) {
     );
   }
 
-  return NextResponse.json({ ok: true, assetId });
+  return NextResponse.json({ ok: true, assetId, seed });
 }
