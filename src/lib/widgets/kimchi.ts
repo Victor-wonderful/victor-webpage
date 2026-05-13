@@ -1,6 +1,8 @@
 // Kimchi Premium fetcher — Upbit KRW price vs Binance USD price × USD/KRW rate.
 // All endpoints free, no auth.
 
+import { fetchUsdKrwRate } from "./fx";
+
 export type KimchiPoint = {
   symbol: string;
   upbitKrw: number;
@@ -17,22 +19,6 @@ const PAIRS: { symbol: string; upbit: string; binance: string }[] = [
   { symbol: "XRP", upbit: "KRW-XRP", binance: "XRPUSDT" },
 ];
 
-async function fetchUsdKrwRate(): Promise<number> {
-  // exchangerate.host is free, no key. Fallback to 1350 if unreachable.
-  try {
-    const res = await fetch(
-      "https://api.exchangerate.host/latest?base=USD&symbols=KRW",
-      { next: { revalidate: 600 } },
-    );
-    if (!res.ok) throw new Error("rate");
-    const json = (await res.json()) as { rates?: { KRW?: number } };
-    const krw = json.rates?.KRW;
-    if (typeof krw === "number" && krw > 100) return krw;
-    throw new Error("rate-shape");
-  } catch {
-    return 1350;
-  }
-}
 
 type UpbitTicker = { market: string; trade_price: number }[];
 type BinanceTicker = { symbol: string; price: string };

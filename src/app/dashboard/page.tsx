@@ -7,8 +7,6 @@ import {
 } from "@/components/home/market-snapshot";
 import { MoversBoard } from "@/components/home/movers-board";
 import { ChartHeroSection } from "@/components/dashboard/chart-hero-section";
-import { MiniChartsGrid } from "@/components/dashboard/mini-charts-grid";
-import { PriceStrip } from "@/components/dashboard/price-strip";
 import { KimchiCard } from "@/components/dashboard/kimchi-card";
 import { AltSeasonCard } from "@/components/dashboard/alt-season-card";
 import { StablecapCard } from "@/components/dashboard/stablecap-card";
@@ -54,28 +52,10 @@ export default function DashboardPage() {
         <PillNav />
       </section>
 
-      {/* ── 1. Live Chart + Victor's take ─────────────── */}
+      {/* ── 1. Snapshot: Technicals + Victor's take ──── */}
       <ChartHeroSection />
 
-      {/* ── 1b. Watchlist mini charts ─────────────────── */}
-      <MiniChartsGrid />
-
-      {/* ── 2. Price strip ────────────────────────────── */}
-      <Suspense
-        fallback={
-          <section className="container-page mt-8">
-            <div className="grid gap-4 sm:grid-cols-2 md:grid-cols-3">
-              <CardFallback label="BTC" />
-              <CardFallback label="ETH" />
-              <CardFallback label="SOL" />
-            </div>
-          </section>
-        }
-      >
-        <PriceStrip />
-      </Suspense>
-
-      {/* ── 3. Live Market: sentiment & structure ────── */}
+      {/* ── 2. Live Market: sentiment & structure ────── */}
       <section className="container-page mt-12" aria-label="시장 심리·구조">
         <header className="mb-6">
           <p className="text-eyebrow text-accent">Live Market</p>

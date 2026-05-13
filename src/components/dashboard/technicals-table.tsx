@@ -10,6 +10,13 @@ function fmtPrice(n: number) {
   return `$${n.toLocaleString("en-US", { maximumFractionDigits: 0 })}`;
 }
 
+function fmtKrw(n: number) {
+  if (!n) return "—";
+  if (n < 100) return `₩${n.toFixed(2)}`;
+  if (n < 10000) return `₩${Math.round(n).toLocaleString("ko-KR")}`;
+  return `₩${Math.round(n).toLocaleString("ko-KR")}`;
+}
+
 function fmtRsi(v: number | null) {
   return v == null ? "—" : v.toFixed(0);
 }
@@ -97,7 +104,10 @@ export async function TechnicalsTable() {
                 <td className="px-2 py-3 font-display text-base font-bold">
                   {r.symbol}
                 </td>
-                <td className="px-2 py-3 tabular-nums">{fmtPrice(r.close)}</td>
+                <td className="px-2 py-3 tabular-nums">
+                  <div>{fmtPrice(r.close)}</div>
+                  <div className="text-[11px] text-fg-muted">{fmtKrw(r.closeKrw)}</div>
+                </td>
                 <td className={`px-2 py-3 font-mono font-bold ${trendTone(r.trend)}`}>
                   {trendIcon(r.trend)}{" "}
                   {r.trend === "up" ? "상승" : r.trend === "down" ? "하락" : "횡보"}

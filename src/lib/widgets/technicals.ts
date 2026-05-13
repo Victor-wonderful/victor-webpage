@@ -2,7 +2,7 @@
 // All endpoints free, no auth.
 //
 // Per symbol we compute:
-//  - Latest close
+//  - Latest close (USD + KRW conversion)
 //  - 1D EMA21    → trend (price vs EMA21)
 //  - 1D RSI(14)  → momentum
 //  - 200DMA      → long-term bias
@@ -10,12 +10,15 @@
 //
 // Then a rule-based one-line read so the row scans in 2 seconds.
 
+import { fetchUsdKrwRate } from "./fx";
+
 export type Trend = "up" | "down" | "flat";
 
 export type TechnicalRow = {
   symbol: string;          // "BTC"
   pair: string;            // "BTCUSDT"
-  close: number;           // latest 1D close
+  close: number;           // latest 1D close (USD)
+  closeKrw: number;        // close * USD/KRW rate
   ema21: number | null;
   rsi14: number | null;
   ma200: number | null;
@@ -128,16 +131,17 @@ async function fetchFunding(pair: string): Promise<number | null> {
   }
 }
 
-async function buildRow(p: {
-  symbol: string;
-  pair: string;
-}): Promise<TechnicalRow> {
+async function buildRow(
+  p: { symbol: string; pair: string },
+  usdKrw: number,
+): Promise<TechnicalRow> {
   try {
     const [closes, fundingPct] = await Promise.all([
       fetchKlines(p.pair),
       fetchFunding(p.pair),
     ]);
     const close = closes[closes.length - 1] ?? 0;
+    const closeKrw = close * usdKrw;
     const ema21 = ema(closes, 21);
     const rsi14 = rsi(closes, 14);
     const ma200 = sma(closes, 200);
@@ -155,6 +159,7 @@ async function buildRow(p: {
       symbol: p.symbol,
       pair: p.pair,
       close,
+      closeKrw,
       ema21,
       rsi14,
       ma200,
@@ -169,6 +174,7 @@ async function buildRow(p: {
       symbol: p.symbol,
       pair: p.pair,
       close: 0,
+      closeKrw: 0,
       ema21: null,
       rsi14: null,
       ma200: null,
@@ -182,5 +188,6 @@ async function buildRow(p: {
 }
 
 export async function fetchTechnicalsSnapshot(): Promise<TechnicalRow[]> {
-  return Promise.all(PAIRS.map(buildRow));
+  const usdKrw = await fetchUsdKrwRate();
+  return Promise.all(PAIRS.map((p) => buildRow(p, usdKrw)));
 }
