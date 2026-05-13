@@ -9,9 +9,12 @@ import { AlphaResearchBanner } from "@/components/alpha-research-banner";
  */
 export async function AlphaResearchBannerMount() {
   const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  // Swallow noisy AuthApiError when the cookie carries an expired/invalid
+  // refresh token — the call resolves to a null user either way.
+  const user = await supabase.auth
+    .getUser()
+    .then((r) => r.data?.user ?? null)
+    .catch(() => null);
   if (!user) return null;
 
   let optedIn = false;

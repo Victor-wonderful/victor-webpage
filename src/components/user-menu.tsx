@@ -10,8 +10,13 @@ import { createClient } from "@/lib/supabase/server";
  */
 export async function UserMenu({ className = "" }: { className?: string }) {
   const supabase = await createClient();
-  const { data } = await supabase.auth.getUser();
-  const user = data?.user;
+  // Supabase logs a noisy AuthApiError to stderr when the cookie carries an
+  // expired/invalid refresh token, even though the call still resolves to
+  // { user: null }. Swallow it — the logged-out branch handles that case.
+  const user = await supabase.auth
+    .getUser()
+    .then((r) => r.data?.user ?? null)
+    .catch(() => null);
 
   if (!user) {
     return (
