@@ -53,6 +53,21 @@ export function TvAdvancedChart() {
       hide_side_toolbar: false,
       allow_symbol_change: true,
       details: true,
+      // Default trader-friendly overlays so the chart isn't a blank canvas:
+      // - EMA 21 / 200 on the price pane (trend)
+      // - RSI as a sub-pane (momentum)
+      // Users can still add/remove indicators inside the widget.
+      studies: [
+        "STD;EMA",
+        "STD;EMA",
+        "STD;RSI",
+      ],
+      studies_overrides: {
+        "moving average exponential.length": 21,
+        "moving average exponential.plot.color": "#f59e0b",
+        "moving average exponential 1.length": 200,
+        "moving average exponential 1.plot.color": "#8b5cf6",
+      },
       support_host: "https://www.tradingview.com",
     });
     el.appendChild(script);
