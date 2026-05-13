@@ -8,6 +8,7 @@ import {
 import { MoversBoard } from "@/components/home/movers-board";
 import { ChartHeroSection } from "@/components/dashboard/chart-hero-section";
 import { LongShortCard } from "@/components/dashboard/long-short-card";
+import { AutoRefreshBar } from "@/components/dashboard/auto-refresh-bar";
 import { KimchiCard } from "@/components/dashboard/kimchi-card";
 import { AltSeasonCard } from "@/components/dashboard/alt-season-card";
 import { StablecapCard } from "@/components/dashboard/stablecap-card";
@@ -35,6 +36,7 @@ function CardFallback({ label }: { label: string }) {
 }
 
 export default function DashboardPage() {
+  const renderedAt = Date.now();
   return (
     <>
       {/* ── Header ─────────────────────────────────────── */}
@@ -47,6 +49,9 @@ export default function DashboardPage() {
           매일 1분, 시장 상태·자금 흐름·다가오는 이벤트를 한 페이지에서. 영문 대시보드들이
           채우지 못하는 김치 프리미엄과 Victor의 시각을 같이 봅니다.
         </p>
+        <div className="mt-6">
+          <AutoRefreshBar renderedAt={renderedAt} />
+        </div>
       </section>
 
       <section className="container-page mt-10">
