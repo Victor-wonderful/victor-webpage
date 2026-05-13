@@ -66,7 +66,7 @@ export default function DashboardPage() {
             심리(F&amp;G) · 구조(BTC Dominance) · 알트 사이클(Alt Season) · 지역 프리미엄(김프) · 유동성(Stablecoin).
           </p>
         </header>
-        <div className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5">
+        <div className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
           <Suspense fallback={<CardFallback label="Fear & Greed" />}>
             <FearGreedCard />
           </Suspense>

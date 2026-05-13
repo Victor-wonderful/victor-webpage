@@ -167,7 +167,7 @@ export async function DominanceCard() {
           <div className="bg-emerald-500/70" style={{ width: `${dom.stables}%` }} title={`Stables ${dom.stables.toFixed(1)}%`} />
           <div className="bg-fg-muted/40" style={{ width: `${dom.others}%` }} title={`Others ${dom.others.toFixed(1)}%`} />
         </div>
-        <ul className="mt-3 grid grid-cols-2 gap-x-4 gap-y-1 text-meta tabular-nums">
+        <ul className="mt-3 grid grid-cols-1 gap-x-4 gap-y-1 text-meta tabular-nums xl:grid-cols-2">
           <li className="flex items-center gap-2">
             <span className="inline-block h-2 w-2 rounded-sm bg-accent" />
             <span className="text-fg-muted">BTC</span>
