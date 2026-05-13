@@ -19,16 +19,18 @@ export async function UserMenu({ className = "" }: { className?: string }) {
     .catch(() => null);
 
   if (!user) {
+    // Compact inline links. The big orange CTA used to be 회원가입,
+    // which competed visually with the 구독하기 CTA next to it. Keep
+    // both reachable but downgrade their weight so 구독하기 remains
+    // the only primary accent button in the header.
     return (
-      <div className={`flex items-center gap-3 ${className}`}>
-        <Link
-          href="/signup"
-          className="rounded-full bg-accent px-4 py-2 font-semibold text-white transition-colors hover:bg-accent-hover"
-        >
-          회원가입
-        </Link>
+      <div className={`flex items-center gap-3 text-meta ${className}`}>
         <Link href="/login" className="hover:text-accent">
           로그인
+        </Link>
+        <span aria-hidden className="text-fg-muted/40">·</span>
+        <Link href="/signup" className="hover:text-accent">
+          가입
         </Link>
       </div>
     );

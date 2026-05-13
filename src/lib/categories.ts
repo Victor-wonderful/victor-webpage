@@ -13,21 +13,41 @@ export type CategorySlug =
 
 export type Category = {
   slug: CategorySlug;
-  label: string;
+  label: string;          // full display label (page titles, breadcrumbs)
+  navLabel?: string;      // short label for tight nav bars; falls back to label
   description: string;
-  eyebrow: string; // English short label for editorial eyebrow
+  eyebrow: string;        // English short label for editorial eyebrow
 };
 
+/**
+ * Order matters — this is the canonical reading order, applied to:
+ *   - desktop header nav
+ *   - mobile drawer category list
+ *   - in-page pill-nav
+ *   - footer link list
+ *
+ * Reading-priority sort: most time-sensitive first (daily macro), then
+ * weekly market, then evergreen content (strategy / deep-dive / basics).
+ */
 export const CATEGORIES: Category[] = [
+  {
+    slug: "macro",
+    label: "오늘의 시장",
+    navLabel: "오늘 시장",
+    description: "오늘 BTC·ETH·주요 알트 가격 흐름 + 금리·CPI·정책 등 매크로 이벤트의 크립토 전가 해석.",
+    eyebrow: "Today's Market",
+  },
   {
     slug: "market",
     label: "주간마켓인사이트",
+    navLabel: "주간 마켓",
     description: "이번 주 주목해야 할 L1/L2 프로젝트, 비트코인 도미넌스 변화, 혹은 거시 경제 일정(FOMC 등)에 따른 시나리오.",
     eyebrow: "Market Insight",
   },
   {
     slug: "strategy",
     label: "트레이딩 전략",
+    navLabel: "전략",
     description: "추세추종·평균회귀·돌파 전략과 백테스트 결과.",
     eyebrow: "Strategy",
   },
@@ -40,14 +60,9 @@ export const CATEGORIES: Category[] = [
   {
     slug: "basics",
     label: "입문 가이드",
+    navLabel: "입문",
     description: "차트 보는 법, 지표 기초, 매매 원칙 — 처음 시작하는 분들을 위해.",
     eyebrow: "Basics",
-  },
-  {
-    slug: "macro",
-    label: "오늘의 시장",
-    description: "오늘 BTC·ETH·주요 알트 가격 흐름 + 금리·CPI·정책 등 매크로 이벤트의 크립토 전가 해석.",
-    eyebrow: "Today's Market",
   },
 ];
 

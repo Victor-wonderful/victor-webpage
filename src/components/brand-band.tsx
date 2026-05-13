@@ -9,16 +9,23 @@ import { cn } from "@/lib/cn";
 
 type Variant = "header" | "footer";
 
-const CATEGORY_LINKS = [
-  ...CATEGORIES.map((c) => ({
-    label: c.label,
-    href: `/category/${c.slug}`,
-  })),
+// Reading-priority content categories (short labels for tight nav).
+const CONTENT_LINKS = CATEGORIES.map((c) => ({
+  label: c.navLabel ?? c.label,
+  href: `/category/${c.slug}`,
+}));
+
+// Tools group — live dashboard + self-service tools. Visually separated
+// from content categories in the header.
+const TOOL_LINKS = [
   ...EXTRA_NAV_ITEMS,
+  { label: "도구", href: "/tools" },
 ];
 
+// Footer uses full labels (more room, no scan pressure).
 const FOOTER_LINKS = [
-  ...CATEGORY_LINKS,
+  ...CATEGORIES.map((c) => ({ label: c.label, href: `/category/${c.slug}` })),
+  ...EXTRA_NAV_ITEMS,
   { label: "도구", href: "/tools" },
   { label: "소개", href: "/about" },
   { label: "구독", href: "/subscribe" },
@@ -43,18 +50,25 @@ export function BrandBand({
       >
         <div className="container-page flex h-20 items-center justify-between gap-6">
           <WordMark size="sm" asLink className="text-bg dark:text-fg" />
-          <nav className="hidden items-center gap-5 text-meta lg:flex">
-            {CATEGORY_LINKS.map((l) => (
+          <nav className="hidden items-center gap-4 text-meta lg:flex">
+            {CONTENT_LINKS.map((l) => (
               <Link key={l.href} href={l.href} className="hover:text-accent">
                 {l.label}
               </Link>
             ))}
-            <Link
-              href="/tools"
-              className="font-semibold text-accent hover:text-accent-hover"
-            >
-              도구
-            </Link>
+            <span
+              aria-hidden="true"
+              className="mx-1 h-4 w-px bg-bg/25 dark:bg-fg/20"
+            />
+            {TOOL_LINKS.map((l) => (
+              <Link
+                key={l.href}
+                href={l.href}
+                className="font-semibold text-accent hover:text-accent-hover"
+              >
+                {l.label}
+              </Link>
+            ))}
           </nav>
           <div className="flex items-center gap-3 text-meta">
             <ThemeToggle />
