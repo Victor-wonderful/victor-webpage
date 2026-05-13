@@ -119,7 +119,7 @@ export function TvAdvancedChart() {
       <div
         ref={containerRef}
         className="tradingview-widget-container border border-border"
-        style={{ height: "560px", width: "100%" }}
+        style={{ height: "min(82vh, 760px)", minHeight: "600px", width: "100%" }}
       />
       <p className="mt-2 text-[11px] uppercase tracking-[0.18em] text-fg-muted">
         via TradingView · 인터벌 4H 기본 · 차트 내부에서 자유롭게 변경 가능
