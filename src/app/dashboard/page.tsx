@@ -6,7 +6,8 @@ import {
   DominanceCard,
 } from "@/components/home/market-snapshot";
 import { MoversBoard } from "@/components/home/movers-board";
-import { TvAdvancedChart } from "@/components/dashboard/tv-advanced-chart";
+import { ChartHeroSection } from "@/components/dashboard/chart-hero-section";
+import { MiniChartsGrid } from "@/components/dashboard/mini-charts-grid";
 import { PriceStrip } from "@/components/dashboard/price-strip";
 import { KimchiCard } from "@/components/dashboard/kimchi-card";
 import { AltSeasonCard } from "@/components/dashboard/alt-season-card";
@@ -53,8 +54,11 @@ export default function DashboardPage() {
         <PillNav />
       </section>
 
-      {/* ── 1. Live Chart ─────────────────────────────── */}
-      <TvAdvancedChart />
+      {/* ── 1. Live Chart + Victor's take ─────────────── */}
+      <ChartHeroSection />
+
+      {/* ── 1b. Watchlist mini charts ─────────────────── */}
+      <MiniChartsGrid />
 
       {/* ── 2. Price strip ────────────────────────────── */}
       <Suspense
