@@ -4,9 +4,13 @@
  * Triggered by a Sanity webhook configured in the project console with:
  *   URL:     https://<site>/api/telegram/publish
  *   Filter:  _type == "post" && !(_id in path("drafts.**"))
- *            && category->slug.current in ["macro","market","tokens","basics"]
+ *            && category->slug.current in ["macro","market","tokens","basics","strategy"]
  *   Project: { _id, "slug": slug.current }
  *   Secret:  matches SANITY_WEBHOOK_SECRET in this server's env
+ *
+ * Keep the Sanity Console filter category list in sync with
+ * TELEGRAM_BROADCAST_CATEGORIES in @/lib/telegram. If they drift, posts
+ * in the missing category silently never broadcast.
  *
  * Behavior:
  *   - Verifies HMAC signature (`@sanity/webhook` isValidSignature)
