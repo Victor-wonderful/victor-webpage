@@ -84,7 +84,7 @@ function ScaleStrip({ value }: { value: number }) {
   );
 }
 
-async function FearGreedCard() {
+export async function FearGreedCard() {
   const fng = await fetchFng();
   const angle = (fng.value / 100) * 180;
   const weekDelta = fng.value - fng.weekAgo;
@@ -145,7 +145,7 @@ function dominanceHint(btc: number) {
   return "알트 우위 — 알트 시즌 가능성 모니터링.";
 }
 
-async function DominanceCard() {
+export async function DominanceCard() {
   const dom = await fetchDominance();
   return (
     <article className="flex h-full flex-col gap-5 border border-border bg-surface-warm/40 p-6">
