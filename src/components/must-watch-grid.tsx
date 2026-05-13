@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { Post } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
-import { EditorialImage } from "./editorial-image";
+import { PostCoverImage } from "./post-cover-image";
 
 export function MustWatchGrid({
   posts,
@@ -30,7 +30,7 @@ export function MustWatchGrid({
               href={`/blog/${p.slug}`}
               className="group block overflow-hidden rounded-md border border-border bg-surface transition-colors hover:border-accent"
             >
-              <EditorialImage seed={p.slug} variant="card" alt={p.title} />
+              <PostCoverImage post={p} variant="card" alt={p.title} />
               <div className="p-5">
                 <p className="text-eyebrow text-fg-muted">{cardEyebrow}</p>
                 <h3 className="mt-2 font-serif-body text-lg font-bold leading-snug tracking-tight group-hover:text-accent">

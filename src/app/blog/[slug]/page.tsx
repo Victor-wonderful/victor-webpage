@@ -4,7 +4,8 @@ import type { Metadata } from "next";
 import { getAllSlugs, getPostBySlug } from "@/lib/posts";
 import { getCategory } from "@/lib/categories";
 import { formatDate } from "@/lib/format";
-import { EditorialImage } from "@/components/editorial-image";
+import { PostCoverImage } from "@/components/post-cover-image";
+import { imageUrl } from "@/sanity/image";
 import { TypedMetaBlock } from "@/components/typed-meta";
 import { MarkdownContent } from "@/components/markdown-content";
 import { PostAttachments } from "@/components/post-attachments";
@@ -28,10 +29,22 @@ export async function generateMetadata(
   const slug = decodeURIComponent(rawSlug);
   const post = await getPostBySlug(slug);
   if (!post) return { title: "글을 찾을 수 없습니다" };
+  const ogImage = imageUrl(post.coverImage, 1200);
   return {
     title: post.title,
     description: post.summary,
-    openGraph: { title: post.title, description: post.summary, type: "article" },
+    openGraph: {
+      title: post.title,
+      description: post.summary,
+      type: "article",
+      images: ogImage ? [ogImage] : undefined,
+    },
+    twitter: {
+      card: ogImage ? "summary_large_image" : "summary",
+      title: post.title,
+      description: post.summary,
+      images: ogImage ? [ogImage] : undefined,
+    },
   };
 }
 
@@ -82,7 +95,7 @@ export default async function PostPage(
 
       {/* Full-bleed cover */}
       <div className="mt-10 w-full">
-        <EditorialImage seed={post.slug} variant="hero" priority alt={post.title} />
+        <PostCoverImage post={post} variant="hero" priority alt={post.title} />
       </div>
 
       {/* Body */}

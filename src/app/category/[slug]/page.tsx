@@ -5,7 +5,7 @@ import { CATEGORIES, getCategory, isCategorySlug } from "@/lib/categories";
 import { getPostsByCategoryPage, POSTS_PER_PAGE } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 import { PillNav } from "@/components/pill-nav";
-import { EditorialImage } from "@/components/editorial-image";
+import { PostCoverImage } from "@/components/post-cover-image";
 import { Pagination } from "@/components/pagination";
 
 export const revalidate = 60;
@@ -112,7 +112,7 @@ export default async function CategoryPage({
                     href={`/blog/${p.slug}`}
                     className="group block overflow-hidden rounded-md border border-border bg-surface transition-colors hover:border-accent"
                   >
-                    <EditorialImage seed={p.slug} variant="wide" alt={p.title} />
+                    <PostCoverImage post={p} variant="wide" alt={p.title} />
                     <div className="p-6">
                       <p className="text-eyebrow text-fg-muted">
                         {category.label}

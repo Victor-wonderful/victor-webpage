@@ -1,13 +1,13 @@
 import Link from "next/link";
 import type { Post } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
-import { EditorialImage } from "./editorial-image";
+import { PostCoverImage } from "./post-cover-image";
 
 export function FeaturedHero({ post }: { post: Post }) {
   return (
     <section className="container-page mt-10">
       <div className="relative overflow-hidden rounded-md border border-border bg-ink text-bg dark:text-fg">
-        <EditorialImage seed={post.slug} variant="hero" priority alt={post.title} />
+        <PostCoverImage post={post} variant="hero" priority alt={post.title} />
         {/* Floating overlay card */}
         <div className="absolute bottom-6 left-6 right-6 max-w-md rounded-md bg-surface p-6 text-fg shadow-sm md:left-auto md:right-8 md:bottom-8">
           <p className="text-eyebrow text-accent">이번 주 핵심 차트</p>
