@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { TechnicalsTable } from "./technicals-table";
 import { VictorTakeCard } from "./victor-take-card";
+import { SectionExplainer } from "./section-explainer";
 
 /**
  * Top-of-dashboard hero. Pairs the day's editorial (Victor's take) with a
@@ -25,6 +26,67 @@ export function ChartHeroSection() {
           </p>
         </div>
       </header>
+
+      <SectionExplainer
+        topics={[
+          {
+            title: "추세 1D (가격 vs EMA21)",
+            body: (
+              <>
+                ▲ 상승 = 가격이 21일 EMA 위, 단기 추세 살아있음 → 추격 가능. <br />
+                ▼ 하락 = EMA 아래, 추세 약화 → 추격 자제, 반등 후 진입 검토. <br />
+                → 횡보 = 박스권, 돌파 방향 기다리기.
+              </>
+            ),
+          },
+          {
+            title: "RSI 14",
+            body: (
+              <>
+                <strong>70+</strong> 과매수 — 추격보다 분할 익절. <br />
+                <strong>30-</strong> 과매도 — 단기 바운스 후보, 단 추세 반전 확인 필요. <br />
+                <strong>45-65</strong> 건강한 추세 영역.
+              </>
+            ),
+          },
+          {
+            title: "200DMA 위치",
+            body: (
+              <>
+                현재가가 200일 평균선 위 = 장기 강세장 유지. <br />
+                아래 = 장기 약세 의심, 큰 포지션 자제. <br />
+                기관·장기 투자자가 가장 많이 보는 1차 기준선.
+              </>
+            ),
+          },
+          {
+            title: "펀딩비 (Perp)",
+            body: (
+              <>
+                양수 = 롱이 비용 지불 (롱 우세). <br />
+                <strong>+0.05%/8h 이상</strong> 지속 = 롱 과열 신호. <br />
+                음수 = 숏이 비용 지불 (숏 우세, 바운스 가능).
+              </>
+            ),
+          },
+          {
+            title: "한 줄 요약",
+            body: (
+              <>
+                각 코인 행 아래 자동 생성되는 룰베이스 코멘트. 4가지 신호(추세·RSI·200DMA·펀딩비)를 조합한 가벼운 가이드 — 결정의 전부가 아니라 시작점.
+              </>
+            ),
+          },
+          {
+            title: "Victor의 시각 (옆 카드)",
+            body: (
+              <>
+                매일 발행되는 macro(오늘의 시장) 글의 핵심 요약. 수치만으로 못 잡는 그날의 컨텍스트(이벤트·시나리오·핵심 레벨)를 제공. 표 + 시각 같이 봐야 완성.
+              </>
+            ),
+          },
+        ]}
+      />
 
       <div className="grid items-stretch gap-4 lg:grid-cols-[1.5fr_1fr]">
         <Suspense
