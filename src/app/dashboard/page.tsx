@@ -7,6 +7,7 @@ import {
 } from "@/components/home/market-snapshot";
 import { MoversBoard } from "@/components/home/movers-board";
 import { ChartHeroSection } from "@/components/dashboard/chart-hero-section";
+import { LongShortCard } from "@/components/dashboard/long-short-card";
 import { KimchiCard } from "@/components/dashboard/kimchi-card";
 import { AltSeasonCard } from "@/components/dashboard/alt-season-card";
 import { StablecapCard } from "@/components/dashboard/stablecap-card";
@@ -63,7 +64,7 @@ export default function DashboardPage() {
             지금 시장은 어디 있나
           </h2>
           <p className="mt-2 max-w-xl text-meta text-fg-muted">
-            심리(F&amp;G) · 구조(BTC Dominance) · 알트 사이클(Alt Season) · 지역 프리미엄(김프) · 유동성(Stablecoin).
+            심리(F&amp;G) · 구조(BTC Dominance) · 알트 사이클(Alt Season) · 지역 프리미엄(김프) · 유동성(Stablecoin) · 포지셔닝(Long/Short).
           </p>
         </header>
         <div className="grid items-stretch gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -81,6 +82,9 @@ export default function DashboardPage() {
           </Suspense>
           <Suspense fallback={<CardFallback label="Stablecoin Mcap" />}>
             <StablecapCard />
+          </Suspense>
+          <Suspense fallback={<CardFallback label="Long/Short · BTC" />}>
+            <LongShortCard />
           </Suspense>
         </div>
       </section>
