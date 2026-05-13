@@ -42,9 +42,47 @@ export async function EtfFlowCard() {
       <p className="text-eyebrow text-accent">BTC Spot ETF · 순유입</p>
 
       {r.series.length === 0 ? (
-        <p className="mt-2 text-meta text-fg-muted">
-          데이터를 가져오지 못했습니다. SoSoValue 엔드포인트 점검 필요.
-        </p>
+        <div className="flex flex-1 flex-col gap-3">
+          <p className="font-display text-2xl font-bold leading-snug">
+            데이터 일시 미연결
+          </p>
+          <p className="text-meta text-fg-muted">
+            BTC 현물 ETF 순유입 데이터는 무료 공개 API가 부족합니다. 아래
+            외부 대시보드에서 일일·누적 자금흐름을 직접 확인하세요.
+          </p>
+          <ul className="mt-1 space-y-2 text-meta">
+            <li>
+              <a
+                href="https://farside.co.uk/btc/"
+                target="_blank"
+                rel="noreferrer"
+                className="text-accent hover:underline"
+              >
+                Farside Investors — Daily Flows ↗
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://sosovalue.com/assets/etf/us-btc-spot"
+                target="_blank"
+                rel="noreferrer"
+                className="text-accent hover:underline"
+              >
+                SoSoValue — US BTC Spot ETF ↗
+              </a>
+            </li>
+            <li>
+              <a
+                href="https://www.coinglass.com/bitcoin-etf-flow-all"
+                target="_blank"
+                rel="noreferrer"
+                className="text-accent hover:underline"
+              >
+                Coinglass — ETF Flow ↗
+              </a>
+            </li>
+          </ul>
+        </div>
       ) : (
         <>
           <div>
