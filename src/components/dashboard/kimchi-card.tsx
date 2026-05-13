@@ -35,7 +35,7 @@ export async function KimchiCard() {
     <article className="flex h-full flex-col gap-4 border border-border bg-surface-warm/40 p-6">
       <p className="text-eyebrow text-accent">김치 프리미엄</p>
 
-      <div className="flex items-end justify-between">
+      <div className="flex flex-col gap-1">
         <p
           className={`font-display text-4xl font-extrabold leading-none tabular-nums ${tone(
             btc.premiumPct,
@@ -43,7 +43,7 @@ export async function KimchiCard() {
         >
           {fmtPct(btc.premiumPct)}
         </p>
-        <p className="text-meta text-fg-muted tabular-nums">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted tabular-nums">
           USD/KRW {btc.usdKrwRate.toFixed(0)}
         </p>
       </div>
