@@ -14,7 +14,6 @@ import { AltSeasonCard } from "@/components/dashboard/alt-season-card";
 import { StablecapCard } from "@/components/dashboard/stablecap-card";
 import { FundingRateTable } from "@/components/dashboard/funding-rate-table";
 import { DefiTvlCard } from "@/components/dashboard/defi-tvl-card";
-import { LiquidationHeatmap } from "@/components/dashboard/liquidation-heatmap";
 import { ThisWeekPanel } from "@/components/dashboard/this-week-panel";
 import { SessionsClock } from "@/components/dashboard/sessions-clock";
 
@@ -138,13 +137,10 @@ export default function DashboardPage() {
         <FundingRateTable />
       </Suspense>
 
-      {/* ── 6. Liquidation Heatmap ─────────────────────── */}
-      <LiquidationHeatmap />
-
-      {/* ── 7. This Week macro ─────────────────────────── */}
+      {/* ── 6. This Week macro ─────────────────────────── */}
       <ThisWeekPanel />
 
-      {/* ── 8. Sessions Clock ──────────────────────────── */}
+      {/* ── 7. Sessions Clock ──────────────────────────── */}
       <SessionsClock />
 
       {/* ── Footer note ────────────────────────────────── */}
