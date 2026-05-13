@@ -61,7 +61,7 @@ export type NavItem = {
 };
 
 export const EXTRA_NAV_ITEMS: NavItem[] = [
-  { label: "트레이딩 대시보드", href: "/dashboard" },
+  { label: "대시보드", href: "/dashboard" },
 ];
 
 export function getCategory(slug: string): Category | undefined {
