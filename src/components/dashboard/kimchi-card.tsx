@@ -44,7 +44,7 @@ export async function KimchiCard() {
           {fmtPct(btc.premiumPct)}
         </p>
         <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted tabular-nums">
-          USD/KRW {btc.usdKrwRate.toFixed(0)}
+          USDT/KRW {btc.usdKrwRate.toFixed(0)}
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export async function KimchiCard() {
         {hint(btc.premiumPct)}
       </p>
       <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">
-        via Upbit · Binance · exchangerate.host
+        via Upbit · Binance · USDT/KRW market rate
       </p>
     </article>
   );
