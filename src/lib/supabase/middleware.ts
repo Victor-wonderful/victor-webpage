@@ -29,7 +29,17 @@ export async function updateSession(request: NextRequest) {
   });
 
   // Touch the user — this is what actually refreshes the token cookie.
-  await supabase.auth.getUser();
+  // If the cookie holds a stale/invalid refresh token, Supabase logs a noisy
+  // AuthApiError. Catch it and clear the bad auth cookies so subsequent
+  // requests don't keep tripping the same error.
+  const { error } = await supabase.auth.getUser().catch((err) => ({ error: err }));
+  if (error?.code === "refresh_token_not_found") {
+    for (const c of request.cookies.getAll()) {
+      if (c.name.startsWith("sb-")) {
+        supabaseResponse.cookies.delete(c.name);
+      }
+    }
+  }
 
   return supabaseResponse;
 }
