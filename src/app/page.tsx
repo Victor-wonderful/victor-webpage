@@ -17,7 +17,6 @@ import { ToolsRail } from "@/components/home/tools-rail";
 import { BasicsTrackRail } from "@/components/home/basics-track-rail";
 import { DailySignalCard } from "@/components/home/daily-signal-card";
 import { SubscribeChannels } from "@/components/home/subscribe-channels";
-import { PinescriptGrid } from "@/components/home/pinescript-grid";
 
 export const revalidate = 60;
 
@@ -28,19 +27,15 @@ export default async function Home() {
   // Latest macro daily for Promise 01
   const latestMacro = posts.find((p) => p.category === "macro");
 
-  // Promise 03: real strategy + pinescript content
-  const [strategyPosts, pinescriptPosts] = await Promise.all([
-    getPostsByCategory("strategy"),
-    getPostsByCategory("pinescript"),
-  ]);
+  // Promise 03: real strategy content
+  const strategyPosts = await getPostsByCategory("strategy");
   const spotlight = strategyPosts.slice(0, 3).map((p) => ({
     post: p,
     winRate: typeof p.meta?.winRate === "number" ? p.meta.winRate : 0,
     mdd: typeof p.meta?.mdd === "number" ? p.meta.mdd : 0,
     author: "Victor",
   }));
-  const pineGrid = pinescriptPosts.slice(0, 3);
-  const hasPromise03Content = spotlight.length > 0 || pineGrid.length > 0;
+  const hasPromise03Content = spotlight.length > 0;
 
   // Exclude the hero (already featured at top); show the rest.
   // Cap at 20 — beyond that, /blog has full pagination.
@@ -87,17 +82,16 @@ export default async function Home() {
       <TokenPicks />
 
       {/* ═════════════════════════════════════════════════
-          Promise 03 · 전략 노트 + Pine Script 코드
+          Promise 03 · 전략 노트
           ═══════════════════════════════════════════════ */}
       {hasPromise03Content && (
         <>
           <PromiseSection
             number="03"
-            title="전략 노트 + Pine Script 코드"
-            description="실제 운용한 셋업의 사고법·룰·실수를 글로, 그 전략을 차트에 바로 붙이는 코드로."
+            title="전략 노트"
+            description="실제 운용한 셋업의 사고법·룰·실수를 글로 — 백테스트 수치를 공개해."
           />
           <SpotlightSection items={spotlight} />
-          <PinescriptGrid posts={pineGrid} />
         </>
       )}
 

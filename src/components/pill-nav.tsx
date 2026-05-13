@@ -2,15 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, EXTRA_NAV_ITEMS } from "@/lib/categories";
 import { cn } from "@/lib/cn";
 
 export function PillNav({ className }: { className?: string }) {
   const pathname = usePathname();
-  const items = CATEGORIES.map((c) => ({
-    label: c.label,
-    href: `/category/${c.slug}`,
-  }));
+  const items = [
+    ...CATEGORIES.map((c) => ({
+      label: c.label,
+      href: `/category/${c.slug}`,
+    })),
+    ...EXTRA_NAV_ITEMS,
+  ];
   return (
     <nav
       aria-label="카테고리"

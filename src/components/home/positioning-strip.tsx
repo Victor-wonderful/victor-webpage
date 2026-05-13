@@ -67,7 +67,7 @@ export function PositioningStrip() {
               검증된 셋업 라이브러리
             </p>
             <p className="mt-1 break-keep font-serif-body text-[12px] leading-[1.5] text-fg-muted">
-              트레이딩 전략 + Pine Script — 백테스트 수치 공개.
+              실전 운용 셋업과 백테스트 수치를 공개.
             </p>
           </li>
           <li className="rounded border border-border bg-surface p-4">

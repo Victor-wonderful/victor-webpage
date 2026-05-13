@@ -10,7 +10,7 @@ export const revalidate = 60;
 
 export const metadata: Metadata = {
   title: "전체 글",
-  description: "Pine Script · 시장분석 · 전략 · 차트노트.",
+  description: "시장분석 · 전략 · 토큰 심층분석 · 차트노트.",
 };
 
 type Search = { page?: string };

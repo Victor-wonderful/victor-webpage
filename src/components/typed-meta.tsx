@@ -8,7 +8,6 @@ import type { Post } from "@/lib/posts";
  * Variants per spec ch.4:
  * - market    : symbol · timeframe · sentiment · analysisType
  * - strategy  : strategyType · difficulty · winRate · MDD
- * - pinescript: scriptType · pineVersion · TV link · relatedStrategy
  * - basics    : level · estimated reading · prerequisites
  * - macro     : event · region · scheduledAt · marketImpact
  * - chart-note: symbol · timeframe (compact)
@@ -124,19 +123,6 @@ export function TypedMetaBlock({ post }: { post: Post }) {
             { label: "난이도", value: meta.difficulty ?? "중급" },
             { label: "승률", value: <span className="tabular-nums">{(meta.winRate as number) ?? 64}%</span> },
             { label: "MDD", value: <span className="tabular-nums">{(meta.mdd as number) ?? 18}%</span> },
-          ]}
-        />
-      );
-    case "pinescript":
-      return (
-        <MetaShell
-          icon={Icons.code}
-          title="Pine Script"
-          fields={[
-            { label: "스크립트", value: meta.scriptType ?? "strategy" },
-            { label: "Pine 버전", value: meta.pineVersion ?? "v5" },
-            { label: "TV 링크", value: meta.tvLink ? <a href={String(meta.tvLink)} className="text-accent hover:underline" target="_blank" rel="noreferrer">열기 ↗</a> : "—" },
-            { label: "연관 전략", value: meta.relatedStrategy ?? "—" },
           ]}
         />
       );

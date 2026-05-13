@@ -15,6 +15,16 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "cdn.sanity.io" },
     ],
   },
+  async redirects() {
+    return [
+      // Pine Script 카테고리는 폐지 → 트레이딩 대시보드로 안내
+      {
+        source: "/category/pinescript",
+        destination: "/dashboard",
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default nextConfig;

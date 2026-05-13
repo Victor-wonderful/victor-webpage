@@ -101,7 +101,7 @@ export default function AboutPage() {
               <strong className="ml-2 font-display text-xl">검증된 셋업 라이브러리</strong>
             </p>
             <p className="mt-2 text-fg-muted">
-              추세추종·평균회귀·돌파 셋업과 Pine Script 코드. 모든 셋업에 백테스트 수치(승률·MDD)
+              추세추종·평균회귀·돌파 셋업의 사고법·룰·실패 케이스 공개. 모든 셋업에 백테스트 수치(승률·MDD)
               공개. &ldquo;어디서 들었는데&rdquo;가 아닌 데이터로 검증된 것만.
             </p>
           </li>

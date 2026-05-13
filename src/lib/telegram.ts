@@ -23,7 +23,6 @@ const CATEGORY_BANNER_PHOTO_IDS: Record<CategorySlug, string> = {
   tokens: "1559526324-4b87b5e36e44",         // golden bitcoin coin
   basics: "1518186285589-2f7649de83e0",      // laptop with chart, low light
   strategy: "1640340434855-6084b1f4901c",    // dark trading desk
-  pinescript: "1551288049-bebda4e38f71",     // candle chart on screen
 };
 
 function categoryBannerUrl(category: CategorySlug, w = 1280, h = 720): string {
@@ -59,7 +58,6 @@ export const TELEGRAM_BROADCAST_CATEGORIES = [
   "tokens",
   "basics",
   "strategy",
-  "pinescript",
 ] as const;
 
 /**
@@ -74,8 +72,7 @@ type CategorySlugLocal =
   | "market"
   | "tokens"
   | "basics"
-  | "strategy"
-  | "pinescript";
+  | "strategy";
 
 const CATEGORY_TG_PRESENTATION: Record<
   CategorySlugLocal,
@@ -142,17 +139,6 @@ const CATEGORY_TG_PRESENTATION: Record<
       if (m?.strategyType) parts.push(String(m.strategyType));
       if (m?.winRate !== undefined && m?.winRate !== "") parts.push(`승률 ${m.winRate}`);
       if (m?.mdd !== undefined && m?.mdd !== "") parts.push(`MDD ${m.mdd}`);
-      return parts.join(" · ");
-    },
-  },
-  pinescript: {
-    icon: "💻",
-    label: "Pine 코드",
-    cta: "💻 코드 받기",
-    metaLine: (m) => {
-      const parts: string[] = [];
-      if (m?.scriptType) parts.push(String(m.scriptType));
-      if (m?.pineVersion) parts.push(String(m.pineVersion));
       return parts.join(" · ");
     },
   },
@@ -254,13 +240,6 @@ export function buildReplyMarkup(post: Post, siteUrl: string) {
   if (!isPublicUrl(url)) return undefined;
   const pres = presentationFor(post.category);
   const buttons: { text: string; url: string }[][] = [[{ text: pres.cta, url }]];
-  // pinescript: add a TradingView link button if present in meta
-  if (post.category === "pinescript") {
-    const tvLink = post.meta?.tvLink;
-    if (typeof tvLink === "string" && tvLink.startsWith("http")) {
-      buttons.push([{ text: "📈 TradingView에서 열기", url: tvLink }]);
-    }
-  }
   return { inline_keyboard: buttons };
 }
 

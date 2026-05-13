@@ -102,7 +102,7 @@ export function BrandBand({
 
         {/* Tagline + copyright on one line at md+ */}
         <div className="flex flex-col gap-1 text-meta text-bg/60 dark:text-fg/60 md:flex-row md:items-center md:justify-between">
-          <p>Pine Script로 시작하는 트레이딩 전략과 시장 인사이트</p>
+          <p>라이브 대시보드와 함께 읽는 트레이딩 전략·시장 인사이트</p>
           <p>© 2026 Victor Alpha</p>
         </div>
       </div>
