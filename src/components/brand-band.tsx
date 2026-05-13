@@ -4,15 +4,18 @@ import { SocialDots } from "./social-dots";
 import { MobileMenu } from "./mobile-menu";
 import { ThemeToggle } from "./theme-toggle";
 import { UserMenu } from "./user-menu";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, EXTRA_NAV_ITEMS } from "@/lib/categories";
 import { cn } from "@/lib/cn";
 
 type Variant = "header" | "footer";
 
-const CATEGORY_LINKS = CATEGORIES.map((c) => ({
-  label: c.label,
-  href: `/category/${c.slug}`,
-}));
+const CATEGORY_LINKS = [
+  ...CATEGORIES.map((c) => ({
+    label: c.label,
+    href: `/category/${c.slug}`,
+  })),
+  ...EXTRA_NAV_ITEMS,
+];
 
 const FOOTER_LINKS = [
   ...CATEGORY_LINKS,

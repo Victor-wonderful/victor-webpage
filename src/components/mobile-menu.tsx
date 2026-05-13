@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { CATEGORIES } from "@/lib/categories";
+import { CATEGORIES, EXTRA_NAV_ITEMS } from "@/lib/categories";
 import { cn } from "@/lib/cn";
 
 export function MobileMenu() {
@@ -108,6 +108,16 @@ export function MobileMenu() {
                     className="block py-3 font-serif-body text-2xl font-bold tracking-tight hover:text-accent"
                   >
                     {c.label}
+                  </Link>
+                </li>
+              ))}
+              {EXTRA_NAV_ITEMS.map((item) => (
+                <li key={item.href}>
+                  <Link
+                    href={item.href}
+                    className="block py-3 font-serif-body text-2xl font-bold tracking-tight hover:text-accent"
+                  >
+                    {item.label}
                   </Link>
                 </li>
               ))}
