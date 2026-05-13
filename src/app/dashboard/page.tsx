@@ -12,7 +12,7 @@ import { KimchiCard } from "@/components/dashboard/kimchi-card";
 import { AltSeasonCard } from "@/components/dashboard/alt-season-card";
 import { StablecapCard } from "@/components/dashboard/stablecap-card";
 import { FundingRateTable } from "@/components/dashboard/funding-rate-table";
-import { EtfFlowCard } from "@/components/dashboard/etf-flow-card";
+import { DefiTvlCard } from "@/components/dashboard/defi-tvl-card";
 import { LiquidationHeatmap } from "@/components/dashboard/liquidation-heatmap";
 import { ThisWeekPanel } from "@/components/dashboard/this-week-panel";
 import { SessionsClock } from "@/components/dashboard/sessions-clock";
@@ -89,34 +89,39 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* ── 4. Flow: Movers + ETF ─────────────────────── */}
+      {/* ── 4. Flow: Movers + On-chain ────────────────── */}
       <Suspense fallback={null}>
         <MoversBoard />
       </Suspense>
 
-      <section className="container-page mt-12" aria-label="ETF 자금 흐름">
+      <section className="container-page mt-12" aria-label="온체인 · DeFi">
+        <header className="mb-6">
+          <p className="text-eyebrow text-accent">On-chain</p>
+          <h2 className="mt-2 font-display text-[28px] font-extrabold leading-[1.1] tracking-tight md:text-[36px]">
+            온체인 자금 흐름
+          </h2>
+          <p className="mt-2 max-w-xl text-meta text-fg-muted">
+            DeFi에 잠긴 자금이 늘면 risk-on, 빠지면 risk-off — 가격보다 먼저 움직이는 선행 지표.
+          </p>
+        </header>
         <div className="grid gap-4 md:grid-cols-2">
-          <Suspense fallback={<CardFallback label="BTC ETF" />}>
-            <EtfFlowCard />
+          <Suspense fallback={<CardFallback label="DeFi TVL" />}>
+            <DefiTvlCard />
           </Suspense>
           <article className="flex h-full flex-col gap-3 border border-border bg-surface-warm/40 p-6">
-            <p className="text-eyebrow text-accent">자금 흐름 읽는 법</p>
+            <p className="text-eyebrow text-accent">읽는 법</p>
             <ul className="space-y-2 text-meta leading-[1.7] text-fg-muted">
               <li>
-                <strong className="text-fg">ETF 순유입 ↑</strong> + 도미넌스 ↑ ={" "}
-                기관 자금이 BTC로 — 알트 약세 가능.
+                <strong className="text-fg">TVL 7d ↑ + Stablecoin 시총 ↑</strong> = DeFi 자금 유입 + 탄약 누적 → 강한 risk-on.
               </li>
               <li>
-                <strong className="text-fg">ETF 순유입 ↑</strong> + 도미넌스 ↓ ={" "}
-                BTC와 알트 동반 상승, 시장 전반에 유입.
+                <strong className="text-fg">TVL 7d ↓ + 도미넌스 ↑</strong> = 알트에서 BTC로 회귀 — 알트 약세 후보.
               </li>
               <li>
-                <strong className="text-fg">ETF 순유출 + 김프 ↑</strong> ={" "}
-                글로벌 매도/한국 FOMO 괴리 — 차익거래 매물 압력.
+                <strong className="text-fg">TVL 급락 + Funding 음수</strong> = 디레버리징 진행 — 단기 바닥 후보지만 칼날 잡지 말 것.
               </li>
               <li>
-                <strong className="text-fg">스테이블 시총 확장</strong> ={" "}
-                위험자산으로 갈 탄약 누적. 단기 매수 우호.
+                <strong className="text-fg">특정 체인 TVL 비중 급증</strong> = 그 체인 토큰 알트시즌 신호 (예: Solana 비중 ↑ → SOL 생태계).
               </li>
             </ul>
           </article>
@@ -140,7 +145,7 @@ export default function DashboardPage() {
       {/* ── Footer note ────────────────────────────────── */}
       <section className="container-page mt-16">
         <p className="text-meta text-fg-muted">
-          데이터 새로고침 주기: 시세 60초 · 펀딩비 5분 · 도미넌스/Alt Season/Stablecoin 10분 · F&amp;G/ETF 1시간.
+          데이터 새로고침 주기: Technicals 10분 · 펀딩비 5분 · 도미넌스/Alt Season/Stablecoin 10분 · F&amp;G/TVL 1시간.
           모든 수치는 참고용이며, 매매 결정은 본인 책임입니다.
         </p>
       </section>
