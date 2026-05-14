@@ -47,8 +47,8 @@ export async function UserMenu({ className = "" }: { className?: string }) {
   const initial = displayName.charAt(0).toUpperCase();
 
   return (
-    <div className={`flex items-center gap-3 ${className}`}>
-      <span className="hidden items-center gap-2 lg:flex" title={user.email ?? ""}>
+    <div className={`flex items-center gap-4 ${className}`}>
+      <span className="flex items-center gap-2" title={user.email ?? ""}>
         {avatar ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
@@ -63,6 +63,9 @@ export async function UserMenu({ className = "" }: { className?: string }) {
           </span>
         )}
         <span className="whitespace-nowrap text-meta">{displayName}</span>
+      </span>
+      <span aria-hidden className="text-fg-muted/40">
+        ·
       </span>
       <form action="/auth/sign-out" method="post">
         <button
