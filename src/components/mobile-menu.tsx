@@ -33,7 +33,7 @@ export function MobileMenu() {
         aria-label="메뉴 열기"
         aria-expanded={open}
         onClick={() => setOpen(true)}
-        className="inline-flex h-9 w-9 items-center justify-center rounded-full text-bg hover:text-accent dark:text-fg lg:hidden"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-full text-bg hover:text-accent dark:text-fg xl:hidden"
       >
         <svg
           viewBox="0 0 24 24"
@@ -52,7 +52,7 @@ export function MobileMenu() {
       {/* Drawer */}
       <div
         className={cn(
-          "fixed inset-0 z-50 lg:hidden",
+          "fixed inset-0 z-50 xl:hidden",
           open ? "pointer-events-auto" : "pointer-events-none",
         )}
         aria-hidden={!open}

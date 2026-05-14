@@ -50,9 +50,13 @@ export function BrandBand({
       >
         <div className="container-page flex h-20 items-center justify-between gap-6">
           <WordMark size="sm" asLink className="text-bg dark:text-fg" />
-          <nav className="hidden items-center gap-4 text-meta lg:flex">
+          <nav className="hidden items-center gap-4 text-meta xl:flex">
             {CONTENT_LINKS.map((l) => (
-              <Link key={l.href} href={l.href} className="hover:text-accent">
+              <Link
+                key={l.href}
+                href={l.href}
+                className="whitespace-nowrap hover:text-accent"
+              >
                 {l.label}
               </Link>
             ))}
@@ -64,7 +68,7 @@ export function BrandBand({
               <Link
                 key={l.href}
                 href={l.href}
-                className="font-semibold text-accent hover:text-accent-hover"
+                className="whitespace-nowrap font-semibold text-accent hover:text-accent-hover"
               >
                 {l.label}
               </Link>
@@ -78,7 +82,7 @@ export function BrandBand({
             >
               구독하기
             </Link>
-            <UserMenu className="hidden lg:flex" />
+            <UserMenu className="hidden xl:flex" />
             <MobileMenu />
           </div>
         </div>
