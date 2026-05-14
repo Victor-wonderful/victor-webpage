@@ -62,12 +62,12 @@ export async function UserMenu({ className = "" }: { className?: string }) {
             {initial}
           </span>
         )}
-        <span className="text-meta">{displayName}</span>
+        <span className="whitespace-nowrap text-meta">{displayName}</span>
       </span>
       <form action="/auth/sign-out" method="post">
         <button
           type="submit"
-          className="text-meta hover:text-accent"
+          className="whitespace-nowrap text-meta hover:text-accent"
           aria-label="로그아웃"
         >
           로그아웃

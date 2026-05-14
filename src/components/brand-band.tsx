@@ -78,7 +78,7 @@ export function BrandBand({
             <ThemeToggle />
             <Link
               href="/subscribe"
-              className="hidden rounded-full bg-accent px-4 py-2 font-semibold text-white transition-colors hover:bg-accent-hover sm:inline-block"
+              className="hidden whitespace-nowrap rounded-full bg-accent px-4 py-2 font-semibold text-white transition-colors hover:bg-accent-hover sm:inline-block"
             >
               구독하기
             </Link>
