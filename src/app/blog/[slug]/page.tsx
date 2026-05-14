@@ -12,6 +12,7 @@ import { PostAttachments } from "@/components/post-attachments";
 import { CommentsSection } from "@/components/comments/comments-section";
 import { PostLike } from "@/components/likes/post-like";
 import { PostBookmark } from "@/components/bookmarks/post-bookmark";
+import { PostMetaBar } from "@/components/post/post-meta-bar";
 
 export const revalidate = 60;
 
@@ -81,6 +82,7 @@ export default async function PostPage(
         <p className="mt-5 font-serif-body text-xl italic text-fg-muted">
           {post.summary}
         </p>
+        <PostMetaBar post={post} />
         <div className="mt-6 flex flex-wrap items-center gap-3 text-meta text-fg-muted">
           <span className="flex h-7 w-7 items-center justify-center rounded-full bg-ink text-xs text-bg">
             V

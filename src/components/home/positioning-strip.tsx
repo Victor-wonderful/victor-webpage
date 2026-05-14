@@ -95,17 +95,24 @@ export function PositioningStrip() {
 
         <div className="mt-6 flex flex-wrap gap-3">
           <Link
-            href="/about"
+            href="/start"
             className="text-meta font-medium text-accent hover:text-accent-hover"
           >
-            이 사이트가 약속하는 것 →
+            처음이신가요? 30초 안내 →
           </Link>
           <span className="text-meta text-fg-muted">·</span>
           <Link
-            href="/category/basics"
+            href="/about"
             className="text-meta text-fg-muted hover:text-accent"
           >
-            입문 트랙 시작하기
+            이 사이트가 약속하는 것
+          </Link>
+          <span className="text-meta text-fg-muted">·</span>
+          <Link
+            href="/category/learn"
+            className="text-meta text-fg-muted hover:text-accent"
+          >
+            입문 가이드
           </Link>
           <span className="text-meta text-fg-muted">·</span>
           <Link

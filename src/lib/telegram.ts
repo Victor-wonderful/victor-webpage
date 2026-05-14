@@ -21,6 +21,7 @@ const CATEGORY_BANNER_PHOTO_IDS: Record<CategorySlug, string> = {
   macro: "1642543492481-44e81e3914a7",       // bloomberg-style terminal
   market: "1611974789855-9c2a0a7236a3",      // multi-monitor stock screens
   tokens: "1559526324-4b87b5e36e44",         // golden bitcoin coin
+  learn: "1554224155-6726b3ff858f",          // notebook + pen, learning vibe
   basics: "1518186285589-2f7649de83e0",      // laptop with chart, low light
   strategy: "1640340434855-6084b1f4901c",    // dark trading desk
 };
@@ -56,6 +57,7 @@ export const TELEGRAM_BROADCAST_CATEGORIES = [
   "macro",
   "market",
   "tokens",
+  "learn",
   "basics",
   "strategy",
 ] as const;
@@ -71,6 +73,7 @@ type CategorySlugLocal =
   | "macro"
   | "market"
   | "tokens"
+  | "learn"
   | "basics"
   | "strategy";
 
@@ -80,7 +83,7 @@ const CATEGORY_TG_PRESENTATION: Record<
     icon: string;
     label: string;
     cta: string;
-    metaLine: (m: Record<string, string | number> | undefined) => string;
+    metaLine: (m: import("./posts").PostMeta | undefined) => string;
   }
 > = {
   macro: {
@@ -118,10 +121,21 @@ const CATEGORY_TG_PRESENTATION: Record<
       return parts.join(" · ");
     },
   },
+  learn: {
+    icon: "🎓",
+    label: "입문 가이드",
+    cta: "🎓 가이드 읽기",
+    metaLine: (m) => {
+      const parts: string[] = [];
+      if (m?.level) parts.push(String(m.level));
+      if (m?.readMinutes) parts.push(`${m.readMinutes}분 읽기`);
+      return parts.join(" · ");
+    },
+  },
   basics: {
     icon: "📚",
-    label: "입문 가이드",
-    cta: "📚 가이드 읽기",
+    label: "월가의 전설",
+    cta: "📚 시리즈 읽기",
     metaLine: (m) => {
       const parts: string[] = [];
       if (m?.bookChapter) parts.push(String(m.bookChapter));

@@ -124,7 +124,7 @@ export function TypedMetaBlock({ post }: { post: Post }) {
       return (
         <MetaShell
           icon={Icons.book}
-          title="입문 가이드"
+          title="월가의 전설 (시리즈)"
           fields={[
             { label: "레벨", value: meta.level ?? "초급" },
             { label: "읽는 시간", value: meta.readMinutes ? `${meta.readMinutes}분` : "5분" },
@@ -132,6 +132,18 @@ export function TypedMetaBlock({ post }: { post: Post }) {
             ...(meta.bookChapter
               ? [{ label: "책 챕터", value: String(meta.bookChapter) }]
               : []),
+          ]}
+        />
+      );
+    case "learn":
+      return (
+        <MetaShell
+          icon={Icons.book}
+          title="입문 가이드"
+          fields={[
+            { label: "레벨", value: meta.level ?? "입문" },
+            { label: "읽는 시간", value: meta.readMinutes ? `${meta.readMinutes}분` : "5분" },
+            { label: "선수 지식", value: meta.prerequisites ?? "없음" },
           ]}
         />
       );

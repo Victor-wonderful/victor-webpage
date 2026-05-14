@@ -129,8 +129,10 @@ export function MobileMenu() {
             <ul className="mt-4 space-y-1">
               {[
                 { label: "도구", href: "/tools" },
+                { label: "용어 사전", href: "/glossary" },
                 { label: "전체 글", href: "/blog" },
                 { label: "북마크", href: "/bookmarks" },
+                { label: "처음이신가요?", href: "/start" },
                 { label: "소개", href: "/about" },
                 { label: "Alpha Research 구독", href: "/subscribe" },
                 { label: "회원가입", href: "/signup" },

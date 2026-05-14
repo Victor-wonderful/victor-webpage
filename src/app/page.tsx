@@ -16,6 +16,7 @@ import { PromiseSection } from "@/components/home/promise-section";
 import { ToolsRail } from "@/components/home/tools-rail";
 import { BasicsTrackRail } from "@/components/home/basics-track-rail";
 import { DailySignalCard } from "@/components/home/daily-signal-card";
+import { TodaysSetupBoard } from "@/components/home/todays-setup-board";
 import { SubscribeChannels } from "@/components/home/subscribe-channels";
 
 export const revalidate = 60;
@@ -68,6 +69,7 @@ export default async function Home() {
         description="오늘의 시장(macro) 데일리로 그날 톤을 한 페이지에 정리. 보조 지표는 24시간 Movers."
       />
       <DailySignalCard post={latestMacro} />
+      <TodaysSetupBoard limit={3} />
       <MoversBoard />
 
       {/* ═════════════════════════════════════════════════

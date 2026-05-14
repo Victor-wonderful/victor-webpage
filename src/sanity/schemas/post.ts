@@ -162,6 +162,8 @@ export const postType = defineType({
         { name: "sector", title: "섹터 (tokens)", type: "string" },
         { name: "dataSource", title: "데이터 출처", type: "string" },
         { name: "riskLevel", title: "리스크", type: "string" },
+        // Plan Part C Phase 2: 기존 meta.tradeSetup 슬롯은 신규 tradeIdea 도큐먼트
+        // 타입(/today)으로 승급되어 제거. 이전 데이터 0건 — 마이그레이션 불필요.
       ],
     }),
   ],

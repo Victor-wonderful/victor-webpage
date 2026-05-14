@@ -4,7 +4,7 @@
  * Triggered by a Sanity webhook configured in the project console with:
  *   URL:     https://<site>/api/telegram/publish
  *   Filter:  _type == "post" && !(_id in path("drafts.**"))
- *            && category->slug.current in ["macro","market","tokens","basics","strategy"]
+ *            && category->slug.current in ["macro","market","tokens","learn","basics","strategy"]
  *   Project: { _id, "slug": slug.current }
  *   Secret:  matches SANITY_WEBHOOK_SECRET in this server's env
  *

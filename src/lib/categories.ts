@@ -8,6 +8,7 @@ export type CategorySlug =
   | "market"
   | "strategy"
   | "tokens"
+  | "learn"
   | "basics"
   | "macro";
 
@@ -58,11 +59,20 @@ export const CATEGORIES: Category[] = [
     eyebrow: "Project X-ray",
   },
   {
-    slug: "basics",
+    slug: "learn",
     label: "입문 가이드",
     navLabel: "입문",
-    description: "차트 보는 법, 지표 기초, 매매 원칙 — 처음 시작하는 분들을 위해.",
-    eyebrow: "Basics",
+    description:
+      "코인이 처음인 분들이 진짜 알아야 할 것들. 차트 보는 법, 거래소 기초, 지갑·보안, 첫 매매 전 체크 — 한 편씩 읽어도 완결.",
+    eyebrow: "Learn",
+  },
+  {
+    slug: "basics",
+    label: "월가의 전설",
+    navLabel: "월가의 전설",
+    description:
+      "Livermore·Soros·Tudor Jones·Dalio·Druckenmiller의 원칙을 암호화폐에 적용하는 100편 시리즈 — 필자의 출판 도서를 블로그로 연재합니다.",
+    eyebrow: "Wall Street Legends",
   },
 ];
 
@@ -77,6 +87,8 @@ export type NavItem = {
 
 export const EXTRA_NAV_ITEMS: NavItem[] = [
   { label: "대시보드", href: "/dashboard" },
+  { label: "오늘의 셋업", href: "/today" },
+  { label: "용어 사전", href: "/glossary" },
 ];
 
 export function getCategory(slug: string): Category | undefined {

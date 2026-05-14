@@ -20,6 +20,20 @@ export default function AboutPage() {
         Victor Alpha는 한국 리테일 트레이더의 트레이딩 운영체제입니다. 매번 매매 전·후에
         점검하는 &lsquo;트레이딩 데스크&rsquo;를 지향합니다.
       </p>
+      <div className="mt-6 flex flex-wrap gap-3">
+        <Link
+          href="/start"
+          className="rounded-full bg-accent px-5 py-2.5 text-pill text-white hover:bg-accent-hover"
+        >
+          처음이신가요? 30초 안내 →
+        </Link>
+        <Link
+          href="/glossary"
+          className="rounded-full border border-ink px-5 py-2.5 text-pill text-fg hover:border-accent hover:text-accent"
+        >
+          용어 사전
+        </Link>
+      </div>
 
       {/* WHO ─────────────────────────────────────────────── */}
       <section className="mt-14 border-t border-border pt-10">
@@ -140,6 +154,20 @@ export default function AboutPage() {
               원칙을 암호화폐에 적용하는 100편 시리즈. 매주 화·목 발행, 약 12개월 트랙.
             </p>
           </li>
+          <li>
+            <p>
+              <span className="font-mono text-[12px] uppercase tracking-wider text-accent">
+                06
+              </span>
+              <strong className="ml-2 font-display text-xl">오늘 바로 따라할 수 있는 매매 셋업</strong>
+            </p>
+            <p className="mt-2 text-fg-muted">
+              필자가 실제 매매하는 셋업이 있는 날에만 카드가 <Link href="/today" className="text-accent underline">/today</Link> 보드에 올라갑니다. 진입가·손절·익절·무효화 조건·R:R을 한 카드로, 마감 후엔 승/패/PnL까지 같은 자리에 누적. 빈 날은 비워 둡니다 — 매일 강제로 뽑는 신호가 아닙니다.
+            </p>
+            <p className="mt-2 text-[14px] text-fg-muted">
+              모든 카드에 <strong>교육용·매매 추천 아님·DYOR</strong> 고지 자동 첨부. 텔레그램 채널에는 카드가 게시되는 즉시 함께 나갑니다.
+            </p>
+          </li>
         </ol>
 
         <div className="mt-8 rounded-md border-l-4 border-accent bg-surface-warm p-5">
@@ -252,9 +280,13 @@ export default function AboutPage() {
         </h3>
         <ul className="mt-5 space-y-3 break-keep font-serif-body text-[16px] leading-[1.7] text-fg">
           <li>
-            <strong>처음이라면</strong> →{" "}
+            <strong>완전 처음이라면</strong> →{" "}
+            <Link href="/start" className="text-accent underline">
+              30초 안내 페이지
+            </Link>{" "}
+            ·{" "}
             <Link href="/category/basics" className="text-accent underline">
-              입문 트랙 (월가의 전설 × 크립토 시리즈)
+              입문 트랙
             </Link>
           </li>
           <li>

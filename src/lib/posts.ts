@@ -42,6 +42,12 @@ export type PostAttachment = {
   file?: SanityFileRef;
 };
 
+/**
+ * Post.meta is a loose record; values can be strings or numbers.
+ * Trade setups moved out to the tradeIdea content type — see lib/trade-ideas.
+ */
+export type PostMeta = Record<string, string | number | undefined>;
+
 export type Post = {
   slug: string;
   title: string;
@@ -50,7 +56,7 @@ export type Post = {
   publishedAt: string;
   tags: string[];
   category: CategorySlug;
-  meta?: Record<string, string | number>;
+  meta?: PostMeta;
   coverImage?: SanityImageRef;
   bodyImages?: SanityImageRef[];
   attachments?: PostAttachment[];
