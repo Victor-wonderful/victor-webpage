@@ -277,11 +277,27 @@ export function buildCaption(post: Post, siteUrl: string): string {
  * Inline keyboard with the post permalink as a primary button.
  * Returns null when the site URL isn't public (Telegram rejects those).
  */
-export function buildReplyMarkup(post: Post, siteUrl: string) {
+export function buildReplyMarkup(
+  post: Post,
+  siteUrl: string,
+  counts?: { up?: number; down?: number },
+) {
   const url = `${siteUrl}/blog/${post.slug}`;
   if (!isPublicUrl(url)) return undefined;
   const pres = presentationFor(post.category);
-  const buttons: { text: string; url: string }[][] = [[{ text: pres.cta, url }]];
+  const up = counts?.up ?? 0;
+  const down = counts?.down ?? 0;
+  // Sanity post ids are namespaced ("post-<slug>"). We use the slug as the
+  // callback payload key to keep it under Telegram's 64-byte callback_data
+  // budget while remaining a stable identifier.
+  const cbKey = post.slug;
+  const buttons: Array<Array<{ text: string; url?: string; callback_data?: string }>> = [
+    [
+      { text: `👍 ${up}`, callback_data: `vote:up:${cbKey}` },
+      { text: `👎 ${down}`, callback_data: `vote:down:${cbKey}` },
+    ],
+    [{ text: pres.cta, url }],
+  ];
   return { inline_keyboard: buttons };
 }
 

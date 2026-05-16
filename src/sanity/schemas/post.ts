@@ -138,6 +138,37 @@ export const postType = defineType({
       hidden: ({ document }) => !document?.telegramMessageId,
     }),
     defineField({
+      name: "tgUpvotes",
+      title: "텔레그램 좋아요 (시스템)",
+      type: "number",
+      readOnly: true,
+      description: "/api/telegram/callback 이 자동 집계. 수동 편집 금지.",
+      hidden: ({ document }) => !document?.telegramMessageId,
+    }),
+    defineField({
+      name: "tgDownvotes",
+      title: "텔레그램 별로 (시스템)",
+      type: "number",
+      readOnly: true,
+      hidden: ({ document }) => !document?.telegramMessageId,
+    }),
+    defineField({
+      name: "tgVoters",
+      title: "텔레그램 투표자 (시스템)",
+      type: "array",
+      readOnly: true,
+      hidden: true,
+      of: [
+        {
+          type: "object",
+          fields: [
+            { name: "userId", type: "number", title: "User ID" },
+            { name: "vote", type: "string", title: "Vote (up|down)" },
+          ],
+        },
+      ],
+    }),
+    defineField({
       name: "meta",
       title: "타입별 메타 (선택)",
       type: "object",
