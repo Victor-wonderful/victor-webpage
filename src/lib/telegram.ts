@@ -197,8 +197,19 @@ const CATEGORY_POLLS: Partial<Record<CategorySlugLocal, { question: string; opti
   },
 };
 
-function pollForCategory(category: string) {
-  return CATEGORY_POLLS[category as CategorySlugLocal];
+/**
+ * Resolve which poll (if any) to attach to a post:
+ *   1. post.telegramPoll === false  → no poll
+ *   2. post.telegramPoll === { question, options } → custom poll
+ *   3. fall back to CATEGORY_POLLS[category]
+ *   4. otherwise undefined (no poll)
+ */
+function pollForPost(post: Post) {
+  if (post.telegramPoll === false) return undefined;
+  if (post.telegramPoll && typeof post.telegramPoll === "object") {
+    return post.telegramPoll;
+  }
+  return CATEGORY_POLLS[post.category as CategorySlugLocal];
 }
 
 const SUMMARY_CAP = 110;
@@ -376,7 +387,7 @@ export async function sendPostToTelegram(
   //    audience reaction has analytical value (macro/market/tokens/strategy).
   //    Educational categories (basics/learn) skip the poll to avoid noise.
   //    Failures swallowed for the same reason as the group mirror.
-  const pollDef = pollForCategory(post.category);
+  const pollDef = pollForPost(post);
   if (pollDef) {
     const pollPayloadBase = {
       question: pollDef.question,

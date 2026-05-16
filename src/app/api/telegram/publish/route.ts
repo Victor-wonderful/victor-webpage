@@ -75,7 +75,7 @@ export async function POST(req: Request) {
   // Fetch full post for caption + dedup check
   const post = await writeClient.fetch<
     (Post & { telegramSentAt?: string }) | null
-  >(`*[_id == $id][0]{ ${POST_PROJECTION}, telegramSentAt }`, { id: _id });
+  >(`*[_id == $id][0]{ ${POST_PROJECTION}, telegramSentAt, telegramPoll }`, { id: _id });
 
   if (!post) {
     return NextResponse.json({ ok: true, skipped: "post not found" });

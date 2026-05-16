@@ -63,6 +63,11 @@ export type Post = {
   // System fields managed by /api/telegram/publish
   telegramSentAt?: string;
   telegramMessageId?: number;
+  // Optional per-post override for the Telegram opinion poll.
+  //   - false  → no poll, even if category has a default
+  //   - object → custom question/options (replaces category default)
+  //   - undefined → category default applies
+  telegramPoll?: false | { question: string; options: string[] };
 };
 
 function normalize(p: Post): Post {
