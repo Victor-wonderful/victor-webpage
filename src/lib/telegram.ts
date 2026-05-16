@@ -289,6 +289,7 @@ export async function sendPostToTelegram(
 ): Promise<number> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHANNEL_ID;
+  const groupChatId = process.env.TELEGRAM_GROUP_CHAT_ID;
   if (!token) throw new Error("TELEGRAM_BOT_TOKEN is not set");
   if (!chatId) throw new Error("TELEGRAM_CHANNEL_ID is not set");
 
@@ -296,16 +297,36 @@ export async function sendPostToTelegram(
   const photo = resolvePhotoUrl(post);
   const reply_markup = buildReplyMarkup(post, siteUrl);
 
-  // Always sendPhoto since resolvePhotoUrl guarantees a URL
-  // (category default banner if nothing else available).
-  const payload: Record<string, unknown> = {
+  // 1) Primary: send to the announcement channel (return its message_id for
+  //    dedup tracking).
+  const channelPayload: Record<string, unknown> = {
     chat_id: chatId,
     photo,
     caption,
     parse_mode: "HTML",
   };
-  if (reply_markup) payload.reply_markup = reply_markup;
+  if (reply_markup) channelPayload.reply_markup = reply_markup;
+  const r = await tgCall<SendResponse>(token, "sendPhoto", channelPayload);
 
-  const r = await tgCall<SendResponse>(token, "sendPhoto", payload);
+  // 2) Secondary: mirror to the community group's General topic when
+  //    TELEGRAM_GROUP_CHAT_ID is configured. Failures here MUST NOT throw —
+  //    the channel publish already succeeded and Sanity should not retry.
+  if (groupChatId) {
+    const groupPayload: Record<string, unknown> = {
+      chat_id: groupChatId,
+      photo,
+      caption,
+      parse_mode: "HTML",
+    };
+    if (reply_markup) groupPayload.reply_markup = reply_markup;
+    try {
+      await tgCall<SendResponse>(token, "sendPhoto", groupPayload);
+    } catch (e) {
+      console.warn(
+        `[telegram] group mirror failed for ${post.slug}: ${(e as Error).message}`,
+      );
+    }
+  }
+
   return r.message_id;
 }
