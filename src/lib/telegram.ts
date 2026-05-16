@@ -173,6 +173,34 @@ export type TelegramSendResult = {
   error: string;
 };
 
+/**
+ * Per-category opinion poll definitions. Categories not listed → no poll.
+ * Polls are non-anonymous=false (anonymous), single-choice, attached as a
+ * separate message right after the cover photo.
+ */
+const CATEGORY_POLLS: Partial<Record<CategorySlugLocal, { question: string; options: string[] }>> = {
+  macro: {
+    question: "오늘 BTC 방향은? (24h 관점)",
+    options: ["📈 위", "📉 아래", "↔️ 횡보"],
+  },
+  market: {
+    question: "이번 주 시장 시나리오는?",
+    options: ["🟢 강세", "🔴 약세", "🟡 중립"],
+  },
+  tokens: {
+    question: "이 분석에 동의하시나요?",
+    options: ["👍 동의", "🤔 부분 동의", "👎 반대"],
+  },
+  strategy: {
+    question: "이 전략 적용해보시겠어요?",
+    options: ["✅ 적용", "🧪 백테스트부터", "⛔ 안 함"],
+  },
+};
+
+function pollForCategory(category: string) {
+  return CATEGORY_POLLS[category as CategorySlugLocal];
+}
+
 const SUMMARY_CAP = 110;
 
 /** Escape characters that have meaning in Telegram HTML parse mode. */
@@ -325,6 +353,45 @@ export async function sendPostToTelegram(
       console.warn(
         `[telegram] group mirror failed for ${post.slug}: ${(e as Error).message}`,
       );
+    }
+  }
+
+  // 3) Opinion poll — attached as a second message for categories where
+  //    audience reaction has analytical value (macro/market/tokens/strategy).
+  //    Educational categories (basics/learn) skip the poll to avoid noise.
+  //    Failures swallowed for the same reason as the group mirror.
+  const pollDef = pollForCategory(post.category);
+  if (pollDef) {
+    const pollPayloadBase = {
+      question: pollDef.question,
+      options: pollDef.options.map((text) => ({ text })),
+      is_anonymous: true,
+      allows_multiple_answers: false,
+      type: "regular",
+    };
+    // Channel poll
+    try {
+      await tgCall<SendResponse>(token, "sendPoll", {
+        chat_id: chatId,
+        ...pollPayloadBase,
+      });
+    } catch (e) {
+      console.warn(
+        `[telegram] channel poll failed for ${post.slug}: ${(e as Error).message}`,
+      );
+    }
+    // Group poll (only if group configured)
+    if (groupChatId) {
+      try {
+        await tgCall<SendResponse>(token, "sendPoll", {
+          chat_id: groupChatId,
+          ...pollPayloadBase,
+        });
+      } catch (e) {
+        console.warn(
+          `[telegram] group poll failed for ${post.slug}: ${(e as Error).message}`,
+        );
+      }
     }
   }
 
