@@ -108,6 +108,8 @@ export default async function SubscribePage() {
         </p>
         <a
           href="/rss.xml"
+          target="_blank"
+          rel="noopener"
           className="mt-4 inline-flex items-center gap-2 font-mono text-[14px] text-accent underline-offset-4 hover:underline"
         >
           /rss.xml
