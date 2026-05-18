@@ -7,6 +7,7 @@
  */
 
 import type { Post } from "@/lib/posts";
+import type { TradeIdea } from "@/lib/trade-ideas";
 import { type CategorySlug } from "@/lib/categories";
 import { imageUrl } from "@/sanity/image";
 
@@ -419,6 +420,107 @@ export async function sendPostToTelegram(
           `[telegram] group poll failed for ${post.slug}: ${(e as Error).message}`,
         );
       }
+    }
+  }
+
+  return r.message_id;
+}
+
+// ─────────────────────────────────────────────────────────────────────
+// Trade Idea (오늘의 셋업) broadcaster
+
+function fmtPrice(n: number): string {
+  return `$${n.toLocaleString("en-US", { maximumFractionDigits: 2 })}`;
+}
+
+function fmtKstShort(iso?: string): string {
+  if (!iso) return "—";
+  const d = new Date(iso);
+  const kst = new Date(d.getTime() + 9 * 3600 * 1000);
+  const mm = String(kst.getUTCMonth() + 1).padStart(2, "0");
+  const dd = String(kst.getUTCDate()).padStart(2, "0");
+  const hh = String(kst.getUTCHours()).padStart(2, "0");
+  const mi = String(kst.getUTCMinutes()).padStart(2, "0");
+  return `${mm}/${dd} ${hh}:${mi} KST`;
+}
+
+export function buildTradeIdeaCaption(
+  idea: TradeIdea,
+  siteUrl: string,
+): string {
+  const dirIcon = idea.direction === "Long" ? "📈" : "📉";
+  const dirLabel = idea.direction === "Long" ? "롱" : "숏";
+  const tp1 = idea.takeProfits?.[0];
+  const rrLine = idea.rr ? ` (${idea.rr.toFixed(2)}R)` : "";
+
+  const lines: string[] = [
+    `🎯 <b>오늘의 셋업</b> · ${escapeHtml(idea.symbol)} ${dirIcon} ${escapeHtml(dirLabel)}`,
+    `<b>${escapeHtml(idea.title)}</b>`,
+    "",
+    `▶ 진입 <b>${fmtPrice(idea.entry)}</b>`,
+    `🛑 손절 ${fmtPrice(idea.stopLoss)}`,
+  ];
+  if (tp1) lines.push(`🎯 목표 ${fmtPrice(tp1)}${rrLine}`);
+  if (idea.validUntil) lines.push(`⏱ 유효 ~${fmtKstShort(idea.validUntil)}`);
+  lines.push("", escapeHtml(truncate(idea.thesis, 220)));
+  lines.push("", `⚠ <b>무효화</b>: ${escapeHtml(idea.invalidationCondition)}`);
+
+  // Site URL fallback (only when not public — public URL goes into inline button)
+  const url = `${siteUrl}/today/${idea.slug}`;
+  if (!isPublicUrl(url)) lines.push("", `→ ${url}`);
+
+  return lines.join("\n");
+}
+
+export function buildTradeIdeaReplyMarkup(idea: TradeIdea, siteUrl: string) {
+  const url = `${siteUrl}/today/${idea.slug}`;
+  if (!isPublicUrl(url)) return undefined;
+  return {
+    inline_keyboard: [[{ text: "📊 셋업 상세 보기", url }]],
+  };
+}
+
+/**
+ * Send a trade idea to the configured Telegram channel + group.
+ * Text-only sendMessage (no cover image per user decision).
+ * Returns the channel message id for dedup tracking.
+ */
+export async function sendTradeIdeaToTelegram(
+  idea: TradeIdea,
+  siteUrl: string,
+): Promise<number> {
+  const token = process.env.TELEGRAM_BOT_TOKEN;
+  const chatId = process.env.TELEGRAM_CHANNEL_ID;
+  const groupChatId = process.env.TELEGRAM_GROUP_CHAT_ID;
+  if (!token) throw new Error("TELEGRAM_BOT_TOKEN is not set");
+  if (!chatId) throw new Error("TELEGRAM_CHANNEL_ID is not set");
+
+  const text = buildTradeIdeaCaption(idea, siteUrl);
+  const reply_markup = buildTradeIdeaReplyMarkup(idea, siteUrl);
+
+  const channelPayload: Record<string, unknown> = {
+    chat_id: chatId,
+    text,
+    parse_mode: "HTML",
+    disable_web_page_preview: true,
+  };
+  if (reply_markup) channelPayload.reply_markup = reply_markup;
+  const r = await tgCall<SendResponse>(token, "sendMessage", channelPayload);
+
+  if (groupChatId) {
+    try {
+      const groupPayload: Record<string, unknown> = {
+        chat_id: groupChatId,
+        text,
+        parse_mode: "HTML",
+        disable_web_page_preview: true,
+      };
+      if (reply_markup) groupPayload.reply_markup = reply_markup;
+      await tgCall<SendResponse>(token, "sendMessage", groupPayload);
+    } catch (e) {
+      console.warn(
+        `[telegram] trade-idea group mirror failed for ${idea.slug}: ${(e as Error).message}`,
+      );
     }
   }
 

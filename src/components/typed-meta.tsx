@@ -17,6 +17,12 @@ import type { Post } from "@/lib/posts";
 
 type Field = { label: string; value: React.ReactNode };
 
+function formatPrereq(raw: unknown): string {
+  if (typeof raw === "string") return raw.trim() || "없음";
+  if (Array.isArray(raw) && raw.length > 0) return raw.map(String).join(" · ");
+  return "없음";
+}
+
 function MetaShell({
   icon,
   title,
@@ -128,7 +134,7 @@ export function TypedMetaBlock({ post }: { post: Post }) {
           fields={[
             { label: "레벨", value: meta.level ?? "초급" },
             { label: "읽는 시간", value: meta.readMinutes ? `${meta.readMinutes}분` : "5분" },
-            { label: "선수 지식", value: meta.prerequisites ?? "없음" },
+            { label: "선수 지식", value: formatPrereq(meta.prerequisites) },
             ...(meta.bookChapter
               ? [{ label: "책 챕터", value: String(meta.bookChapter) }]
               : []),
@@ -143,7 +149,7 @@ export function TypedMetaBlock({ post }: { post: Post }) {
           fields={[
             { label: "레벨", value: meta.level ?? "입문" },
             { label: "읽는 시간", value: meta.readMinutes ? `${meta.readMinutes}분` : "5분" },
-            { label: "선수 지식", value: meta.prerequisites ?? "없음" },
+            { label: "선수 지식", value: formatPrereq(meta.prerequisites) },
           ]}
         />
       );

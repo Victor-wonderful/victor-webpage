@@ -53,7 +53,13 @@ export function PostMetaBar({ post }: { post: Post }) {
 
   const level = resolveLevel(category, meta);
   const readMinutes = meta.readMinutes ? `${meta.readMinutes}분` : null;
-  const prerequisites = (meta.prerequisites as string | undefined)?.trim();
+  const prereqRaw = meta.prerequisites;
+  const prerequisites =
+    typeof prereqRaw === "string"
+      ? prereqRaw.trim() || undefined
+      : Array.isArray(prereqRaw) && prereqRaw.length > 0
+        ? prereqRaw.map(String).join(" · ")
+        : undefined;
 
   // basics(월가의 전설) / learn(입문 가이드) 외 카테고리는 메타가 비면 표시하지 않음
   const hasAnyMeta = level || readMinutes || prerequisites;

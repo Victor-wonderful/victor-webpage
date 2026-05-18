@@ -3,9 +3,11 @@
  *
  * Triggered by a Sanity webhook configured in the project console with:
  *   URL:     https://<site>/api/telegram/publish
- *   Filter:  _type == "post" && !(_id in path("drafts.**"))
- *            && category->slug.current in ["macro","market","tokens","learn","basics","strategy"]
- *   Project: { _id, "slug": slug.current }
+ *   Filter:  (_type == "post" && category->slug.current in
+ *              ["macro","market","tokens","learn","basics","strategy"])
+ *            || _type == "tradeIdea"
+ *   Filter:  !(_id in path("drafts.**"))
+ *   Project: { _id, _type, "slug": slug.current }
  *   Secret:  matches SANITY_WEBHOOK_SECRET in this server's env
  *
  * Keep the Sanity Console filter category list in sync with
@@ -14,10 +16,11 @@
  *
  * Behavior:
  *   - Verifies HMAC signature (`@sanity/webhook` isValidSignature)
+ *   - Dispatches by _type: "post" → sendPostToTelegram, "tradeIdea" → sendTradeIdeaToTelegram
  *   - Skips drafts and non-broadcast categories (200 + skip reason)
  *   - Skips if telegramSentAt already set (dedup against Sanity retries)
- *   - Sends to channel, then patches telegramSentAt + telegramMessageId on
- *     the Sanity doc to mark as sent
+ *   - For tradeIdea: only "active" status is broadcast
+ *   - Sends to channel, then patches telegramSentAt + telegramMessageId
  */
 
 import { NextResponse } from "next/server";
@@ -25,12 +28,17 @@ import { isValidSignature, SIGNATURE_HEADER_NAME } from "@sanity/webhook";
 import { writeClient } from "@/sanity/client";
 import { POST_PROJECTION } from "@/sanity/queries";
 import type { Post } from "@/lib/posts";
+import type { TradeIdea } from "@/lib/trade-ideas";
 import { SITE } from "@/lib/site";
-import { sendPostToTelegram, TELEGRAM_BROADCAST_CATEGORIES } from "@/lib/telegram";
+import {
+  sendPostToTelegram,
+  sendTradeIdeaToTelegram,
+  TELEGRAM_BROADCAST_CATEGORIES,
+} from "@/lib/telegram";
 
 export const runtime = "nodejs";
 
-type Payload = { _id?: string; slug?: string };
+type Payload = { _id?: string; _type?: string; slug?: string };
 
 function isBroadcastCategory(slug: string): boolean {
   return (TELEGRAM_BROADCAST_CATEGORIES as readonly string[]).includes(slug);
@@ -72,7 +80,47 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, skipped: "draft" });
   }
 
-  // Fetch full post for caption + dedup check
+  const docType = payload._type;
+
+  // ── TradeIdea branch ────────────────────────────────────────────
+  if (docType === "tradeIdea") {
+    const idea = await writeClient.fetch<
+      (TradeIdea & { telegramSentAt?: string }) | null
+    >(
+      `*[_id == $id][0]{
+        "slug": slug.current, title, publishedAt, status,
+        symbol, direction, entry, stopLoss, takeProfits, rr, validUntil,
+        thesis, invalidationCondition, tags, telegramSentAt
+      }`,
+      { id: _id },
+    );
+    if (!idea) {
+      return NextResponse.json({ ok: true, skipped: "trade-idea not found" });
+    }
+    if (idea.status !== "active") {
+      return NextResponse.json({ ok: true, skipped: `status=${idea.status}` });
+    }
+    if (idea.telegramSentAt) {
+      return NextResponse.json({ ok: true, skipped: "already sent" });
+    }
+    try {
+      const messageId = await sendTradeIdeaToTelegram(idea, SITE.url);
+      await writeClient
+        .patch(_id)
+        .set({
+          telegramSentAt: new Date().toISOString(),
+          telegramMessageId: messageId,
+        })
+        .commit();
+      return NextResponse.json({ ok: true, type: "tradeIdea", messageId });
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      console.error("[telegram/publish] trade-idea send failed:", msg);
+      return NextResponse.json({ ok: false, error: msg }, { status: 500 });
+    }
+  }
+
+  // ── Post branch (default) ──────────────────────────────────────
   const post = await writeClient.fetch<
     (Post & { telegramSentAt?: string }) | null
   >(`*[_id == $id][0]{ ${POST_PROJECTION}, telegramSentAt, telegramPoll }`, { id: _id });
@@ -96,7 +144,7 @@ export async function POST(req: Request) {
         telegramMessageId: messageId,
       })
       .commit();
-    return NextResponse.json({ ok: true, messageId });
+    return NextResponse.json({ ok: true, type: "post", messageId });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     console.error("[telegram/publish] send failed:", msg);
