@@ -1,3 +1,9 @@
 {
-  "regions": ["icn1"]
+  "regions": ["icn1"],
+  "crons": [
+    {
+      "path": "/api/cron/evaluate-trade-ideas",
+      "schedule": "0 0 * * *"
+    }
+  ]
 }
