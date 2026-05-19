@@ -27,7 +27,20 @@ export type TradeIdeaResult = {
   outcome?: TradeIdeaOutcome;
   pnlR?: number;
   notesAfter?: string;
+  autoEvaluated?: boolean;
+  evaluatedAt?: string;
 };
+
+export function awaitingEvaluation(idea: {
+  status: TradeIdeaStatus;
+  validUntil?: string;
+  result?: TradeIdeaResult;
+}): boolean {
+  const expired =
+    idea.status === "expired" ||
+    (idea.status === "active" && !!idea.validUntil && new Date(idea.validUntil).getTime() < Date.now());
+  return expired && !idea.result?.outcome;
+}
 
 export type TradeIdea = {
   slug: string;

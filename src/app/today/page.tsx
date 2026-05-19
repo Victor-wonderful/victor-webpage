@@ -4,6 +4,7 @@ import {
   getActiveTradeIdeas,
   getAllTradeIdeas,
   effectiveStatus,
+  awaitingEvaluation,
 } from "@/lib/trade-ideas";
 import { TradeIdeaCard } from "@/components/today/trade-idea-card";
 
@@ -76,6 +77,7 @@ export default async function TodayBoardPage() {
           <ul className="divide-y divide-border border-y border-border">
             {archived.map((idea) => {
               const st = effectiveStatus(idea);
+              const pending = awaitingEvaluation(idea);
               return (
                 <li key={idea.slug}>
                   <Link
@@ -90,7 +92,7 @@ export default async function TodayBoardPage() {
                         <span className="text-[11px] text-fg-muted">
                           · {idea.direction}
                         </span>
-                        {idea.result?.outcome && (
+                        {idea.result?.outcome ? (
                           <span
                             className={`text-[11px] font-medium ${
                               idea.result.outcome === "win"
@@ -108,8 +110,20 @@ export default async function TodayBoardPage() {
                                 : "본전"}
                             {typeof idea.result.pnlR === "number" &&
                               ` ${idea.result.pnlR > 0 ? "+" : ""}${idea.result.pnlR.toFixed(2)}R`}
+                            {idea.result.autoEvaluated && (
+                              <span
+                                className="ml-1 text-[10px] font-normal text-fg-muted"
+                                title="평가 시점 마감가 기준 자동 산출. 회고 메모 입력 시 검증·보정됩니다."
+                              >
+                                (자동)
+                              </span>
+                            )}
                           </span>
-                        )}
+                        ) : pending ? (
+                          <span className="text-[11px] font-medium text-amber-700 dark:text-amber-300">
+                            · 평가 대기
+                          </span>
+                        ) : null}
                       </div>
                       <p className="mt-1 line-clamp-1 break-keep font-serif-body text-base text-fg group-hover:text-accent">
                         {idea.title}
@@ -117,7 +131,9 @@ export default async function TodayBoardPage() {
                     </div>
                     <p className="shrink-0 text-meta text-fg-muted">
                       {st === "expired"
-                        ? "만료"
+                        ? pending
+                          ? "만료 · 미평가"
+                          : "만료"
                         : st === "triggered_tp"
                           ? "익절"
                           : st === "triggered_sl"

@@ -197,6 +197,20 @@ export const tradeIdeaType = defineType({
           type: "text",
           rows: 3,
         },
+        {
+          name: "autoEvaluated",
+          title: "자동 평가 여부 (시스템)",
+          description:
+            "evaluate-trade-ideas.mjs 가 자동 채운 결과면 true. 수동 회고 입력 시 false로 두면 됨.",
+          type: "boolean",
+          initialValue: false,
+        },
+        {
+          name: "evaluatedAt",
+          title: "평가 시각 (시스템)",
+          type: "datetime",
+          readOnly: true,
+        },
       ],
     }),
 
