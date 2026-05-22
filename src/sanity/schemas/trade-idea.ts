@@ -127,6 +127,13 @@ export const tradeIdeaType = defineType({
       validation: (r) => r.required().max(220),
     }),
     defineField({
+      name: "chartImage",
+      title: "차트 이미지 (선택)",
+      description: "/today/[slug] 상세 페이지 상단에 노출. TradingView 스냅샷 등.",
+      type: "image",
+      options: { hotspot: true },
+    }),
+    defineField({
       name: "thesisLong",
       title: "상세 근거 (Markdown, 선택)",
       description:

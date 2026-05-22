@@ -120,6 +120,17 @@ export function TradeIdeaCard({
       {/* Detail-only blocks */}
       {variant === "detail" && (
         <>
+          {idea.chartImageUrl && (
+            <figure className="mt-6 overflow-hidden rounded border border-ink/15 bg-bg">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={idea.chartImageUrl}
+                alt={`${idea.symbol} 차트`}
+                className="w-full h-auto"
+              />
+            </figure>
+          )}
+
           {idea.takeProfits && idea.takeProfits.length > 1 && (
             <div className="mt-3 flex flex-wrap gap-2 text-meta text-fg-muted">
               <span>전체 익절:</span>

@@ -57,6 +57,7 @@ export type TradeIdea = {
   thesis: string;
   thesisLong?: string;
   invalidationCondition: string;
+  chartImageUrl?: string;
   relatedMacroPost?: { slug: string; title: string } | null;
   result?: TradeIdeaResult;
   tags?: string[];
@@ -77,6 +78,7 @@ const TRADE_IDEA_PROJECTION = /* groq */ `
   thesis,
   thesisLong,
   invalidationCondition,
+  "chartImageUrl": chartImage.asset->url,
   "relatedMacroPost": relatedMacroPost->{
     "slug": slug.current,
     title
