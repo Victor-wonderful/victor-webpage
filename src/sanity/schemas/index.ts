@@ -5,6 +5,7 @@ import { editorialType } from "./editorial";
 import { tokenPickType } from "./token-pick";
 import { pollType } from "./poll";
 import { tradeIdeaType } from "./trade-idea";
+import { dailyWidgetType } from "./daily-widget";
 
 export const schemaTypes = [
   categoryType,
@@ -14,4 +15,5 @@ export const schemaTypes = [
   tokenPickType,
   pollType,
   tradeIdeaType,
+  dailyWidgetType,
 ];

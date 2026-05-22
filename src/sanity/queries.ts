@@ -81,6 +81,38 @@ export const activePollQuery = groq(`
   }
 `);
 
+export const activeDailyWidgetQuery = groq(`
+  *[_type == "dailyWidget" && active == true
+    && (!defined(displayDate) || displayDate <= now())
+  ] | order(displayDate desc, _updatedAt desc) [0] {
+    _id,
+    title,
+    type,
+    subtitle,
+    body,
+    ctaLabel,
+    ctaHref,
+    displayDate,
+    metric,
+    eventName,
+    eventAt,
+    quiz,
+    "chartImageUrl": chartImage.asset->url,
+    chartCaption,
+    whaleAmount,
+    whaleTxHref,
+    "poll": pollRef->{
+      _id,
+      question,
+      "slug": slug.current,
+      options,
+      startsAt,
+      endsAt,
+      context
+    }
+  }
+`);
+
 export const postBySlugQuery = groq(`
   *[_type == "post" && slug.current == $slug][0] {
     ${POST_PROJECTION}

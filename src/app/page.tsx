@@ -8,7 +8,7 @@ import { EditorNote } from "@/components/home/editor-note";
 import { TokenPicks } from "@/components/home/token-picks";
 import { DeepDives } from "@/components/home/deep-dives";
 import { MostDiscussed } from "@/components/home/most-discussed";
-import { TodaysPoll } from "@/components/home/todays-poll";
+import { DailyHomeWidget } from "@/components/home/daily-widget";
 import { MarketSnapshot } from "@/components/home/market-snapshot";
 import { MoversBoard } from "@/components/home/movers-board";
 import { PositioningStrip } from "@/components/home/positioning-strip";
@@ -118,7 +118,7 @@ export default async function Home() {
       <BasicsTrackRail />
 
       {/* ── Engagement: poll · most discussed ───────────── */}
-      <TodaysPoll />
+      <DailyHomeWidget />
       <MostDiscussed days={30} limit={3} />
 
       {/* ── Subscribe channels: Newsletter + Telegram ────── */}
