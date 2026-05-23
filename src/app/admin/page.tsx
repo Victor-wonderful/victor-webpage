@@ -19,6 +19,7 @@ import { RecentCommentsFeed } from "@/components/admin/recent-comments-feed";
 import { RecentSignupsList } from "@/components/admin/recent-signups-list";
 import { ActivityRanking } from "@/components/admin/activity-ranking";
 import { TokenPicksStatus } from "@/components/admin/token-picks-status";
+import { EvaluateTradeIdeasButton } from "@/components/admin/evaluate-trade-ideas-button";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -74,6 +75,9 @@ export default async function AdminOverviewPage() {
         <KpiCard label="휴대폰" value={memberKpis.newsletterPhone} hint="📱 SMS/알림톡" />
         <KpiCard label="텔레그램" value={memberKpis.newsletterTelegram} hint="✈️ 무료" />
       </div>
+
+      <h2 className="mt-8 text-eyebrow text-fg-muted">운영 도구</h2>
+      <EvaluateTradeIdeasButton />
 
       <ContentCalendar slots={calendar} />
 
