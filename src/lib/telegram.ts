@@ -299,10 +299,10 @@ export function buildReplyMarkup(
   const pres = presentationFor(post.category);
   const up = counts?.up ?? 0;
   const down = counts?.down ?? 0;
-  // Sanity post ids are namespaced ("post-<slug>"). We use the slug as the
-  // callback payload key to keep it under Telegram's 64-byte callback_data
-  // budget while remaining a stable identifier.
-  const cbKey = post.slug;
+  // Telegram limits callback_data to 64 bytes. "vote:down:" is 10 bytes,
+  // leaving 54 bytes for the key. Truncate long slugs — the callback handler
+  // uses a prefix range query so partial slugs still resolve correctly.
+  const cbKey = post.slug.length <= 54 ? post.slug : post.slug.slice(0, 54);
   const buttons: Array<Array<{ text: string; url?: string; callback_data?: string }>> = [
     [
       { text: `👍 ${up}`, callback_data: `vote:up:${cbKey}` },

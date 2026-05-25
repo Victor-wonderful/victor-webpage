@@ -88,20 +88,24 @@ export async function POST(req: Request) {
   const [, voteType, slug] = m;
   const userId = cb.from.id;
 
-  // Look up post (we use slug, not Sanity _id, in callback_data)
+  // Look up post by slug. When the slug was truncated to 54 chars to fit
+  // Telegram's 64-byte callback_data limit, use a prefix range query:
+  // slug >= key && slug < key + "{" covers all strings starting with key
+  // ("{" is ASCII 123, one above "z"/122, safe for alphanumeric+hyphen slugs).
   type PostWithVotes = Post & {
     _id: string;
     tgUpvotes?: number;
     tgDownvotes?: number;
     tgVoters?: { userId: number; vote: "up" | "down" }[];
   };
+  const slugEnd = slug + "{";
   const post = await writeClient.fetch<PostWithVotes | null>(
-    `*[_type=="post" && slug.current==$slug][0]{
+    `*[_type=="post" && slug.current >= $slug && slug.current < $slugEnd][0]{
       _id, title, summary, "slug": slug.current, category,
       "coverImage": coverImage, "bodyImages": bodyImages,
       tgUpvotes, tgDownvotes, tgVoters, meta
     }`,
-    { slug },
+    { slug, slugEnd },
   );
   if (!post) {
     await answer(cb.id, "글을 찾을 수 없어요");
