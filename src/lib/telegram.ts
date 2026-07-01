@@ -332,8 +332,10 @@ type SendResponse = { message_id: number };
 /**
  * Send a single post to the configured Telegram channel.
  *
- * - With coverImage: sendPhoto with caption.
- * - Without:         sendMessage with text.
+ * Always sendPhoto: the image is resolvePhotoUrl(post) — coverImage, else the
+ * first body image, else the category banner. The /api/telegram/publish route
+ * gates on coverImage BEFORE calling this, so in normal operation `photo` is
+ * the real article cover (the fallbacks are a last resort, not the norm).
  *
  * Returns the channel message id on success (used for dedup tracking).
  * Throws on Telegram API error so the caller (webhook) can return 5xx

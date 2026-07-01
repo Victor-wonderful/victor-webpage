@@ -135,6 +135,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, skipped: "already sent" });
   }
 
+  // Cover-image gate. resolvePhotoUrl() falls back to the generic category
+  // banner when a post has no coverImage, which is how coverless posts ended
+  // up broadcast with a bland repeated banner. Defer instead: skip WITHOUT
+  // setting telegramSentAt, so that once a real cover is attached later
+  // (e.g. scripts/gen-cover-comfy.mjs patches coverImage → Sanity fires this
+  // webhook again), the broadcast proceeds with the actual cover. This makes
+  // the cover a hard precondition and removes the publish-before-cover race.
+  if (!post.coverImage) {
+    console.warn(
+      `[telegram/publish] deferred ${post.slug}: awaiting coverImage (no broadcast until a cover is attached)`,
+    );
+    return NextResponse.json({ ok: true, deferred: "awaiting cover" });
+  }
+
   try {
     const messageId = await sendPostToTelegram(post, SITE.url);
     await writeClient
