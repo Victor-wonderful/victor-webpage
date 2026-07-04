@@ -62,6 +62,32 @@ export const MACRO_EVENTS: MacroEvent[] = [
     kind: "FOMC",
     impact: "high",
   },
+  {
+    startsAt: "2026-07-09T21:30:00+09:00",
+    title: "美 주간 신규 실업수당 청구건수",
+    kind: "고용",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-07-14T21:30:00+09:00",
+    title: "美 6월 소비자물가지수 (CPI)",
+    kind: "CPI",
+    impact: "high",
+    note: "6월 물가 — FOMC(7/29) 직전 마지막 CPI",
+  },
+  {
+    startsAt: "2026-07-16T21:30:00+09:00",
+    title: "美 주간 신규 실업수당 청구건수",
+    kind: "고용",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-07-30T03:00:00+09:00",
+    title: "FOMC 7월 금리 결정",
+    kind: "FOMC",
+    impact: "high",
+    note: "7/28~29 회의 · 결정 발표 KST 7/30 새벽 3시",
+  },
 ];
 
 export type UpcomingEvent = MacroEvent & {
