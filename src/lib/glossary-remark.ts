@@ -30,17 +30,12 @@ function escapeRe(s: string): string {
 function buildMatchers(): Matcher[] {
   const matchers: Matcher[] = [];
   for (const e of GLOSSARY) {
-    const keys = new Set<string>();
-    // 표제어 본체 (괄호 앞)
-    const base = e.term.replace(/\s*\([^)]*\)\s*/, "").trim();
-    if (base) keys.add(base);
-    // 괄호 안 한글 설명
-    const paren = e.term.match(/\(([^)]+)\)/);
-    if (paren) keys.add(paren[1].trim());
-    for (const k of keys) {
-      if (k.length < 2) continue; // 1글자 키 제외
-      matchers.push({ key: k, id: e.id, ascii: /^[\x00-\x7F]+$/.test(k) });
-    }
+    // 표제어 본체(괄호 앞)만 매칭 키로 쓴다.
+    // 괄호 안 설명(예: "CHoCH (추세 전환)"의 "추세 전환")은 일반 표현과
+    // 겹쳐 오탐을 내므로 매칭 대상에서 제외한다.
+    const key = e.term.replace(/\s*\([^)]*\)\s*/, "").trim();
+    if (key.length < 2) continue; // 1글자 키 제외
+    matchers.push({ key, id: e.id, ascii: /^[\x00-\x7F]+$/.test(key) });
   }
   // 긴 키 우선 (겹침 방지: "BTC 도미넌스"가 "BTC"보다 먼저)
   matchers.sort((a, b) => b.key.length - a.key.length);

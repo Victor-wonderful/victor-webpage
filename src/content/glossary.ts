@@ -11,7 +11,9 @@
  */
 
 export type GlossaryCategory =
+  | "macro"
   | "market-structure"
+  | "onchain"
   | "derivatives"
   | "technical"
   | "smc-ict";
@@ -34,9 +36,19 @@ export type GlossaryEntry = {
 
 export const GLOSSARY_CATEGORIES: { id: GlossaryCategory; label: string; description: string }[] = [
   {
+    id: "macro",
+    label: "매크로 · 거시경제",
+    description: "금리·물가·고용 등 크립토를 움직이는 거시 지표와 연준(Fed) 관련 용어. 데일리 글의 배경.",
+  },
+  {
     id: "market-structure",
     label: "시장 구조",
     description: "전체 시장의 흐름·심리·자금 분포를 설명하는 개념.",
+  },
+  {
+    id: "onchain",
+    label: "온체인 · 펀더멘털",
+    description: "ETF·스테이킹·반감기 등 자산의 수급과 본질 가치를 읽는 데이터.",
   },
   {
     id: "derivatives",
@@ -56,6 +68,82 @@ export const GLOSSARY_CATEGORIES: { id: GlossaryCategory; label: string; descrip
 ];
 
 export const GLOSSARY: GlossaryEntry[] = [
+  // ── 매크로 · 거시경제 ──────────────────────────────────────
+  {
+    id: "cpi",
+    term: "CPI (소비자물가지수)",
+    alias: "Consumer Price Index",
+    category: "macro",
+    definition:
+      "소비자가 사는 상품·서비스 물가의 전년 대비 상승률(%). 연준이 금리를 올릴지 내릴지 판단하는 1순위 지표다. 예상보다 높으면 '인플레 고착 → 긴축 우려'로 위험자산에 악재, 낮으면 그 반대.",
+    analogy:
+      "장바구니 물가가 작년보다 몇 % 비싸졌는지를 나라 전체로 잰 숫자.",
+  },
+  {
+    id: "pce",
+    term: "PCE (개인소비지출 물가)",
+    alias: "Personal Consumption Expenditures",
+    category: "macro",
+    definition:
+      "연준이 CPI보다 더 신뢰하는 물가 지표. 소비 패턴 변화까지 반영해 실제 지출에 가깝다. 특히 변동성 큰 식품·에너지를 뺀 '근원 PCE'가 연준의 진짜 목표(2%)다.",
+    analogy:
+      "CPI가 '정가표 물가'라면 PCE는 '실제로 계산대에서 낸 돈' 기준 물가.",
+  },
+  {
+    id: "fomc",
+    term: "FOMC (연방공개시장위원회)",
+    alias: "Federal Open Market Committee",
+    category: "macro",
+    definition:
+      "미국 기준금리를 결정하는 연준의 회의체. 1년에 8번 열리며 결정문·기자회견·점도표가 시장을 크게 흔든다. 크립토는 24시간 열려 있어 이 발표에 즉각 반응한다.",
+  },
+  {
+    id: "nfp",
+    term: "NFP (비농업 고용지표)",
+    alias: "Non-Farm Payrolls",
+    category: "macro",
+    definition:
+      "매달 첫째 주 금요일 발표되는 미국 신규 일자리 수(농업 제외). 고용이 강하면 '경기 과열 → 긴축 지속', 약하면 '침체 우려 → 완화 기대'로 읽힌다. 실업률과 함께 본다.",
+    analogy:
+      "미국 경제가 지난달 사람을 몇 명 더 뽑았나를 보는 월간 건강검진.",
+  },
+  {
+    id: "dot-plot",
+    term: "점도표 (Dot Plot)",
+    alias: "Dot Plot",
+    category: "macro",
+    definition:
+      "FOMC 위원 각자가 예상하는 향후 금리 수준을 점으로 찍은 분포도. 분기마다 공개되며, 중앙값이 '연준이 스스로 그리는 금리 경로'다. 시장 기대와 어긋나면 변동성이 커진다.",
+  },
+  {
+    id: "quantitative-tightening",
+    term: "양적긴축 (QT)",
+    alias: "Quantitative Tightening",
+    category: "macro",
+    definition:
+      "연준이 보유 자산을 줄여 시중 유동성을 회수하는 정책. 반대로 자산을 사서 돈을 푸는 것이 양적완화(QE)다. QT는 위험자산에 역풍, QE는 순풍으로 작용하는 경우가 많다.",
+    analogy:
+      "시장이라는 욕조에서 물(돈)을 빼는 게 QT, 채우는 게 QE.",
+  },
+  {
+    id: "fed",
+    term: "연준 (Fed)",
+    alias: "Federal Reserve",
+    category: "macro",
+    definition:
+      "미국의 중앙은행. 기준금리와 유동성을 조절해 물가·고용을 관리한다. 달러가 기축통화라 연준의 결정은 크립토를 포함한 전 세계 위험자산의 방향을 좌우한다.",
+  },
+  {
+    id: "policy-rate",
+    term: "기준금리",
+    alias: "Policy Rate",
+    category: "macro",
+    definition:
+      "연준이 정하는 미국의 기본 금리. 오르면(인상) 안전한 예금·채권 수익이 커져 크립토 같은 위험자산에서 자금이 빠지고, 내리면(인하) 그 반대로 위험자산에 우호적이다.",
+    analogy:
+      "돈의 '기본 몸값'. 이게 비싸지면 굳이 위험한 곳에 돈을 둘 이유가 줄어든다.",
+  },
+
   // ── 시장 구조 ──────────────────────────────────────────────
   {
     id: "btc-dominance",
@@ -92,6 +180,66 @@ export const GLOSSARY: GlossaryEntry[] = [
     category: "market-structure",
     definition:
       "USDT·USDC 등 1달러 페그 토큰의 총 발행량. 시장에 \"대기 중인 현금\"으로 해석한다. 발행량이 늘면 매수 화력 충전, 줄면 자금 유출 신호.",
+  },
+
+  // ── 온체인 · 펀더멘털 ──────────────────────────────────────
+  {
+    id: "spot-etf",
+    term: "ETF (현물 ETF)",
+    alias: "Spot ETF",
+    category: "onchain",
+    definition:
+      "비트코인·이더리움 현물을 담아 주식처럼 거래소에서 사고파는 펀드. 기관·연기금이 지갑 없이도 크립토에 투자하는 통로라, 순유입/순유출 데이터가 기관 수급의 바로미터로 쓰인다.",
+    analogy:
+      "코인을 직접 안 사도 '코인 담은 주식'을 증권 계좌에서 사는 것.",
+  },
+  {
+    id: "tvl",
+    term: "TVL (예치총액)",
+    alias: "Total Value Locked",
+    category: "onchain",
+    definition:
+      "디파이(DeFi) 프로토콜에 예치된 자산의 총 달러 가치. 그 체인·서비스에 실제로 얼마의 돈이 묶여 일하는지를 보여줘, 생태계 규모와 신뢰도를 재는 대표 지표다.",
+  },
+  {
+    id: "staking",
+    term: "스테이킹",
+    alias: "Staking",
+    category: "onchain",
+    definition:
+      "코인을 네트워크에 맡겨 검증에 참여하고 보상을 받는 것. 지분증명(PoS) 체인의 핵심으로, 예치된 물량은 유통에서 빠져 매도 압력을 줄이는 효과도 있다.",
+    analogy:
+      "코인을 은행에 예금처럼 묶어두고 이자를 받되, 그 돈이 네트워크 보안에 쓰이는 것.",
+  },
+  {
+    id: "halving",
+    term: "반감기",
+    alias: "Halving",
+    category: "onchain",
+    definition:
+      "비트코인 채굴 보상이 약 4년마다 절반으로 줄어드는 이벤트. 신규 공급이 급감해 역사적으로 강세장의 방아쇠로 여겨졌다. 다만 '이미 알려진 재료'라 반영 시점은 논쟁적이다.",
+    analogy:
+      "금광에서 캐낼 수 있는 금의 양이 4년마다 반으로 줄어드는 것.",
+  },
+  {
+    id: "fear-greed",
+    term: "공포탐욕지수",
+    alias: "Fear & Greed Index",
+    category: "onchain",
+    definition:
+      "변동성·거래량·SNS 심리 등을 0~100으로 합산한 시장 심리 지표. 낮으면 '극단적 공포'(저점 신호로 자주 해석), 높으면 '극단적 탐욕'(과열 경고). 대표적 역발상 지표.",
+    analogy:
+      "시장 전체의 기분을 100점 만점으로 잰 감정 온도계.",
+  },
+  {
+    id: "whale",
+    term: "고래",
+    alias: "Whale",
+    category: "onchain",
+    definition:
+      "시세를 흔들 만큼 대량의 코인을 보유한 개인·기관. 이들의 지갑 이동(거래소 입금/출금)은 온체인 분석의 핵심 관찰 대상으로, 대량 입금은 매도 준비 신호로 읽히곤 한다.",
+    analogy:
+      "작은 연못에서 몸을 한 번 뒤척이면 온 물결이 출렁이는 큰 물고기.",
   },
 
   // ── 파생상품 ──────────────────────────────────────────────
@@ -138,6 +286,53 @@ export const GLOSSARY: GlossaryEntry[] = [
       "거래소 트레이더의 롱 포지션 수 ÷ 숏 포지션 수. 1보다 크면 롱 우세. 단, \"군중이 다 한쪽이면 그 반대로 간다\"는 역지표로도 자주 쓰인다.",
   },
 
+  {
+    id: "leverage",
+    term: "레버리지",
+    alias: "Leverage",
+    category: "derivatives",
+    definition:
+      "증거금의 몇 배 규모로 포지션을 잡는 것(예: 10배). 수익도 손실도 같은 배수로 커진다. 배율이 높을수록 청산 가격이 진입가에 가까워져, 작은 역방향 움직임에도 전액을 잃을 수 있다.",
+    analogy:
+      "내 돈 100만으로 1,000만어치를 굴리는 것 — 벌 때도 10배, 잃을 때도 10배.",
+  },
+  {
+    id: "liquidation",
+    term: "청산",
+    alias: "Liquidation",
+    category: "derivatives",
+    definition:
+      "레버리지 포지션의 손실이 증거금을 넘어서기 직전, 거래소가 강제로 포지션을 종료하는 것. 청산이 연쇄로 터지면 가격이 한 방향으로 급하게 쏠린다(청산 캐스케이드).",
+    analogy:
+      "빌린 돈으로 산 집값이 담보 밑으로 떨어지면 은행이 강제로 파는 것.",
+  },
+  {
+    id: "perpetual",
+    term: "무기한 선물",
+    alias: "Perpetual · Perp",
+    category: "derivatives",
+    definition:
+      "만기가 없는 선물 계약. 펀딩비로 현물 가격에 계속 붙어 있게 설계돼 있다. 크립토 거래량의 대부분을 차지하며, 롱·숏 베팅과 레버리지의 주 무대다.",
+  },
+  {
+    id: "short-squeeze",
+    term: "숏 스퀴즈",
+    alias: "Short Squeeze",
+    category: "derivatives",
+    definition:
+      "하락에 베팅한 숏 포지션이 가격 상승에 몰려 강제 청산되고, 그 청산이 다시 매수를 불러 가격을 더 밀어올리는 현상. 급등의 연료가 되며, 반대 방향은 '롱 스퀴즈'.",
+    analogy:
+      "내릴 거라 판 사람들이 '어? 오르네' 하고 급히 되사면서 불을 더 키우는 것.",
+  },
+  {
+    id: "margin",
+    term: "마진 (증거금)",
+    alias: "Margin",
+    category: "derivatives",
+    definition:
+      "레버리지 포지션을 유지하기 위해 담보로 맡기는 돈. 손실로 증거금이 유지 기준 아래로 내려가면 추가 입금 요구(마진콜)나 청산이 발생한다.",
+  },
+
   // ── 기술적 분석 ───────────────────────────────────────────
   {
     id: "rsi",
@@ -170,6 +365,61 @@ export const GLOSSARY: GlossaryEntry[] = [
     category: "technical",
     definition:
       "단기·장기 이동평균의 차이를 막대그래프로 보여 모멘텀 전환을 잡는 지표. 시그널선과의 교차, 다이버전스(가격은 신고가인데 MACD는 못 따라옴)가 핵심.",
+  },
+
+  {
+    id: "support-resistance",
+    term: "지지·저항",
+    alias: "Support / Resistance",
+    category: "technical",
+    definition:
+      "가격이 반복해서 튕겨 오른 바닥이 지지, 반복해서 막힌 천장이 저항이다. 매수·매도 주문이 몰려 있는 심리적 경계선으로, 돌파·이탈 여부가 다음 방향의 기준이 된다.",
+    analogy:
+      "공을 튀길 때 바닥(지지)과 천장(저항) 사이를 오가는 것과 같다.",
+  },
+  {
+    id: "divergence",
+    term: "다이버전스",
+    alias: "Divergence",
+    category: "technical",
+    definition:
+      "가격과 보조지표(RSI·MACD 등)가 서로 반대로 움직이는 현상. 가격은 신고점인데 지표는 못 따라오면(약세 다이버전스) 추세 힘이 빠졌다는 조기 경고로 읽는다.",
+  },
+  {
+    id: "volume",
+    term: "거래량",
+    alias: "Volume",
+    category: "technical",
+    definition:
+      "일정 기간 체결된 거래의 총량. 추세의 '진짜 여부'를 검증하는 도구로, 가격 상승에 거래량이 실리면 신뢰도가 높고, 거래량 없이 오르면 힘이 약한 상승으로 본다.",
+    analogy:
+      "가격이 '무슨 말을 하는지'라면, 거래량은 '그 말에 몇 명이 동의하는지'.",
+  },
+  {
+    id: "vwap",
+    term: "VWAP (거래량가중평균가)",
+    alias: "Volume Weighted Average Price",
+    category: "technical",
+    definition:
+      "거래량을 가중치로 계산한 평균 가격선. 기관이 '오늘 잘 산 건지'를 판단하는 기준선으로 쓰며, 가격이 VWAP 위면 매수 우위, 아래면 매도 우위로 해석한다.",
+  },
+  {
+    id: "fibonacci",
+    term: "피보나치 되돌림",
+    alias: "Fibonacci Retracement",
+    category: "technical",
+    definition:
+      "상승·하락 파동의 되돌림 구간을 38.2%·50%·61.8% 등 비율로 표시한 도구. 이 자리들이 지지·저항으로 자주 작동한다고 보고 진입·목표 설정에 활용한다.",
+  },
+  {
+    id: "bollinger-bands",
+    term: "볼린저 밴드",
+    alias: "Bollinger Bands",
+    category: "technical",
+    definition:
+      "이동평균선 위아래로 변동성(표준편차)만큼 띠를 두른 지표. 밴드가 좁아지면 변동성 폭발 임박(스퀴즈), 가격이 밴드 상·하단에 닿으면 과열·과매도 신호로 읽는다.",
+    analogy:
+      "가격이 다니는 '탄력 있는 도로 차선' — 좁아지면 곧 크게 움직인다는 신호.",
   },
 
   // ── SMC / ICT ─────────────────────────────────────────────
