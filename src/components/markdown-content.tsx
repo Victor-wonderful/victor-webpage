@@ -2,6 +2,8 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
 import { CodeBlock } from "./code-block";
+import { GlossaryTerm } from "./glossary-term";
+import { remarkGlossary } from "@/lib/glossary-remark";
 import { imageUrl } from "@/sanity/image";
 import type { SanityImageRef } from "@/lib/posts";
 import { cn } from "@/lib/cn";
@@ -110,10 +112,26 @@ export function MarkdownContent({
       )}
     >
       <ReactMarkdown
-        remarkPlugins={[[remarkGfm, { singleTilde: false }], remarkUnwrapImages]}
+        remarkPlugins={[
+          [remarkGfm, { singleTilde: false }],
+          remarkUnwrapImages,
+          remarkGlossary,
+        ]}
         rehypePlugins={[rehypeHighlight]}
         components={{
           pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
+          a: ({ href, children, node, ...props }) => {
+            // remark-glossary 가 실어 준 data-glossary 를 툴팁 컴포넌트로 교체
+            const gid =
+              (props as Record<string, string>)["data-glossary"] ??
+              (node?.properties?.dataGlossary as string | undefined);
+            if (gid) return <GlossaryTerm id={gid}>{children}</GlossaryTerm>;
+            return (
+              <a href={href} {...props}>
+                {children}
+              </a>
+            );
+          },
           img: ({ src, alt }) => {
             const resolved = resolveSrc(typeof src === "string" ? src : undefined);
             if (!resolved) return null;
