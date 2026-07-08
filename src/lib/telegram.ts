@@ -278,9 +278,12 @@ export function buildCaption(post: Post, siteUrl: string): string {
     escapeHtml(summary),
   ];
 
-  if (!isPublicUrl(url)) {
-    lines.push("", `→ ${url}`);
-  }
+  // Always surface the blog link in the caption body — not only for private
+  // URLs. The inline-keyboard CTA button carries the link on direct bot sends
+  // (channel + mirror group), but Telegram STRIPS the inline keyboard when it
+  // auto-forwards a channel post into its linked discussion group. Without a
+  // caption-level link, the discussion-group copy has no way back to the site.
+  lines.push("", `🔗 전문 보기: ${url}`);
 
   return lines.join("\n");
 }
