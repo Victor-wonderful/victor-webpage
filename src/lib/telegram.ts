@@ -351,6 +351,11 @@ export async function sendPostToTelegram(
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHANNEL_ID;
   const groupChatId = process.env.TELEGRAM_GROUP_CHAT_ID;
+  // The channel's linked discussion group. Telegram auto-forwards channel posts
+  // here but STRIPS the inline keyboard on that copy, so the vote/CTA buttons
+  // disappear. We send our own copy (with buttons) here too — this duplicates
+  // the auto-forwarded post (accepted trade-off) but restores the buttons.
+  const discussionChatId = process.env.TELEGRAM_DISCUSSION_CHAT_ID;
   if (!token) throw new Error("TELEGRAM_BOT_TOKEN is not set");
   if (!chatId) throw new Error("TELEGRAM_CHANNEL_ID is not set");
 
@@ -369,22 +374,23 @@ export async function sendPostToTelegram(
   if (reply_markup) channelPayload.reply_markup = reply_markup;
   const r = await tgCall<SendResponse>(token, "sendPhoto", channelPayload);
 
-  // 2) Secondary: mirror to the community group's General topic when
-  //    TELEGRAM_GROUP_CHAT_ID is configured. Failures here MUST NOT throw —
+  // 2) Secondary: mirror the photo (with buttons) to the community group and to
+  //    the channel's linked discussion group. Failures here MUST NOT throw —
   //    the channel publish already succeeded and Sanity should not retry.
-  if (groupChatId) {
-    const groupPayload: Record<string, unknown> = {
-      chat_id: groupChatId,
+  const photoMirrors = [groupChatId, discussionChatId].filter(Boolean) as string[];
+  for (const mirrorId of photoMirrors) {
+    const mirrorPayload: Record<string, unknown> = {
+      chat_id: mirrorId,
       photo,
       caption,
       parse_mode: "HTML",
     };
-    if (reply_markup) groupPayload.reply_markup = reply_markup;
+    if (reply_markup) mirrorPayload.reply_markup = reply_markup;
     try {
-      await tgCall<SendResponse>(token, "sendPhoto", groupPayload);
+      await tgCall<SendResponse>(token, "sendPhoto", mirrorPayload);
     } catch (e) {
       console.warn(
-        `[telegram] group mirror failed for ${post.slug}: ${(e as Error).message}`,
+        `[telegram] photo mirror ${mirrorId} failed for ${post.slug}: ${(e as Error).message}`,
       );
     }
   }
