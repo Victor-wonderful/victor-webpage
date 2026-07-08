@@ -13,6 +13,9 @@ import { CommentsSection } from "@/components/comments/comments-section";
 import { PostLike } from "@/components/likes/post-like";
 import { PostBookmark } from "@/components/bookmarks/post-bookmark";
 import { PostMetaBar } from "@/components/post/post-meta-bar";
+import { JsonLd } from "@/components/seo/json-ld";
+import { blogPostingJsonLd, breadcrumbJsonLd } from "@/lib/seo";
+import { SITE } from "@/lib/site";
 
 export const revalidate = 60;
 
@@ -34,13 +37,23 @@ export async function generateMetadata(
   // Guarantees link previews (Telegram/X/etc.) render a thumbnail even when
   // a post has no manually-set cover.
   const ogImage = resolvePhotoUrl(post);
+  const category = getCategory(post.category);
   return {
     title: post.title,
     description: post.summary,
+    keywords: post.tags?.length ? post.tags : undefined,
+    authors: [{ name: SITE.author }],
+    alternates: { canonical: `/blog/${post.slug}` },
     openGraph: {
       title: post.title,
       description: post.summary,
       type: "article",
+      url: `${SITE.url}/blog/${post.slug}`,
+      publishedTime: post.publishedAt,
+      modifiedTime: post.publishedAt,
+      authors: [SITE.author],
+      section: category?.label,
+      tags: post.tags,
       images: [ogImage],
     },
     twitter: {
@@ -61,8 +74,25 @@ export default async function PostPage(
   if (!post) notFound();
   const category = getCategory(post.category);
 
+  const postUrl = `${SITE.url}/blog/${post.slug}`;
+  const jsonLd = [
+    blogPostingJsonLd(post, {
+      url: postUrl,
+      imageUrl: resolvePhotoUrl(post),
+      sectionLabel: category?.label ?? "",
+    }),
+    breadcrumbJsonLd([
+      { name: SITE.name, url: SITE.url },
+      ...(category
+        ? [{ name: category.label, url: `${SITE.url}/category/${category.slug}` }]
+        : []),
+      { name: post.title, url: postUrl },
+    ]),
+  ];
+
   return (
     <article>
+      <JsonLd data={jsonLd} />
       {/* Header */}
       <header className="container-prose mt-12 border-b border-border pb-10">
         <Link

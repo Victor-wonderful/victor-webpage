@@ -3,7 +3,9 @@ import { Playfair_Display, Source_Serif_4, Inter, JetBrains_Mono } from "next/fo
 import { BrandBand } from "@/components/brand-band";
 import { BackToTop } from "@/components/back-to-top";
 import { AlphaResearchBannerMount } from "@/components/alpha-research-banner-mount";
+import { JsonLd } from "@/components/seo/json-ld";
 import { SITE } from "@/lib/site";
+import { siteJsonLd } from "@/lib/seo";
 import "./globals.css";
 
 const display = Playfair_Display({
@@ -77,6 +79,7 @@ export default function RootLayout({
             __html: `try{var t=localStorage.getItem('victor-alpha-theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t;}}catch(e){}`,
           }}
         />
+        <JsonLd data={siteJsonLd()} />
       </head>
       <body className="bg-bg text-fg antialiased">
         <BrandBand variant="header" />
