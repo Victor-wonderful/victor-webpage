@@ -17,49 +17,40 @@ export type MacroEvent = {
   note?: string;
 };
 
-// Edit this list each month.
+// Edit this list each month. Last updated: 2026-07-01 (July–August 2026 events).
+// Date sources: BLS release schedule (CPI 6월=7/14, PPI 6월=7/15, 6월 고용=7/2),
+// FOMC official calendar (7월 회의 7/28~29, 결정 7/29 14:00 ET).
 export const MACRO_EVENTS: MacroEvent[] = [
   {
-    startsAt: "2026-05-13T21:30:00+09:00",
-    title: "美 4월 소비자물가지수 (CPI)",
-    kind: "CPI",
+    startsAt: "2026-07-02T21:30:00+09:00",
+    title: "美 6월 비농업 고용 · 실업률 (NFP)",
+    kind: "고용",
     impact: "high",
-    note: "예상 전월대비 +0.3% / 전년대비 +3.1%",
+    note: "독립기념일 휴장 앞두고 하루 앞당김 · 예상 +10만~11.5만 / 실업률 4.3%",
   },
   {
-    startsAt: "2026-05-14T21:30:00+09:00",
-    title: "美 4월 생산자물가지수 (PPI)",
+    startsAt: "2026-07-14T21:30:00+09:00",
+    title: "美 6월 소비자물가지수 (CPI)",
+    kind: "CPI",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-07-15T21:30:00+09:00",
+    title: "美 6월 생산자물가지수 (PPI)",
     kind: "PPI",
     impact: "med",
   },
   {
-    startsAt: "2026-05-15T21:30:00+09:00",
-    title: "美 주간 신규 실업수당 청구건수",
-    kind: "고용",
-    impact: "med",
-  },
-  {
-    startsAt: "2026-05-21T03:00:00+09:00",
-    title: "FOMC 5월 회의 의사록 공개",
+    startsAt: "2026-07-30T03:00:00+09:00",
+    title: "FOMC 7월 금리 결정",
     kind: "FOMC",
     impact: "high",
+    note: "7/29 14:00 ET 발표 · 점도표 없음 (SEP는 3·6·9·12월만)",
   },
   {
-    startsAt: "2026-06-06T21:30:00+09:00",
-    title: "美 5월 비농업 고용 · 실업률 (NFP)",
+    startsAt: "2026-08-07T21:30:00+09:00",
+    title: "美 7월 비농업 고용 · 실업률 (NFP)",
     kind: "고용",
-    impact: "high",
-  },
-  {
-    startsAt: "2026-06-11T21:30:00+09:00",
-    title: "美 5월 소비자물가지수 (CPI)",
-    kind: "CPI",
-    impact: "high",
-  },
-  {
-    startsAt: "2026-06-18T03:00:00+09:00",
-    title: "FOMC 6월 금리 결정 · 점도표",
-    kind: "FOMC",
     impact: "high",
   },
   {
@@ -69,24 +60,10 @@ export const MACRO_EVENTS: MacroEvent[] = [
     impact: "med",
   },
   {
-    startsAt: "2026-07-14T21:30:00+09:00",
-    title: "美 6월 소비자물가지수 (CPI)",
-    kind: "CPI",
-    impact: "high",
-    note: "6월 물가 — FOMC(7/29) 직전 마지막 CPI",
-  },
-  {
     startsAt: "2026-07-16T21:30:00+09:00",
     title: "美 주간 신규 실업수당 청구건수",
     kind: "고용",
     impact: "med",
-  },
-  {
-    startsAt: "2026-07-30T03:00:00+09:00",
-    title: "FOMC 7월 금리 결정",
-    kind: "FOMC",
-    impact: "high",
-    note: "7/28~29 회의 · 결정 발표 KST 7/30 새벽 3시",
   },
 ];
 
