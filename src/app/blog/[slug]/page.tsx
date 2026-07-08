@@ -5,7 +5,7 @@ import { getAllSlugs, getPostBySlug } from "@/lib/posts";
 import { getCategory } from "@/lib/categories";
 import { formatDate } from "@/lib/format";
 import { PostCoverImage } from "@/components/post-cover-image";
-import { imageUrl } from "@/sanity/image";
+import { resolvePhotoUrl } from "@/lib/telegram";
 import { TypedMetaBlock } from "@/components/typed-meta";
 import { MarkdownContent } from "@/components/markdown-content";
 import { PostAttachments } from "@/components/post-attachments";
@@ -30,7 +30,10 @@ export async function generateMetadata(
   const slug = decodeURIComponent(rawSlug);
   const post = await getPostBySlug(slug);
   if (!post) return { title: "글을 찾을 수 없습니다" };
-  const ogImage = imageUrl(post.coverImage, 1200);
+  // Always resolve an image: cover → first body image → category banner.
+  // Guarantees link previews (Telegram/X/etc.) render a thumbnail even when
+  // a post has no manually-set cover.
+  const ogImage = resolvePhotoUrl(post);
   return {
     title: post.title,
     description: post.summary,
@@ -38,13 +41,13 @@ export async function generateMetadata(
       title: post.title,
       description: post.summary,
       type: "article",
-      images: ogImage ? [ogImage] : undefined,
+      images: [ogImage],
     },
     twitter: {
-      card: ogImage ? "summary_large_image" : "summary",
+      card: "summary_large_image",
       title: post.title,
       description: post.summary,
-      images: ogImage ? [ogImage] : undefined,
+      images: [ogImage],
     },
   };
 }
