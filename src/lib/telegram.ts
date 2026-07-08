@@ -351,11 +351,6 @@ export async function sendPostToTelegram(
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.TELEGRAM_CHANNEL_ID;
   const groupChatId = process.env.TELEGRAM_GROUP_CHAT_ID;
-  // The channel's linked discussion group. Telegram auto-forwards channel posts
-  // here but STRIPS the inline keyboard on that copy, so the vote/CTA buttons
-  // disappear. We send our own copy (with buttons) here too — this duplicates
-  // the auto-forwarded post (accepted trade-off) but restores the buttons.
-  const discussionChatId = process.env.TELEGRAM_DISCUSSION_CHAT_ID;
   if (!token) throw new Error("TELEGRAM_BOT_TOKEN is not set");
   if (!chatId) throw new Error("TELEGRAM_CHANNEL_ID is not set");
 
@@ -374,23 +369,27 @@ export async function sendPostToTelegram(
   if (reply_markup) channelPayload.reply_markup = reply_markup;
   const r = await tgCall<SendResponse>(token, "sendPhoto", channelPayload);
 
-  // 2) Secondary: mirror the photo (with buttons) to the community group and to
-  //    the channel's linked discussion group. Failures here MUST NOT throw —
-  //    the channel publish already succeeded and Sanity should not retry.
-  const photoMirrors = [groupChatId, discussionChatId].filter(Boolean) as string[];
-  for (const mirrorId of photoMirrors) {
-    const mirrorPayload: Record<string, unknown> = {
-      chat_id: mirrorId,
+  // 2) Secondary: mirror to the community group. Its caption gets an extra
+  //    footer linking back to the VA channel + discussion group, so members of
+  //    that community can find their way over (the channel/discussion copies
+  //    don't need this footer — it's only useful in the outside group).
+  //    Failures here MUST NOT throw — the channel publish already succeeded and
+  //    Sanity should not retry.
+  if (groupChatId) {
+    const mirrorCaption =
+      caption + "\n\n📢 채널 @victor_alpha2026 · 💬 토론방 @victor_alpha2026_chat";
+    const groupPayload: Record<string, unknown> = {
+      chat_id: groupChatId,
       photo,
-      caption,
+      caption: mirrorCaption,
       parse_mode: "HTML",
     };
-    if (reply_markup) mirrorPayload.reply_markup = reply_markup;
+    if (reply_markup) groupPayload.reply_markup = reply_markup;
     try {
-      await tgCall<SendResponse>(token, "sendPhoto", mirrorPayload);
+      await tgCall<SendResponse>(token, "sendPhoto", groupPayload);
     } catch (e) {
       console.warn(
-        `[telegram] photo mirror ${mirrorId} failed for ${post.slug}: ${(e as Error).message}`,
+        `[telegram] group mirror failed for ${post.slug}: ${(e as Error).message}`,
       );
     }
   }
