@@ -19,3 +19,7 @@ scripts/
 # not src/lib/supabase which contains application code.
 /supabase/
 tsconfig.tsbuildinfo
+# Local one-off scratch: dated telegram-send / verify / debug scripts and
+# temp publish staging. Convention: leading underscore = throwaway, never committed.
+# (Override a specific file with e.g. `!/_keepme.mjs` if ever needed.)
+/_*
