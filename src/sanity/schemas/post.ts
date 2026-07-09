@@ -138,6 +138,15 @@ export const postType = defineType({
       hidden: ({ document }) => !document?.telegramMessageId,
     }),
     defineField({
+      name: "telegramThreadSeeded",
+      title: "텔레그램 토론 씨앗 게시됨 (시스템)",
+      description:
+        "/api/telegram/callback 이 자동전달 스레드에 토론 질문을 단 뒤 true 로 기록. 수동 편집 금지.",
+      type: "boolean",
+      readOnly: true,
+      hidden: ({ document }) => !document?.telegramMessageId,
+    }),
+    defineField({
       name: "tgUpvotes",
       title: "텔레그램 좋아요 (시스템)",
       type: "number",

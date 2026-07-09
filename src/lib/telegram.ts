@@ -213,6 +213,68 @@ function pollForPost(post: Post) {
   return CATEGORY_POLLS[post.category as CategorySlugLocal];
 }
 
+/**
+ * Discussion-starter prompts posted by the bot as a reply into each post's
+ * comment thread (the auto-forwarded channel message in the linked group).
+ * Purpose: convert a silent auto-forward into a conversation — the "bot half"
+ * of the seeding playbook. One prompt is picked deterministically by the
+ * channel message id so the same post always gets the same question (and
+ * re-deliveries never vary it).
+ */
+const CATEGORY_DISCUSSION_PROMPTS: Record<CategorySlugLocal, string[]> = {
+  macro: [
+    "오늘 여러분 포지션은? 롱 / 숏 / 관망 — 이유도 한 줄 부탁해요 👇",
+    "이 지지선 깨지면 비중 줄이시겠어요? 손절 라인 어디 잡으셨나요?",
+    "지표 앞두고 현금 비중 얼마나 두시나요? 편하게 공유해주세요 👇",
+  ],
+  market: [
+    "이번 주 시나리오, 강세 / 약세 / 중립 어디에 거시겠어요? 👇",
+    "이번 주 가장 주목하는 종목 하나만 꼽는다면?",
+  ],
+  tokens: [
+    "이 분석에 동의하세요? 반대 근거 있으면 댓글로 붙여주세요 👇",
+    "진입한다면 어느 가격대에서 분할하실 건가요?",
+  ],
+  strategy: [
+    "이 전략, 실제 라이브에서 써보신 분 후기 궁금합니다 👇",
+    "어떤 종목·타임프레임에 제일 잘 맞을까요? 의견 나눠주세요.",
+  ],
+  learn: [
+    "이 개념, 처음 배울 때 어디서 제일 헷갈리셨어요? 👇",
+    "실전에서 이거 적용하다 실수한 경험 있으신 분?",
+  ],
+  basics: [
+    "이 대목, 실전에서 지키기 어떤가요? 여러분 경험 나눠주세요 👇",
+    "책에서 가장 와닿은 원칙 하나만 꼽는다면?",
+  ],
+};
+
+const TRADE_IDEA_DISCUSSION_PROMPTS = [
+  "이 셋업 타셨나요? 진입 / 관망 편하게 공유해주세요 👇",
+  "손절·목표 라인 여러분이면 어디 두시겠어요?",
+];
+
+/**
+ * Pick a discussion prompt for a post category. `seed` (the channel message id)
+ * makes the choice deterministic and stable across webhook re-deliveries.
+ * Returns undefined for unknown categories (caller skips commenting).
+ */
+export function pickDiscussionPrompt(
+  category: string,
+  seed: number,
+): string | undefined {
+  const pool = CATEGORY_DISCUSSION_PROMPTS[category as CategorySlugLocal];
+  if (!pool || pool.length === 0) return undefined;
+  return pool[Math.abs(seed) % pool.length];
+}
+
+/** Discussion prompt for a trade-idea thread. */
+export function pickTradeIdeaDiscussionPrompt(seed: number): string {
+  return TRADE_IDEA_DISCUSSION_PROMPTS[
+    Math.abs(seed) % TRADE_IDEA_DISCUSSION_PROMPTS.length
+  ];
+}
+
 const SUMMARY_CAP = 110;
 
 /** Escape characters that have meaning in Telegram HTML parse mode. */

@@ -22,7 +22,11 @@
 
 import { NextResponse } from "next/server";
 import { writeClient } from "@/sanity/client";
-import { buildReplyMarkup } from "@/lib/telegram";
+import {
+  buildReplyMarkup,
+  pickDiscussionPrompt,
+  pickTradeIdeaDiscussionPrompt,
+} from "@/lib/telegram";
 import type { Post } from "@/lib/posts";
 import { SITE } from "@/lib/site";
 
@@ -38,7 +42,23 @@ type CallbackQuery = {
   data?: string;
 };
 
-type Update = { callback_query?: CallbackQuery };
+/**
+ * A message update. We only act on `is_automatic_forward` messages — the copy
+ * Telegram auto-posts into the linked discussion group when the channel
+ * publishes. `forward_origin.message_id` (or the legacy `forward_from_message_id`)
+ * is the ORIGINAL channel message id, which equals the `telegramMessageId` we
+ * stored on the post when broadcasting.
+ */
+type TgMessage = {
+  message_id: number;
+  chat: { id: number };
+  is_automatic_forward?: boolean;
+  sender_chat?: { id: number };
+  forward_from_message_id?: number;
+  forward_origin?: { message_id?: number };
+};
+
+type Update = { callback_query?: CallbackQuery; message?: TgMessage };
 
 async function tgCall<T>(method: string, body: unknown): Promise<T> {
   const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -66,12 +86,95 @@ async function answer(callbackId: string, text?: string) {
   }
 }
 
+/**
+ * When the channel auto-forwards a new post into the linked discussion group,
+ * drop one category-aware discussion prompt as a reply into that post's thread.
+ * This "wakes up" the otherwise-silent comment thread.
+ *
+ * MUST always resolve to a 200 (never throw): a non-200 makes Telegram retry
+ * the update, which would double-post the prompt. Dedup is enforced by the
+ * `telegramThreadSeeded` flag on the Sanity doc.
+ */
+async function handleAutoForward(msg: TgMessage): Promise<NextResponse> {
+  // Only auto-forwards originating from OUR channel.
+  const channelId = process.env.TELEGRAM_CHANNEL_ID;
+  if (!channelId || msg.sender_chat?.id !== Number(channelId)) {
+    return NextResponse.json({ ok: true, skipped: "not our channel forward" });
+  }
+
+  const channelMsgId = msg.forward_origin?.message_id ?? msg.forward_from_message_id;
+  if (!channelMsgId) {
+    return NextResponse.json({ ok: true, skipped: "no origin message id" });
+  }
+
+  try {
+    // Try post first, then trade idea — both store telegramMessageId.
+    const post = await writeClient.fetch<
+      { _id: string; category: string; telegramThreadSeeded?: boolean } | null
+    >(
+      `*[_type=="post" && telegramMessageId == $mid][0]{ _id, category, telegramThreadSeeded }`,
+      { mid: channelMsgId },
+    );
+
+    let docId: string | undefined;
+    let prompt: string | undefined;
+
+    if (post) {
+      if (post.telegramThreadSeeded) {
+        return NextResponse.json({ ok: true, skipped: "already seeded" });
+      }
+      docId = post._id;
+      prompt = pickDiscussionPrompt(post.category, channelMsgId);
+    } else {
+      const idea = await writeClient.fetch<
+        { _id: string; telegramThreadSeeded?: boolean } | null
+      >(
+        `*[_type=="tradeIdea" && telegramMessageId == $mid][0]{ _id, telegramThreadSeeded }`,
+        { mid: channelMsgId },
+      );
+      if (idea) {
+        if (idea.telegramThreadSeeded) {
+          return NextResponse.json({ ok: true, skipped: "already seeded" });
+        }
+        docId = idea._id;
+        prompt = pickTradeIdeaDiscussionPrompt(channelMsgId);
+      }
+    }
+
+    if (!docId || !prompt) {
+      return NextResponse.json({ ok: true, skipped: "no matching doc/prompt" });
+    }
+
+    await tgCall("sendMessage", {
+      chat_id: msg.chat.id,
+      text: prompt,
+      reply_parameters: { message_id: msg.message_id },
+      disable_notification: true,
+    });
+
+    // Mark seeded AFTER a successful send so a send failure lets a retry try again.
+    await writeClient.patch(docId).set({ telegramThreadSeeded: true }).commit();
+
+    return NextResponse.json({ ok: true, seeded: docId });
+  } catch (e) {
+    console.warn(`[telegram/callback] auto-forward seed failed: ${(e as Error).message}`);
+    // Still 200 — a retry would risk a double-post, and the flag isn't set yet
+    // so the next genuine forward for a different post is unaffected.
+    return NextResponse.json({ ok: true, skipped: "seed error (swallowed)" });
+  }
+}
+
 export async function POST(req: Request) {
   let update: Update;
   try {
     update = (await req.json()) as Update;
   } catch {
     return NextResponse.json({ ok: false, error: "invalid json" }, { status: 400 });
+  }
+
+  // Channel → linked-group auto-forward: seed the post's discussion thread.
+  if (update.message?.is_automatic_forward) {
+    return handleAutoForward(update.message);
   }
 
   const cb = update.callback_query;
