@@ -54,8 +54,9 @@ type TgMessage = {
   chat: { id: number };
   is_automatic_forward?: boolean;
   sender_chat?: { id: number };
+  forward_from_chat?: { id: number };
   forward_from_message_id?: number;
-  forward_origin?: { message_id?: number };
+  forward_origin?: { message_id?: number; chat?: { id: number } };
 };
 
 type Update = { callback_query?: CallbackQuery; message?: TgMessage };
@@ -96,9 +97,18 @@ async function answer(callbackId: string, text?: string) {
  * `telegramThreadSeeded` flag on the Sanity doc.
  */
 async function handleAutoForward(msg: TgMessage): Promise<NextResponse> {
-  // Only auto-forwards originating from OUR channel.
+  // Only auto-forwards originating from OUR channel. Telegram may carry the
+  // channel identity in any of sender_chat / forward_from_chat / forward_origin.chat
+  // depending on API version, so accept a match on any of them (don't rely on
+  // sender_chat alone — that silently skipped real forwards).
   const channelId = process.env.TELEGRAM_CHANNEL_ID;
-  if (!channelId || msg.sender_chat?.id !== Number(channelId)) {
+  const chan = Number(channelId);
+  const fromOurChannel =
+    !!channelId &&
+    (msg.sender_chat?.id === chan ||
+      msg.forward_from_chat?.id === chan ||
+      msg.forward_origin?.chat?.id === chan);
+  if (!fromOurChannel) {
     return NextResponse.json({ ok: true, skipped: "not our channel forward" });
   }
 
@@ -148,7 +158,9 @@ async function handleAutoForward(msg: TgMessage): Promise<NextResponse> {
     await tgCall("sendMessage", {
       chat_id: msg.chat.id,
       text: prompt,
-      reply_parameters: { message_id: msg.message_id },
+      // reply_to_message_id (classic, universally supported) — places the
+      // prompt as a comment inside the post's discussion thread.
+      reply_to_message_id: msg.message_id,
       disable_notification: true,
     });
 
