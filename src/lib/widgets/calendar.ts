@@ -17,9 +17,10 @@ export type MacroEvent = {
   note?: string;
 };
 
-// Edit this list each month. Last updated: 2026-07-01 (July–August 2026 events).
-// Date sources: BLS release schedule (CPI 6월=7/14, PPI 6월=7/15, 6월 고용=7/2),
-// FOMC official calendar (7월 회의 7/28~29, 결정 7/29 14:00 ET).
+// Edit this list each month. Last updated: 2026-07-16 (adds Aug–Sep 2026 events).
+// Date sources: BLS release schedule (7월 CPI=8/12 수, 7월 PPI=8/13 목, 8월 고용=9/4 금),
+// FOMC official calendar (9월 회의 9/15~16, 결정 9/16 14:00 ET, 점도표 포함).
+// Times: 8:30 AM ET (EDT, UTC-4) = 21:30 KST · 2:00 PM ET = 익일 03:00 KST.
 export const MACRO_EVENTS: MacroEvent[] = [
   {
     startsAt: "2026-07-02T21:30:00+09:00",
@@ -27,6 +28,12 @@ export const MACRO_EVENTS: MacroEvent[] = [
     kind: "고용",
     impact: "high",
     note: "독립기념일 휴장 앞두고 하루 앞당김 · 예상 +10만~11.5만 / 실업률 4.3%",
+  },
+  {
+    startsAt: "2026-07-09T21:30:00+09:00",
+    title: "美 주간 신규 실업수당 청구건수",
+    kind: "고용",
+    impact: "med",
   },
   {
     startsAt: "2026-07-14T21:30:00+09:00",
@@ -38,6 +45,18 @@ export const MACRO_EVENTS: MacroEvent[] = [
     startsAt: "2026-07-15T21:30:00+09:00",
     title: "美 6월 생산자물가지수 (PPI)",
     kind: "PPI",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-07-16T21:30:00+09:00",
+    title: "美 주간 신규 실업수당 청구건수",
+    kind: "고용",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-07-23T21:30:00+09:00",
+    title: "美 주간 신규 실업수당 청구건수",
+    kind: "고용",
     impact: "med",
   },
   {
@@ -54,16 +73,41 @@ export const MACRO_EVENTS: MacroEvent[] = [
     impact: "high",
   },
   {
-    startsAt: "2026-07-09T21:30:00+09:00",
+    startsAt: "2026-08-12T21:30:00+09:00",
+    title: "美 7월 소비자물가지수 (CPI)",
+    kind: "CPI",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-08-13T21:30:00+09:00",
+    title: "美 7월 생산자물가지수 (PPI)",
+    kind: "PPI",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-08-20T21:30:00+09:00",
     title: "美 주간 신규 실업수당 청구건수",
     kind: "고용",
     impact: "med",
   },
   {
-    startsAt: "2026-07-16T21:30:00+09:00",
+    startsAt: "2026-08-27T21:30:00+09:00",
     title: "美 주간 신규 실업수당 청구건수",
     kind: "고용",
     impact: "med",
+  },
+  {
+    startsAt: "2026-09-04T21:30:00+09:00",
+    title: "美 8월 비농업 고용 · 실업률 (NFP)",
+    kind: "고용",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-09-17T03:00:00+09:00",
+    title: "FOMC 9월 금리 결정",
+    kind: "FOMC",
+    impact: "high",
+    note: "9/16 14:00 ET 발표 · 점도표(SEP) 포함",
   },
 ];
 
