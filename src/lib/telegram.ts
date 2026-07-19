@@ -175,42 +175,60 @@ export type TelegramSendResult = {
 };
 
 /**
- * Per-category opinion poll definitions. Categories not listed → no poll.
- * Polls are non-anonymous=false (anonymous), single-choice, attached as a
- * separate message right after the cover photo.
+ * Per-category opinion poll pools. Categories not listed → no poll.
+ * Polls are anonymous, single-choice, attached as a separate message right
+ * after the cover photo. Each category holds SEVERAL polls; one is picked
+ * deterministically by the channel message id (see pollForPost) so the group
+ * doesn't see the same question every time but re-deliveries stay stable.
+ * Tone: casual + a bit provocative (편 가르기) to pull replies.
  */
-const CATEGORY_POLLS: Partial<Record<CategorySlugLocal, { question: string; options: string[] }>> = {
-  macro: {
-    question: "오늘 BTC 방향은? (24h 관점)",
-    options: ["📈 위", "📉 아래", "↔️ 횡보"],
-  },
-  market: {
-    question: "이번 주 시장 시나리오는?",
-    options: ["🟢 강세", "🔴 약세", "🟡 중립"],
-  },
-  tokens: {
-    question: "이 분석에 동의하시나요?",
-    options: ["👍 동의", "🤔 부분 동의", "👎 반대"],
-  },
-  strategy: {
-    question: "이 전략 적용해보시겠어요?",
-    options: ["✅ 적용", "🧪 백테스트부터", "⛔ 안 함"],
-  },
+const CATEGORY_POLLS: Partial<Record<CategorySlugLocal, { question: string; options: string[] }[]>> = {
+  macro: [
+    { question: "오늘 BTC 방향은? (24h 관점)", options: ["📈 위", "📉 아래", "↔️ 횡보"] },
+    { question: "지금 현금 비중, 어느 정도세요?", options: ["🈳 거의 현금", "⚖️ 반반", "🔥 풀매수"] },
+    { question: "이번 지표 발표, 시장 반응은?", options: ["🟢 호재", "🔴 악재", "😐 이미 반영"] },
+  ],
+  market: [
+    { question: "이번 주 시장 시나리오는?", options: ["🟢 강세", "🔴 약세", "🟡 중립"] },
+    { question: "이번 주 돈은 어디로?", options: ["🅰️ 알트", "₿ BTC", "💵 현금 대기"] },
+    { question: "지금 심리, 공포 vs 탐욕?", options: ["😱 공포", "🤑 탐욕", "😐 중립"] },
+  ],
+  tokens: [
+    { question: "이 분석에 동의하시나요?", options: ["👍 동의", "🤔 부분 동의", "👎 반대"] },
+    { question: "이 토큰, 지금 들어간다면?", options: ["🟢 분할 매수", "⏳ 좀 더 기다림", "🚫 관심 없음"] },
+    { question: "6개월 뒤 이 토큰은?", options: ["🚀 상승", "📉 하락", "🦀 횡보"] },
+  ],
+  strategy: [
+    { question: "이 전략 적용해보시겠어요?", options: ["✅ 적용", "🧪 백테스트부터", "⛔ 안 함"] },
+    { question: "당신의 매매 스타일은?", options: ["⚡ 스캘핑", "🌊 스윙", "📅 장기"] },
+    { question: "손절, 칼같이 지키시나요?", options: ["🗡️ 칼손절", "😅 가끔 놓침", "🙈 잘 못 지킴"] },
+  ],
+  learn: [
+    { question: "이 개념, 알고 계셨나요?", options: ["💡 알고 있었음", "🆕 처음 알았음", "🤔 헷갈렸음"] },
+    { question: "트레이딩에서 제일 어려운 건?", options: ["📊 차트 분석", "🧠 멘탈 관리", "💰 자금 관리"] },
+  ],
+  basics: [
+    { question: "이 원칙, 실전에서 지키시나요?", options: ["✅ 지킴", "😬 가끔", "❌ 잘 못 지킴"] },
+    { question: "투자 공부, 주로 어떻게?", options: ["📚 책", "🎥 영상", "💬 커뮤니티"] },
+  ],
 };
 
 /**
  * Resolve which poll (if any) to attach to a post:
  *   1. post.telegramPoll === false  → no poll
  *   2. post.telegramPoll === { question, options } → custom poll
- *   3. fall back to CATEGORY_POLLS[category]
+ *   3. fall back to CATEGORY_POLLS[category], picking one by `seed` (channel
+ *      message id) so the pool rotates but is stable across webhook retries
  *   4. otherwise undefined (no poll)
  */
-function pollForPost(post: Post) {
+function pollForPost(post: Post, seed: number) {
   if (post.telegramPoll === false) return undefined;
   if (post.telegramPoll && typeof post.telegramPoll === "object") {
     return post.telegramPoll;
   }
-  return CATEGORY_POLLS[post.category as CategorySlugLocal];
+  const pool = CATEGORY_POLLS[post.category as CategorySlugLocal];
+  if (!pool || pool.length === 0) return undefined;
+  return pool[Math.abs(seed) % pool.length];
 }
 
 /**
@@ -226,32 +244,44 @@ const CATEGORY_DISCUSSION_PROMPTS: Record<CategorySlugLocal, string[]> = {
     "오늘 여러분 포지션은? 롱 / 숏 / 관망 — 이유도 한 줄 부탁해요 👇",
     "이 지지선 깨지면 비중 줄이시겠어요? 손절 라인 어디 잡으셨나요?",
     "지표 앞두고 현금 비중 얼마나 두시나요? 편하게 공유해주세요 👇",
+    "이번 발표, 호재일까요 악재일까요? 근거까지 걸어봅시다 👇",
+    "'이건 확실하다' 싶은 시나리오 하나만 걸어보실래요? 나중에 복기해요 👇",
   ],
   market: [
     "이번 주 시나리오, 강세 / 약세 / 중립 어디에 거시겠어요? 👇",
     "이번 주 가장 주목하는 종목 하나만 꼽는다면?",
+    "알트 시즌 온다 vs 아직이다 — 어느 편이세요? 👇",
+    "이번 주 '이 종목만은 담는다' 하나 꼽아주세요 👇",
   ],
   tokens: [
     "이 분석에 동의하세요? 반대 근거 있으면 댓글로 붙여주세요 👇",
     "진입한다면 어느 가격대에서 분할하실 건가요?",
+    "반대 의견 환영 — 이 분석에서 제일 약한 고리는 어디라고 보세요? 👇",
+    "이 토큰, 6개월 뒤 웃을까 울까요? 이유도 함께 👇",
   ],
   strategy: [
     "이 전략, 실제 라이브에서 써보신 분 후기 궁금합니다 👇",
     "어떤 종목·타임프레임에 제일 잘 맞을까요? 의견 나눠주세요.",
+    "이 전략, 어떤 장에서 제일 크게 깨질까요? 약점 같이 찾아봐요 👇",
+    "여러분만의 진입 규칙 하나만 공유해주실래요? 👇",
   ],
   learn: [
     "이 개념, 처음 배울 때 어디서 제일 헷갈리셨어요? 👇",
     "실전에서 이거 적용하다 실수한 경험 있으신 분?",
+    "이거 모르고 손해 본 적 있으신 분… 저부터요 👇",
   ],
   basics: [
     "이 대목, 실전에서 지키기 어떤가요? 여러분 경험 나눠주세요 👇",
     "책에서 가장 와닿은 원칙 하나만 꼽는다면?",
+    "머리론 알지만 실전에선 제일 안 지켜지는 원칙, 뭔가요? 👇",
   ],
 };
 
 const TRADE_IDEA_DISCUSSION_PROMPTS = [
   "이 셋업 타셨나요? 진입 / 관망 편하게 공유해주세요 👇",
   "손절·목표 라인 여러분이면 어디 두시겠어요?",
+  "이 셋업, 어디가 무효화 지점이라고 보세요? 반대 시나리오도 환영 👇",
+  "지금 진입 vs 눌림 기다림 — 여러분이면? 👇",
 ];
 
 /**
@@ -460,7 +490,7 @@ export async function sendPostToTelegram(
   //    audience reaction has analytical value (macro/market/tokens/strategy).
   //    Educational categories (basics/learn) skip the poll to avoid noise.
   //    Failures swallowed for the same reason as the group mirror.
-  const pollDef = pollForPost(post);
+  const pollDef = pollForPost(post, r.message_id);
   if (pollDef) {
     const pollPayloadBase = {
       question: pollDef.question,
