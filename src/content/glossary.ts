@@ -16,7 +16,8 @@ export type GlossaryCategory =
   | "onchain"
   | "derivatives"
   | "technical"
-  | "smc-ict";
+  | "smc-ict"
+  | "wallet-security";
 
 export type GlossaryEntry = {
   /** URL 앵커 식별자 (`/glossary#funding-rate`) */
@@ -64,6 +65,11 @@ export const GLOSSARY_CATEGORIES: { id: GlossaryCategory; label: string; descrip
     id: "smc-ict",
     label: "SMC / ICT",
     description: "스마트 머니 컨셉(SMC)과 ICT 트레이딩의 핵심 용어. 중급 이상.",
+  },
+  {
+    id: "wallet-security",
+    label: "지갑 · 보안",
+    description: "자산을 어디에 어떻게 보관하는가. 시드 문구·콜드월렛·승인 권한 등 잃지 않기 위한 용어.",
   },
 ];
 
@@ -478,5 +484,51 @@ export const GLOSSARY: GlossaryEntry[] = [
     category: "smc-ict",
     definition:
       "Michael J. Huddleston(ICT)가 정립한 시장 구조·시간대(Killzone)·유동성 기반 트레이딩 방법론. SMC의 모태가 된 사고 방식.",
+  },
+
+  // ── 지갑 · 보안 ────────────────────────────────────────────
+  {
+    id: "seed-phrase",
+    term: "시드 문구 (니모닉)",
+    alias: "Seed Phrase / Mnemonic / BIP-39",
+    category: "wallet-security",
+    definition:
+      "BIP-39 표준으로 만들어지는 12~24개 단어 나열. 지갑 내부 난수를 사람이 옮겨 적을 수 있는 단어로 바꾼 것으로, HD 월렛 구조상 이 문구 하나에서 지갑의 모든 주소·모든 코인 개인키가 다시 계산된다. 즉 시드 문구를 아는 사람이 그 지갑의 전권을 갖는다. 어떤 지원팀도 이것을 묻지 않는다 — 물어보면 피싱이다.",
+    analogy:
+      "집 열쇠 하나가 아니라, 그 집과 집 안 모든 금고를 동시에 여는 만능키.",
+    relatedSlugs: ["learn-phase2-ep09-wallet-security-seed-phrase-cold-wallet-approval"],
+  },
+  {
+    id: "cold-wallet",
+    term: "콜드월렛 · 핫월렛",
+    alias: "Cold Wallet / Hot Wallet / Hardware Wallet",
+    category: "wallet-security",
+    definition:
+      "콜드월렛은 개인키를 오프라인에서 생성·보관하고 거래 승인마다 기기의 물리 버튼·PIN을 요구하는 하드웨어 지갑, 핫월렛은 메타마스크처럼 인터넷에 연결된 채 개인키를 보관하는 소프트웨어 지갑. 콜드월렛은 원격 피싱·악성코드가 서명을 가로채기 어렵지만 매번 기기를 연결해야 해 번거롭고, 핫월렛은 편하지만 온라인 공격에 노출된다.",
+    analogy:
+      "콜드월렛은 은행 대여금고(찾으러 가야 하지만 안전), 핫월렛은 지갑 속 현금(바로 쓰지만 소매치기 위험).",
+    relatedSlugs: ["learn-phase2-ep09-wallet-security-seed-phrase-cold-wallet-approval"],
+  },
+  {
+    id: "unlimited-approve",
+    term: "무제한 승인",
+    alias: "Unlimited Approve / Infinite Allowance",
+    category: "wallet-security",
+    definition:
+      "ERC-20 토큰의 지출 승인(allowance) 한도를 사실상 무한대(2^256-1)로 설정하는 방식. 매번 재승인 가스비를 아끼려는 목적으로 다수 dApp이 기본값처럼 요청하지만, 승인 대상 컨트랙트가 취약하거나 악의적이면 보유 토큰 전량이 언제든 인출될 수 있다. Revoke.cash나 이더스캔 Token Approval Checker에서 승인 목록을 조회하고 취소할 수 있다.",
+    analogy:
+      "\"이번 한 번만 100만 원 꺼내가도 됩니다\"가 아니라 \"내 잔고 전부를 언제든 꺼내가도 됩니다\"에 도장을 찍어주는 것.",
+    relatedSlugs: ["learn-phase2-ep09-wallet-security-seed-phrase-cold-wallet-approval"],
+  },
+  {
+    id: "permit",
+    term: "Permit (EIP-2612)",
+    alias: "EIP-2612 / Gasless Permit",
+    category: "wallet-security",
+    definition:
+      "온체인 approve 트랜잭션 없이 가스비 없는 오프체인 서명 한 번으로 토큰 지출 승인을 내주는 ERC-20 확장 표준. 가스비가 없어 \"그냥 로그인\"처럼 가볍게 느껴지지만 실제로는 자금 이동 권한을 넘기는 서명이라, 2024년 월렛 드레이너 공격에서 가장 많이 악용된 서명 유형(56.7%)이었다. USDC·UNI 등 이 표준을 구현한 토큰에만 해당한다.",
+    analogy:
+      "도장을 찍는 대신 구두로 \"네, 그렇게 하세요\"라고 답한 것뿐인데, 그 한마디가 계약서 서명과 똑같은 효력을 갖는 셈.",
+    relatedSlugs: ["learn-phase2-ep09-wallet-security-seed-phrase-cold-wallet-approval"],
   },
 ];
