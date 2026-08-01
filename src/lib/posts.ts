@@ -73,7 +73,12 @@ export type Post = {
 function normalize(p: Post): Post {
   return {
     ...p,
-    publishedAt: p.publishedAt?.slice(0, 10) ?? p.publishedAt,
+    // Keep the full ISO datetime. Truncating to YYYY-MM-DD dropped the time in
+    // UTC, so a post published at 08:00 KST (= 23:00Z the previous day) became
+    // the previous day everywhere — formatDate could no longer recover the KST
+    // date because the time was already gone. Consumers all read this as a
+    // datetime (formatDate, <time dateTime>, RSS pubDate, sitemap, JSON-LD),
+    // and lexicographic sorting still works since every value is ISO/UTC.
     tags: p.tags ?? [],
   };
 }
