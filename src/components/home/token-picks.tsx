@@ -1,4 +1,5 @@
 import { getTokenPicks, type TokenPick } from "@/lib/editorial";
+import { formatDate } from "@/lib/format";
 
 const STANCE: Record<NonNullable<TokenPick["stance"]>, { label: string; cls: string }> = {
   long: {
@@ -87,7 +88,7 @@ export async function TokenPicks() {
                 <div className="mt-auto flex items-end justify-between gap-3 pt-5">
                   <p className="text-[11px] text-fg-muted">
                     {p.updatedAt &&
-                      `갱신 ${new Date(p.updatedAt).toLocaleDateString("ko-KR")}`}
+                      `갱신 ${formatDate(p.updatedAt)}`}
                     {p.disclaimer && (
                       <span className="block mt-1 italic">⚠️ {p.disclaimer}</span>
                     )}

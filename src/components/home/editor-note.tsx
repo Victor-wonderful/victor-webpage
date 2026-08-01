@@ -1,4 +1,5 @@
 import { getEditorial } from "@/lib/editorial";
+import { formatDate } from "@/lib/format";
 
 /**
  * Editor's Note + Sentence of the Day — a short editorial block on the home.
@@ -23,7 +24,7 @@ export async function EditorNote() {
             {ed.updatedAt && (
               <p className="mt-6 text-meta opacity-70">
                 업데이트 ·{" "}
-                {new Date(ed.updatedAt).toLocaleDateString("ko-KR")}
+                {formatDate(ed.updatedAt)}
               </p>
             )}
           </aside>
