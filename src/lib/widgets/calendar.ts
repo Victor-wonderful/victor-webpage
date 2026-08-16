@@ -10,7 +10,7 @@ export type MacroEvent = {
   /** Korean label */
   title: string;
   /** Short type tag */
-  kind: "FOMC" | "CPI" | "PPI" | "고용";
+  kind: "FOMC" | "CPI" | "PPI" | "고용" | "PCE" | "경기";
   /** Impact level */
   impact: "high" | "med";
   /** Optional consensus / previous note */
@@ -85,16 +85,50 @@ export const MACRO_EVENTS: MacroEvent[] = [
     impact: "med",
   },
   {
+    startsAt: "2026-08-17T21:30:00+09:00",
+    title: "美 8월 엠파이어스테이트 제조업지수",
+    kind: "경기",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-08-19T03:00:00+09:00",
+    title: "7월 FOMC 의사록",
+    kind: "FOMC",
+    impact: "high",
+    note: "7/29 회의 · 반대표 3인의 인상 주장 강도가 잭슨홀 언어의 하한선을 정한다",
+  },
+  {
     startsAt: "2026-08-20T21:30:00+09:00",
     title: "美 주간 신규 실업수당 청구건수",
     kind: "고용",
     impact: "med",
   },
   {
+    startsAt: "2026-08-21T21:30:00+09:00",
+    title: "美 필라델피아 연은 제조업 · 8월 플래시 PMI",
+    kind: "경기",
+    impact: "med",
+    note: "같은 날 잭슨홀 심포지엄 개시",
+  },
+  {
+    startsAt: "2026-08-26T21:30:00+09:00",
+    title: "美 7월 개인소비지출 물가 (PCE)",
+    kind: "PCE",
+    impact: "high",
+    note: "7월 PPI 근원(식품·에너지·무역서비스 제외)이 +0.4%로 안 식은 게 부담",
+  },
+  {
     startsAt: "2026-08-27T21:30:00+09:00",
     title: "美 주간 신규 실업수당 청구건수",
     kind: "고용",
     impact: "med",
+  },
+  {
+    startsAt: "2026-08-28T23:00:00+09:00",
+    title: "잭슨홀 — 워시 의장 첫 기조연설",
+    kind: "FOMC",
+    impact: "high",
+    note: "취임 후 첫 잭슨홀 · 정확한 연설 시각은 프로그램 공개 시 갱신",
   },
   {
     startsAt: "2026-09-04T21:30:00+09:00",

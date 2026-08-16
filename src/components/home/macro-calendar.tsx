@@ -7,7 +7,9 @@ const KIND_COLOR: Record<string, string> = {
   FOMC: "bg-rose-500/15 text-rose-500",
   CPI: "bg-orange-400/15 text-orange-400",
   PPI: "bg-amber-500/15 text-amber-600",
+  PCE: "bg-orange-400/15 text-orange-400",
   "고용": "bg-sky-500/15 text-sky-500",
+  "경기": "bg-violet-500/15 text-violet-500",
 };
 
 function dCountdown(d: number) {
