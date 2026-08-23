@@ -81,9 +81,25 @@ export const activePollQuery = groq(`
   }
 `);
 
+/**
+ * `displayDate` is a date-only string ("2026-08-24"), but `now()` is a full
+ * instant ("2026-08-23T20:14:48Z"). Comparing the two is a *string* compare,
+ * so "2026-08-24" sorted after "2026-08-23T..." and a widget dated today was
+ * hidden until UTC crossed midnight — i.e. until 09:00 KST. Every widget
+ * created during a late-night session was invisible for hours.
+ *
+ * Fix: compare against the *KST* wall-clock instant (UTC + 9h). Two properties
+ * make the plain string compare correct:
+ *   - same day  → "2026-08-24" is a prefix of "2026-08-24T05:14:48Z", so it
+ *                 sorts first and the widget shows from 00:00 KST.
+ *   - later day → "2026-08-25" > "2026-08-24T...", so future widgets stay hidden.
+ *
+ * GROQ has no string slicing (`string(...)[0..9]` evaluates to null), so we
+ * compare against the full instant rather than trimming it to a date.
+ */
 export const activeDailyWidgetQuery = groq(`
   *[_type == "dailyWidget" && active == true
-    && (!defined(displayDate) || displayDate <= now())
+    && (!defined(displayDate) || displayDate <= string(dateTime(now()) + 60*60*9))
   ] | order(displayDate desc, _updatedAt desc) [0] {
     _id,
     title,
