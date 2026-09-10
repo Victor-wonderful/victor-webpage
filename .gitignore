@@ -23,3 +23,6 @@ tsconfig.tsbuildinfo
 # temp publish staging. Convention: leading underscore = throwaway, never committed.
 # (Override a specific file with e.g. `!/_keepme.mjs` if ever needed.)
 /_*
+# 차트 도표용 OHLCV 스냅샷 캐시 (trading-chart-figures)
+.cache/
+!docs/content-policy.md

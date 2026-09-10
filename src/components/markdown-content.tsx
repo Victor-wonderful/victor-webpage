@@ -1,3 +1,4 @@
+import type { ComponentProps } from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import rehypeHighlight from "rehype-highlight";
@@ -64,6 +65,17 @@ export function MarkdownContent({
     takeaway = source.slice(markerMatch.index + markerMatch[0].length).trim();
   }
 
+  // 독자 우선 정책 v2 (docs/content-policy.md §1): `## 🔬 검산 노트` 부터는 «뒷면».
+  // 표·전수 검산·채점은 접힌 <details> 안에 두고, 앞면만 펼쳐진 채로 보여준다.
+  // 마커 문자열은 scripts/lib/post-layout.mjs 의 BACK_MARKER 와 같아야 한다.
+  const BACK_MARKER = /^##\s*🔬\s*검산 노트\s*$/m;
+  const backMatch = body.match(BACK_MARKER);
+  let back: string | null = null;
+  if (backMatch && backMatch.index !== undefined) {
+    back = body.slice(backMatch.index + backMatch[0].length).trim();
+    body = body.slice(0, backMatch.index).replace(/\n+---\s*$/, "").trimEnd();
+  }
+
   // Resolve `#N` placeholder URLs against the bodyImages array.
   const resolveSrc = (
     src: string | undefined,
@@ -77,6 +89,49 @@ export function MarkdownContent({
     const url = imageUrl(ref, 1600);
     if (!url) return null;
     return { url, fallbackAlt: ref?.alt };
+  };
+
+  // 앞면과 뒷면(검산 노트)이 같은 플러그인·컴포넌트를 쓴다.
+  const remarkPlugins: ComponentProps<typeof ReactMarkdown>["remarkPlugins"] = [
+    [remarkGfm, { singleTilde: false }],
+    remarkUnwrapImages,
+    remarkGlossary,
+  ];
+  const mdComponents: ComponentProps<typeof ReactMarkdown>["components"] = {
+    pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
+    a: ({ href, children, node, ...props }) => {
+      // remark-glossary 가 실어 준 data-glossary 를 툴팁 컴포넌트로 교체
+      const gid =
+        (props as Record<string, string>)["data-glossary"] ??
+        (node?.properties?.dataGlossary as string | undefined);
+      if (gid) return <GlossaryTerm id={gid}>{children}</GlossaryTerm>;
+      return (
+        <a href={href} {...props}>
+          {children}
+        </a>
+      );
+    },
+    img: ({ src, alt }) => {
+      const resolved = resolveSrc(typeof src === "string" ? src : undefined);
+      if (!resolved) return null;
+      const caption = alt && alt.trim().length > 0 ? alt : resolved.fallbackAlt;
+      return (
+        <figure className="my-8">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={resolved.url}
+            alt={caption ?? ""}
+            className="block w-full rounded-md"
+            loading="lazy"
+          />
+          {caption && (
+            <figcaption className="mt-2 text-center text-sm italic text-fg-muted">
+              {caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    },
   };
 
   return (
@@ -112,51 +167,39 @@ export function MarkdownContent({
       )}
     >
       <ReactMarkdown
-        remarkPlugins={[
-          [remarkGfm, { singleTilde: false }],
-          remarkUnwrapImages,
-          remarkGlossary,
-        ]}
+        remarkPlugins={remarkPlugins}
         rehypePlugins={[rehypeHighlight]}
-        components={{
-          pre: ({ children }) => <CodeBlock>{children}</CodeBlock>,
-          a: ({ href, children, node, ...props }) => {
-            // remark-glossary 가 실어 준 data-glossary 를 툴팁 컴포넌트로 교체
-            const gid =
-              (props as Record<string, string>)["data-glossary"] ??
-              (node?.properties?.dataGlossary as string | undefined);
-            if (gid) return <GlossaryTerm id={gid}>{children}</GlossaryTerm>;
-            return (
-              <a href={href} {...props}>
-                {children}
-              </a>
-            );
-          },
-          img: ({ src, alt }) => {
-            const resolved = resolveSrc(typeof src === "string" ? src : undefined);
-            if (!resolved) return null;
-            const caption = alt && alt.trim().length > 0 ? alt : resolved.fallbackAlt;
-            return (
-              <figure className="my-8">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={resolved.url}
-                  alt={caption ?? ""}
-                  className="block w-full rounded-md"
-                  loading="lazy"
-                />
-                {caption && (
-                  <figcaption className="mt-2 text-center text-sm italic text-fg-muted">
-                    {caption}
-                  </figcaption>
-                )}
-              </figure>
-            );
-          },
-        }}
+        components={mdComponents}
       >
         {body}
       </ReactMarkdown>
+
+      {back && (
+        <details
+          className={cn(
+            "group mt-12 rounded-md border border-border bg-surface-warm/40",
+            "[&_h2]:mt-8 [&_h2]:text-2xl [&_h3]:mt-6 [&_h3]:text-xl",
+            "[&_table]:text-sm",
+          )}
+        >
+          <summary className="cursor-pointer select-none list-none px-6 py-4 font-display text-lg font-bold tracking-tight [&::-webkit-details-marker]:hidden">
+            <span className="mr-2 inline-block transition-transform group-open:rotate-90">▸</span>
+            🔬 검산 노트
+            <span className="ml-2 text-sm font-normal text-fg-muted">
+              숫자와 근거 · 펼쳐서 확인
+            </span>
+          </summary>
+          <div className="px-6 pb-8">
+            <ReactMarkdown
+              remarkPlugins={remarkPlugins}
+              rehypePlugins={[rehypeHighlight]}
+              components={mdComponents}
+            >
+              {back}
+            </ReactMarkdown>
+          </div>
+        </details>
+      )}
 
       {takeaway && (
         <aside

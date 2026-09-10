@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Source_Serif_4, Inter, JetBrains_Mono } from "next/font/google";
 import { BrandBand } from "@/components/brand-band";
+import { Analytics } from "@vercel/analytics/next";
 import { BackToTop } from "@/components/back-to-top";
 import { AlphaResearchBannerMount } from "@/components/alpha-research-banner-mount";
 import { JsonLd } from "@/components/seo/json-ld";
@@ -87,6 +88,8 @@ export default function RootLayout({
         <main>{children}</main>
         <BrandBand variant="footer" />
         <BackToTop />
+        {/* Vercel Web Analytics — 대시보드에서 Enable 전까지는 no-op. 정책 v2 §7 (docs/content-policy.md) */}
+        <Analytics />
       </body>
     </html>
   );
