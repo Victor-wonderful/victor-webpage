@@ -21,6 +21,17 @@ import { SubscribeChannels } from "@/components/home/subscribe-channels";
 
 export const revalidate = 60;
 
+// 전략 메타는 숫자(52.6) 또는 문자열("52.6%")로 들어온다. 없으면 null —
+// 0으로 바꾸면 «승률 0%»처럼 사실과 다른 배지가 뜬다(2026-10-03 발견).
+function pct(v: unknown): number | null {
+  if (typeof v === "number") return v;
+  if (typeof v === "string") {
+    const n = parseFloat(v.replace(/[^0-9.+-]/g, ""));
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
 export default async function Home() {
   const posts = await getAllPosts();
   const [hero, ...rest] = posts;
@@ -32,8 +43,8 @@ export default async function Home() {
   const strategyPosts = await getPostsByCategory("strategy");
   const spotlight = strategyPosts.slice(0, 3).map((p) => ({
     post: p,
-    winRate: typeof p.meta?.winRate === "number" ? p.meta.winRate : 0,
-    mdd: typeof p.meta?.mdd === "number" ? p.meta.mdd : 0,
+    winRate: pct(p.meta?.winRate),
+    mdd: pct(p.meta?.mdd),
     author: "Victor",
   }));
   const hasPromise03Content = spotlight.length > 0;

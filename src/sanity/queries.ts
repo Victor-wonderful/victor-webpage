@@ -58,6 +58,15 @@ export const editorialQuery = groq(`
   }
 `);
 
+// Sentence of the Day 원천 — 가장 최근 발행된 매크로 데일리의 본문.
+// 본문의 `> **Victor:**` 판단 한 줄을 홈에 매일 올린다(2026-10-03 Victor 결정).
+export const latestMacroJudgmentQuery = groq(`
+  *[_type == "post" && category->slug.current == "macro" && publishedAt <= now()]
+    | order(publishedAt desc)[0]{
+      "slug": slug.current, publishedAt, content
+    }
+`);
+
 export const tokenPicksQuery = groq(`
   *[_type == "tokenPick" && active == true] | order(order asc, _updatedAt desc) {
     _id, name, ticker, sector, stance, thesis,

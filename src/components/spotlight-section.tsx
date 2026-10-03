@@ -3,10 +3,16 @@ import type { Post } from "@/lib/posts";
 
 type Strategy = {
   post: Post;
-  winRate: number; // %
-  mdd: number; // %
+  /** 백테스트 승률(%) — 백테스트가 없는 노트(H12 추적 등)는 null */
+  winRate: number | null;
+  mdd: number | null;
   author?: string;
 };
+
+function noteNo(title: string) {
+  const m = title.match(/#(\d+)/);
+  return m ? `#${m[1]}` : "—";
+}
 
 export function SpotlightSection({ items }: { items: Strategy[] }) {
   if (items.length === 0) return null;
@@ -29,19 +35,21 @@ export function SpotlightSection({ items }: { items: Strategy[] }) {
               key={post.slug}
               className="group flex gap-5 border-b border-border pb-8 last:border-b-0"
             >
-              {/* Round backtest badge */}
+              {/* Round badge — 백테스트 승률이 있으면 승률, 없으면 노트 번호 */}
               <div className="shrink-0">
                 <div className="flex h-20 w-20 flex-col items-center justify-center rounded-full bg-ink text-bg dark:bg-fg dark:text-ink">
                   <span className="font-display text-lg font-bold leading-none tabular-nums">
-                    {winRate}%
+                    {winRate !== null ? `${winRate}%` : noteNo(post.title)}
                   </span>
                   <span className="mt-1 text-[10px] uppercase tracking-[0.18em] text-bg/70 dark:text-ink/70">
-                    승률
+                    {winRate !== null ? "승률" : "노트"}
                   </span>
                 </div>
-                <p className="mt-2 text-center text-[11px] tabular-nums text-fg-muted">
-                  MDD {mdd}%
-                </p>
+                {mdd !== null && (
+                  <p className="mt-2 text-center text-[11px] tabular-nums text-fg-muted">
+                    MDD {mdd}%
+                  </p>
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 {author && (

@@ -42,7 +42,7 @@ export function PositioningStrip() {
               매일 1개 시장 신호
             </p>
             <p className="mt-1 break-keep font-serif-body text-[12px] leading-[1.5] text-fg-muted">
-              주간마켓인사이트 — 한 페이지, 한 결정.
+              오늘의 시장 데일리 — 한 페이지, 한 결정.
             </p>
           </li>
           <li className="rounded border border-border bg-surface p-4">

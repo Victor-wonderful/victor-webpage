@@ -2,6 +2,13 @@ import Link from "next/link";
 import { getPostsByCategory } from "@/lib/posts";
 import { formatDate } from "@/lib/format";
 
+// 제목의 실제 회차(「레전드 40편」·「입문 #19」)를 쓴다. 목록 순번(03·02·01)을
+// 붙이면 40편이 「편 03」으로 보인다(2026-10-03 수정).
+function episodeLabel(title: string) {
+  const m = title.match(/(\d+)\s*편/) ?? title.match(/#(\d+)/);
+  return m ? `편 ${m[1]} · ` : "";
+}
+
 /**
  * Basics Track Rail — Promise #5 payoff zone.
  * Latest 3 posts in 입문 가이드(basics) + book series intro card.
@@ -21,7 +28,7 @@ export async function BasicsTrackRail({ limit = 3 }: { limit?: number }) {
           </h3>
           <p className="mt-3 break-keep font-serif-body text-[14px] leading-[1.7] text-fg-muted">
             Livermore·Soros·Tudor Jones·Dalio·Druckenmiller의 검증된 원칙을
-            암호화폐에 적용하는 100편 시리즈. 매주 화·목 발행, 약 12개월 트랙.
+            암호화폐에 적용하는 100편 시리즈. 매주 수·토 발행, 약 12개월 트랙.
           </p>
           <Link
             href="/category/basics"
@@ -39,7 +46,7 @@ export async function BasicsTrackRail({ limit = 3 }: { limit?: number }) {
             </div>
           ) : (
             <ul className="space-y-3">
-              {posts.map((p, i) => (
+              {posts.map((p) => (
                 <li key={p.slug}>
                   <Link
                     href={`/blog/${p.slug}`}
@@ -47,7 +54,7 @@ export async function BasicsTrackRail({ limit = 3 }: { limit?: number }) {
                   >
                     <div className="min-w-0 flex-1">
                       <p className="font-mono text-[11px] uppercase tracking-wider text-accent">
-                        편 {String(posts.length - i).padStart(2, "0")} ·{" "}
+                        {episodeLabel(p.title)}
                         {formatDate(p.publishedAt)}
                       </p>
                       <h4 className="mt-1.5 break-keep font-display text-[18px] font-bold leading-snug group-hover:text-accent">
