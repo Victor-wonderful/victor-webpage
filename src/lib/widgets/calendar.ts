@@ -17,10 +17,15 @@ export type MacroEvent = {
   note?: string;
 };
 
-// Edit this list each month. Last updated: 2026-07-16 (adds Aug–Sep 2026 events).
-// Date sources: BLS release schedule (7월 CPI=8/12 수, 7월 PPI=8/13 목, 8월 고용=9/4 금),
-// FOMC official calendar (9월 회의 9/15~16, 결정 9/16 14:00 ET, 점도표 포함).
-// Times: 8:30 AM ET (EDT, UTC-4) = 21:30 KST · 2:00 PM ET = 익일 03:00 KST.
+// Edit this list each month. Last updated: 2026-10-03 (adds Oct–Dec 2026 events).
+// 9/17 이후 일정이 없어 홈 위젯이 2주간 빈 칸으로 노출됐다(10/3 발견). 남은 일정이
+// RUNWAY_WARN_DAYS 이하로 줄면 서버 로그 경고 + daily-brief 경고가 뜬다.
+// Date sources (2026-10-03 확인): BLS schedule — 고용 10/2·11/6·12/4, CPI 10/14·11/10·12/10,
+// PPI 10/15·11/13·12/15 / BEA schedule — PCE(개인소득·지출) 10/29·11/25·12/23 /
+// FOMC official calendar — 10/27~28, 12/8~9(점도표 포함).
+// Times: 미국 서머타임 종료 11/1(일) 기준으로 KST 환산이 바뀐다.
+//   ~10/31 (EDT): 8:30 AM ET = 21:30 KST · 2:00 PM ET = 익일 03:00 KST
+//   11/1~ (EST): 8:30 AM ET = 22:30 KST · 2:00 PM ET = 익일 04:00 KST
 export const MACRO_EVENTS: MacroEvent[] = [
   {
     startsAt: "2026-07-02T21:30:00+09:00",
@@ -143,6 +148,88 @@ export const MACRO_EVENTS: MacroEvent[] = [
     impact: "high",
     note: "9/16 14:00 ET 발표 · 점도표(SEP) 포함",
   },
+  {
+    startsAt: "2026-10-14T21:30:00+09:00",
+    title: "美 9월 소비자물가지수 (CPI)",
+    kind: "CPI",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-10-15T21:30:00+09:00",
+    title: "美 9월 생산자물가지수 (PPI)",
+    kind: "PPI",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-10-29T03:00:00+09:00",
+    title: "FOMC 10월 금리 결정",
+    kind: "FOMC",
+    impact: "high",
+    note: "10/28 14:00 ET 발표 · 점도표 없음",
+  },
+  {
+    startsAt: "2026-10-29T21:30:00+09:00",
+    title: "美 9월 개인소비지출 물가 (PCE)",
+    kind: "PCE",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-11-06T22:30:00+09:00",
+    title: "美 10월 비농업 고용 · 실업률 (NFP)",
+    kind: "고용",
+    impact: "high",
+    note: "서머타임 종료 — 이날부터 22:30 KST",
+  },
+  {
+    startsAt: "2026-11-10T22:30:00+09:00",
+    title: "美 10월 소비자물가지수 (CPI)",
+    kind: "CPI",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-11-13T22:30:00+09:00",
+    title: "美 10월 생산자물가지수 (PPI)",
+    kind: "PPI",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-11-25T22:30:00+09:00",
+    title: "美 10월 개인소비지출 물가 (PCE)",
+    kind: "PCE",
+    impact: "high",
+    note: "추수감사절 연휴 직전",
+  },
+  {
+    startsAt: "2026-12-04T22:30:00+09:00",
+    title: "美 11월 비농업 고용 · 실업률 (NFP)",
+    kind: "고용",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-12-10T04:00:00+09:00",
+    title: "FOMC 12월 금리 결정",
+    kind: "FOMC",
+    impact: "high",
+    note: "12/9 14:00 ET 발표 · 점도표(SEP) 포함",
+  },
+  {
+    startsAt: "2026-12-10T22:30:00+09:00",
+    title: "美 11월 소비자물가지수 (CPI)",
+    kind: "CPI",
+    impact: "high",
+  },
+  {
+    startsAt: "2026-12-15T22:30:00+09:00",
+    title: "美 11월 생산자물가지수 (PPI)",
+    kind: "PPI",
+    impact: "med",
+  },
+  {
+    startsAt: "2026-12-23T22:30:00+09:00",
+    title: "美 11월 개인소비지출 물가 (PCE)",
+    kind: "PCE",
+    impact: "high",
+  },
 ];
 
 export type UpcomingEvent = MacroEvent & {
@@ -160,8 +247,24 @@ function nowKstStartOfDayMs(): number {
   return Math.floor(kstNow / 86_400_000) * 86_400_000;
 }
 
+/** 남은 일정이 이 일수 이하이면 갱신 경고를 낸다. */
+export const RUNWAY_WARN_DAYS = 14;
+
+/** 마지막 등록 일정까지 남은 일수(KST 기준). 음수면 이미 다 지났다. */
+export function macroCalendarRunwayDays(): number {
+  const lastMs = Math.max(...MACRO_EVENTS.map((e) => new Date(e.startsAt).getTime()));
+  const lastDay = Math.floor((lastMs + KST_OFFSET_MS) / 86_400_000) * 86_400_000;
+  return Math.round((lastDay - nowKstStartOfDayMs()) / 86_400_000);
+}
+
 export function getUpcomingMacroEvents(limit = 6): UpcomingEvent[] {
   const todayKstMs = nowKstStartOfDayMs();
+  const runway = macroCalendarRunwayDays();
+  if (runway <= RUNWAY_WARN_DAYS) {
+    console.warn(
+      `[macro-calendar] 남은 일정 ${runway}일 — src/lib/widgets/calendar.ts 갱신 필요`,
+    );
+  }
   return MACRO_EVENTS.map((e) => {
     const eventMs = new Date(e.startsAt).getTime();
     const eventKstMs = eventMs + KST_OFFSET_MS;

@@ -24,7 +24,13 @@ export function MacroCalendar() {
     <article className="flex h-full flex-col gap-4 border border-border bg-surface-warm/40 p-6">
       <p className="text-eyebrow text-accent">Macro Calendar · KST</p>
 
-      <ul className="flex-1 space-y-4">
+      {events.length === 0 && (
+        <p className="flex-1 text-meta text-fg-muted">
+          다음 주요 지표 일정을 갱신하고 있습니다.
+        </p>
+      )}
+
+      <ul className={events.length ? "flex-1 space-y-4" : "hidden"}>
         {events.map((e) => {
           const d = dCountdown(e.daysUntil);
           return (
